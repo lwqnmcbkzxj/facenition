@@ -1,0 +1,57 @@
+<?php
+function getStaticRoutes() {
+    return array(
+        '/api/v1/logo' => 'logo/showLogo',
+        '/api/v1/classify' => 'classify/classifyImage',
+        '/api/v1/login' => 'users/loginUser',
+        '/api/v1/register' => 'users/createUser',
+        '/api/v1/password-reset' => 'users/resetPassword',
+        '/api/v1/mailing' => 'users/addToMailingList',
+        '/api/v1/contact' => 'users/add_to_mailing_list',
+        '/api/v1/monitors' => 'monitors/handler',
+        '/api/v1/traffic' => 'traffic/handler',
+        '/api/v2/traffic' => 'traffic/get_traffic_entries_v2',
+        '/api/v1/traffic/all' => 'traffic/getTrafficEntriesAll',
+        '/api/v1/traffic/days' => 'traffic/get_traffic_days',
+        '/api/v1/traffic/bulk' => 'traffic/bulk_insert_traffic',
+        '/api/v1/traffic/total' => 'traffic/get_traffic_totals',
+        '/api/v1/gender' => 'gender/handler',
+        '/api/v2/gender' => 'gender/get_gender_entries_v2',
+        '/api/v1/gender/all' => 'gender/get_gender_entries_all',
+        '/api/v2/gender/all' => 'gender/get_gender_entries_all',
+        '/api/v1/gender/bulk' => 'gender/bulk_insert_gender',
+        '/api/v1/gender/total' => 'gender/get_gender_totals',
+        '/api/v1/impression' => 'impression/handler',
+        '/api/v2/impression' => 'impression/get_impression_entries_v2',
+        '/api/v1/impression/all' => 'impression/get_impression_entries_all',
+        '/api/v1/impression/bulk' => 'impression/bulk_insert_impression',
+        '/api/v1/impression/total' => 'impression/get_impression_totals',
+        '/api/v1/account' => 'account/get_user',
+        '/api/v1/account/password-reset' => 'account/reset_password',
+        '/api/v1/account/invoice' => 'account/get_invoice',
+        '/api/v1/account/card' => 'account/handler',
+        '/api/v1/account/usage/start' => 'account/activate_meter',
+        '/api/v1/account/usage/update' => 'account/update_usage',
+        '/api/v1/account/usage/subscription' => 'account/handler'
+
+
+    );
+}
+function getWildCardRoutes() {
+    return array(
+        "~\/api\/v1\/verify\/([a-zA-Z0-9-]+)~" => "users/verifyUser",
+        "~\/api\/v1\/password-reset\/([a-zA-Z0-9-]+)~"=>"users/resetPasswordByToken"
+    );
+}
+function getStripeConfig() {
+    $config=array();
+    $config['stripe_key_test_public']         = '';
+    $config['stripe_key_test_secret']         = 'sk_test_7v3p8JLwuPRGyuqWF4JtukLO';
+    $config['stripe_key_live_public']         = '';
+    $config['stripe_key_live_secret']         = '';
+    $config['stripe_test_mode']               = TRUE;
+    $config['stripe_verify_ssl']              = FALSE;
+    return $config;
+}
+
+

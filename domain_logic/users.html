@@ -88,8 +88,12 @@ function createUser()
         $hash = password_hash($password, PASSWORD_BCRYPT);
         $sql_insert = "REPLACE INTO users (id, email, password, created, customer_id, subscription_id, subscription_item_id, verify_token, mailing_list_only) 
 VALUES (\"$user_id\", \"$email\", \"$hash\", " . get_micro_time() . ", \"{$customer['id']}\", \"{$subscription['$id']}\",\"$subscription_item_id\", \"$verify_token\", 0)";
-        http_response_code(200);
-        return json_encode(array('msg' => "Successfully created user account! Please check your email.", "success" => true));
+        if (empty(mysqli_error($db))) {
+            http_response_code(200);
+            return json_encode(array('msg' => "Successfully created user account! Please check your email.", "success" => true));
+        } else  return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+
+
     } else {
         http_response_code(400);
         return json_encode(array('msg' => "Account already exists with that email", "success" => false));
@@ -112,9 +116,11 @@ function resetPassword()
         $reset_token = uniqid();
         $sql_insert = "INSERT into password_resets (id, email, reset_token, created) VALUES ($reset_id, $email, $reset_token, " . get_micro_time() . ")";
         queryDatabase($db, $sql_insert);
-        // SEND MAIL
-        http_response_code(200);
-        return json_encode(array('msg' => 'Reset request successfully submitted! Follow email instructions', "success" => true));
+        if (empty(mysqli_error($db))) {
+            http_response_code(200);
+            return json_encode(array('msg' => 'Reset request successfully submitted! Follow email instructions', "success" => true));
+        } else return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+
     } else {
         http_response_code(400);
         return json_encode(array('msg' => "Password reset request already exists!", "success" => false));

@@ -75,65 +75,72 @@ function handlingTraffic()
 
         $sql = "INSERT INTO traffic (monitor_id, user_id, value, created) VALUES (\"$monitor_id\", \"$user->id\", $value, " . get_micro_time() . ")";
         queryDatabase($db, $sql);
-        http_response_code(200);
-        return json_encode(array("status" => 200, "msg" => "Inserted entry successfully", "success" => true));
-
-
+        if (empty(mysqli_error($db))) {
+            http_response_code(200);
+            return json_encode(array("status" => 200, "msg" => "Inserted entry successfully", "success" => true));
+        }
+        http_response_code(500);
+        return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
     }
 
 
 }
-function getTrafficDays() {
+
+function getTrafficDays()
+{
     $user = verify_user_token();
-    if(is_bool($user)) {
+    if (is_bool($user)) {
         http_response_code(401);
         return json_encode(array("status" => 401, "success" => false));
     }
     $params = array("days");
-    if(!check_isset_body($_GET, $params)) {
+    if (!check_isset_body($_GET, $params)) {
         http_response_code(400);
         return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
     }
 
-    if(!is_numeric($_GET["days"]) || $_GET["days"] < 0) {
+    if (!is_numeric($_GET["days"]) || $_GET["days"] < 0) {
         http_response_code(400);
         return json_encode(array("status" => 400, "msg" => "Days must be numeric and positive", "success" => false));
     }
-    $db=getDB();
+    $db = getDB();
     $days = subtract_from_date(microtime(true), 'day', $_GET["days"]);
-    $days=mysqli_real_escape_string($db, $days);
-    $sql = "SELECT created, SUM(value) AS total, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM traffic WHERE created >= $days AND created <= ".get_micro_time()." AND user_id = \"{$user->id}\" GROUP BY DAY(time), monitor_id";
-    $rows=getAllRowsOfQuery($db, $sql);
+    $days = mysqli_real_escape_string($db, $days);
+    $sql = "SELECT created, SUM(value) AS total, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM traffic WHERE created >= $days AND created <= " . get_micro_time() . " AND user_id = \"{$user->id}\" GROUP BY DAY(time), monitor_id";
+    $rows = getAllRowsOfQuery($db, $sql);
     http_response_code(200);
     return json_encode(array("status" => 200, "msg" => "Retrieved traffic entries in range for days", "data" => $rows, "success" => true));
 }
-function getTrafficTotal() {
+
+function getTrafficTotal()
+{
     $user = verify_user_token();
-    if(is_bool($user)) {
+    if (is_bool($user)) {
         http_response_code(401);
         return json_encode(array("status" => 401, "success" => false));
     }
     $params = array("start", "end");
-    if(!check_isset_body($_GET, $params)) {
+    if (!check_isset_body($_GET, $params)) {
         http_response_code(400);
         return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
     }
 
     $start = $_GET["start"];
     $end = $_GET["end"];
-    if(!is_numeric($start) || !is_numeric($end) || $start < 0 || $end < 0) {
+    if (!is_numeric($start) || !is_numeric($end) || $start < 0 || $end < 0) {
         http_response_code(400);
         return json_encode(array("status" => 400, "msg" => "Date values must be valid timestamps", "success" => false));
     }
-    $db=getDB();
-    $start=mysqli_real_escape_string($db, $start);
-    $end=mysqli_real_escape_string($db, $end);
+    $db = getDB();
+    $start = mysqli_real_escape_string($db, $start);
+    $end = mysqli_real_escape_string($db, $end);
     $sql = "SELECT SUM(value) as total FROM traffic WHERE created >= $start AND created <= $end AND user_id = \"{$user->id}\"";
     $rows = getAllRowsOfQuery($db, $sql);
     $data = isset($rows[0]["total"]) ? $rows[0] : array("total" => 0);
     http_response_code(200);
     return json_encode(array("status" => 200, "msg" => "Retrieved traffic entries in range for days", "data" => $data, "success" => true));
 }
+
 function insertTrafficInBulk()
 {
     $user = verify_user_token();
@@ -162,12 +169,12 @@ function insertTrafficInBulk()
     $sql = "INSERT INTO `traffic` (monitor_id, user_id, value, created) VALUES (";
     $sql_arr = array();
     foreach ($data as $entry) {
-        $to_insert=array();
+        $to_insert = array();
         $e = array("\"" . mysqli_real_escape_string($db, $body["monitor_id"]) . "\"", "\"" . $user->id . "\"", mysqli_real_escape_string($db, $entry["value"]), mysqli_real_escape_string($db, $entry["created"]));
         foreach ($e as $element) {
             $to_insert[] = $element;
         }
-        $sql_arr[] = $sql.implode(', ', $to_insert).")";
+        $sql_arr[] = $sql . implode(', ', $to_insert) . ")";
     }
 
 
@@ -181,7 +188,6 @@ function insertTrafficInBulk()
 
     http_response_code(500);
     return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
-
 
 
 }

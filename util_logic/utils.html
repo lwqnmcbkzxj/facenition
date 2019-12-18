@@ -28,7 +28,9 @@ function check_isset_body($body, $params)
     }
     return $set;
 }
-
+function subtract_from_date($timestamp, $duration, $unit) {
+    return strtotime("-".$unit." ".$duration."", $timestamp);
+}
 function getAuthorizationHeader()
 {
     $headers = null;

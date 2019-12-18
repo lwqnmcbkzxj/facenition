@@ -1,5 +1,57 @@
 <?php
-function handler()
+function handlingGender()
 {
-    return json_encode(array("status" => "200"));
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        http_response_code(401);
+        return json_encode(array("status" => 401, "success" => false));
+    }
+    if (!isPost()) {
+        $db = getDB();
+        $params = array("start", "end", "monitor_id", "duration");
+        if (!check_isset_body($_GET, $params) || !in_array($_GET["duration"], get_valid_durations())) {
+            http_response_code(400);
+            return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+        }
+
+        $start = intval($_GET["start"]);
+        $end = intval($_GET["end"]);
+        $monitor_id = $_GET["monitor_id"];
+        $duration = ($_GET["duration"]);
+        $shift = ($_GET["shift"]);
+
+        if (isset($shift)) {
+            $start = subtract_from_date($start, $duration, 1);
+            $end = subtract_from_date($end, $duration, 1);
+        }
+        $monitor_id = mysqli_real_escape_string($db, $monitor_id);
+        $duration = mysqli_real_escape_string($db, $duration);
+        #$sql = 'SELECT created, SUM(male) AS males, SUM(female) AS females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= :end AND created >= :start AND user_id = :user_id AND monitor_id = :monitor_id GROUP BY '.$duration.'(time), monitor_id';
+        #$sql = "SELECT created, SUM(value) AS total, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM traffic WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
+        $sql = "SELECT created, SUM(male) AS males, SUM(female) AS females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" AND monitor_id = \"$monitor_id\" GROUP BY $duration (time), monitor_id";
+        $rows = getAllRowsOfQuery($db, $sql);
+        http_response_code(200);
+        return json_encode(array("status" => 200, "msg" => "Retrieved traffic entries in range for monitor", "data" => $rows, "success" => true));
+    } else {
+        $db = getDB();
+        $params = array("male", "female", "monitor_id");
+        if(!check_isset_body($_GET, $params)) {
+            http_response_code(400);
+            return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+        }
+        $male = $_GET["male"];
+        $female=$_GET["female"];
+        if(!is_numeric($male) || $male < 0 || !is_numeric($female) || $female < 0) {
+            http_response_code(400);
+            return json_encode(array("status" => 400, "msg" => "Entries must be valid postive integers", "success" => false));
+        }
+        $monitor_id = mysqli_real_escape_string($db, $_GET["monitor_id"]);
+        $male=mysqli_real_escape_string($db, $male);
+        $female=mysqli_real_escape_string($db, $female);
+        $sql = "INSERT INTO genders (monitor_id, user_id, male, female, created) VALUES (\"$monitor_id\", \"$user->id\", $male, $female, " . get_micro_time() . ")";
+        queryDatabase($db, $sql);
+        http_response_code(200);
+        return json_encode(array("status" => 200, "msg" => "Inserted entry successfully", "success" => true));
+
+    }
 }

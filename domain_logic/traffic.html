@@ -18,7 +18,7 @@ function getTrafficEntriesAll()
 
     $start = intval($_GET["start"]);
     $end = intval($_GET["end"]);
-    $duration = $_GET["duration"];
+    $duration = mysqli_real_escape_string($db, $_GET["duration"]);
     $sql = "SELECT created, SUM(value) AS total, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM traffic WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
     $rows = getAllRowsOfQuery($db, $sql);
     http_response_code(200);

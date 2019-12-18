@@ -1,1 +1,135 @@
 <?php
+function getImpressionEntriesAll()
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        http_response_code(401);
+        return json_encode(array("status" => 401, "success" => false));
+    }
+    $db = getDB();
+    // shift param is not required
+    $params = array("start", "end", "duration");
+    if (!check_isset_body($_GET, $params) || !in_array($_GET["duration"], get_valid_durations())) {
+        http_response_code(400);
+        return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+    }
+
+    $start = intval($_GET["start"]);
+    $end = intval($_GET["end"]);
+    $duration = $_GET["duration"];
+    $sql = "SELECT created, monitor_id, FROM_UNIXTIME(created/1000) as time, COUNT(*) as total from impressions where created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
+    $rows = getAllRowsOfQuery($db, $sql);
+    http_response_code(200);
+    return json_encode(array("status" => 200, "msg" => "Retrieved impression entries in range for monitor", "data" => $rows, "success" => true));
+}
+function handlingImpression()
+{
+
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        http_response_code(401);
+        return json_encode(array("status" => 401, "success" => false));
+    }
+    if (!isPost()) {
+        $db = getDB();
+        $params = array("start", "end", "monitor_id", "duration");
+        if (!check_isset_body($_GET, $params) || !in_array($_GET["duration"], get_valid_durations())) {
+            http_response_code(400);
+            return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+        }
+
+        $start = intval($_GET["start"]);
+        $end = intval($_GET["end"]);
+        $monitor_id = $_GET["monitor_id"];
+        $duration = ($_GET["duration"]);
+        $shift = ($_GET["shift"]);
+
+        if (isset($shift)) {
+            $start = subtract_from_date($start, $duration, 1);
+            $end = subtract_from_date($end, $duration, 1);
+        }
+        $monitor_id = mysqli_real_escape_string($db, $monitor_id);
+        $duration = mysqli_real_escape_string($db, $duration);
+        #$sql = "SELECT created, SUM(male) AS males, SUM(female) AS females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" AND monitor_id = \"$monitor_id\" GROUP BY $duration (time), monitor_id";
+        $sql = "SELECT created, monitor_id, FROM_UNIXTIME(created/1000) as time, COUNT(*) as total from impressions WHERE z > 0 AND created <= $end AND created >= $start AND user_id = \"{$user->id}\" AND monitor_id = \"$monitor_id\" GROUP BY $duration (time), monitor_id";
+        $rows = getAllRowsOfQuery($db, $sql);
+        http_response_code(200);
+        return json_encode(array("status" => 200, "msg" => "Retrieved impression entries in range for monitor", "data" => $rows, "success" => true));
+    } else {
+        $db = getDB();
+        $params = array("x", "y", "z", "monitor_id");
+        if(!check_isset_body($_GET, $params)) {
+            http_response_code(400);
+            return array("status" => 400, "msg" => "Missing required query parameters", "success" => false);
+        }
+        $x = $_GET["x"];
+        $y = $_GET["y"];
+        $z = $_GET["z"];
+        if(!is_numeric($x) || !is_numeric($y) || !is_numeric($z)) {
+            http_response_code(400);
+            return array("status" => 400, "msg" => "Entries must be valid positive integers", "success" => false);
+        }
+        $monitor_id = mysqli_real_escape_string($db, $_GET["monitor_id"]);
+        $x = mysqli_real_escape_string($db, $x);
+        $y = mysqli_real_escape_string($db, $y);
+        $z= mysqli_real_escape_string($db, $z);
+        $sql = "INSERT INTO impressions (monitor_id, user_id, x, y, z, created) VALUES(\"$monitor_id\", \"$user->id\", $x, $y, $z,".get_micro_time().")";
+        queryDatabase($db, $sql);
+        if (empty(mysqli_error($db))) {
+            http_response_code(200);
+            return json_encode(array("status" => 200, "msg" => "Inserted entry successfully", "success" => true));
+        }
+        http_response_code(500);
+        return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+    }
+}
+function insertImpressioninBulk()
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        http_response_code(401);
+        return json_encode(array("status" => 401, "success" => false));
+    }
+    if (!isPost()) {
+        http_response_code(405);
+        return json_encode(array("status" => 405));
+    }
+    $body = json_decode(file_get_contents('php://input'), true);
+
+    $params = array("data", "monitor_id");
+    if (!check_isset_body($body, $params)) {
+        http_response_code(400);
+        return json_encode(array("status" => 400, "msg" => "Missing required body parameters", "success" => false));
+    }
+
+    $data = $body["data"];
+    if (!is_array($data)) {
+        http_response_code(400);
+        return json_encode(array("status" => 400, "msg" => "Need appropriately formatted data array for bulk insertion", "success" => false));
+    }
+    $db = getDB();
+    $sql = "INSERT INTO `impressions` (monitor_id, user_id, x,y,z, created) VALUES (";
+    $sql_arr = array();
+    foreach ($data as $entry) {
+        $to_insert = array();
+        $e = array("\"" . mysqli_real_escape_string($db, $body["monitor_id"]) . "\"", "\"" . $user->id . "\"", intval($entry["x"]), intval($entry["y"]), intval($entry["z"]), mysqli_real_escape_string($db, $entry["created"]));
+        foreach ($e as $element) {
+            $to_insert[] = $element;
+        }
+        $sql_arr[] = $sql . implode(', ', $to_insert) . ")";
+    }
+
+
+    foreach ($sql_arr as $query_var) {
+        queryDatabase($db, $query_var);
+    }
+    if (empty(mysqli_error($db))) {
+        http_response_code(200);
+        return json_encode(array("status" => 200, "msg" => "Bulk entries inserted successfully", "success" => true));
+    }
+
+    http_response_code(500);
+    return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+
+
+}

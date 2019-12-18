@@ -78,7 +78,7 @@ function getGenderEntriesAll()
 
     $start = intval($_GET["start"]);
     $end = intval($_GET["end"]);
-    $duration = $_GET["duration"];
+    $duration = mysqli_real_escape_string($db, $_GET["duration"]);
     $sql = "SELECT created, SUM(male) AS males, SUM(female) as females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
     $rows = getAllRowsOfQuery($db, $sql);
     http_response_code(200);

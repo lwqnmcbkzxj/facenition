@@ -3,6 +3,7 @@ require_once("config.html");
 require_once("./jwt.html");
 require_once("./stripe.html");
 require_once("./util_logic/utils.html");
+require_once("./functions.html");
 $route = $_SERVER['REQUEST_URI'];
 $route = preg_replace('/\?.*/', '', $route);
 $route = rtrim($route, '/\\');

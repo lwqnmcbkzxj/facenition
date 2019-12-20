@@ -1,1 +1,231 @@
 <?php
+function handlingMonitors()
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+    switch ($_SERVER["REQUEST_METHOD"]) {
+        case 'GET':
+            {
+                $id = $user->id;
+                $db = getDB();
+                $time = get_micro_time();
+                $time = strtotime("today", $time);
+                $sql = "SELECT id, name, traffic, genders, impressions, created, (SELECT SUM(value) from traffic WHERE monitor_id = monitors.id AND created > $time) as daily_count FROM monitors WHERE user_id= \"{$user->id}\" ORDER BY created ASC";
+                $rows = getAllRowsOfQuery($db, $sql);
+
+                return array("status" => 200, "msg" => "Retrieved monitors", "data" => $rows, "success" => true);
+
+            }
+            break;
+        case 'POST':
+        {
+            $body = array_map('htmlspecialchars', json_decode(file_get_contents('php://input'), true));
+            $params = array("name", "genders", "traffic", "impressions");
+            if (!check_isset_body($body, $params)) {
+                return array("status" => 400, "msg" => "Missing required parameters", "success" => false);
+            }
+            $id = $user->id;
+            $db = getDB();
+            $time = get_micro_time();
+            $name = mysqli_real_escape_string($db, $body["name"]);
+            $genders = mysqli_escape_string($db, $body["genders"]);
+            $traffic = mysqli_real_escape_string($db, $body["traffic"]);
+            $impressions = mysqli_real_escape_string($db, $body["impressions"]);
+            $monitor_id = uniqid();
+            $user_id = $user->id;
+
+            $sql = "INSERT INTO monitors (id, user_id, name, traffic, genders, impressions, created) VALUES(\"$monitor_id\", \"$user_id\", \"$name\", \"$traffic\", \"$genders\", \"$impressions\", \"$time\")";
+            queryDatabase($db, $sql);
+            return array("status" => 200, "msg" => "Created monitor", "success" => true);
+        }
+
+    }
+
+}
+
+function handlingMonitorSegments($param)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+    switch ($_SERVER["REQUEST_METHOD"]) {
+        case 'GET':
+            {
+
+                $db = getDB();
+                $monitor_id = mysqli_real_escape_string($db, $param);
+                $sql = "SELECT id, start, end, name, created FROM monitor_segments WHERE monitor_id = \"$monitor_id\"";
+                $rows = getAllRowsOfQuery($db, $sql);
+                return array("status" => 200, "msg" => "Retrieved monitor segments", "data" => $rows, "success" => true);
+            }
+            break;
+
+        case 'POST':
+        {
+            $body = array_map('htmlspecialchars', json_decode(file_get_contents('php://input'), true));
+            $params = array("name", "start", "end");
+            $db = getDB();
+            $monitor_id = mysqli_real_escape_string($db, $param);
+            if (!check_isset_body($body, $params) || !isset($monitor_id)) {
+                return array("status" => 400, "msg" => "Missing required parameters", "success" => false);
+            }
+
+            $name = $body["name"];
+            $start = $body["start"];
+            $end = $body["end"];
+            $created = get_micro_time();
+            $sql = "INSERT INTO monitor_segments (monitor_id, name, start, end, created) VALUES (\"$monitor_id\", \"$name\", \"$start\", \"$end\", $created)";
+            queryDatabase($db, $sql);
+
+
+            return array("status" => 200, "msg" => "Created monitor segment", "success" => true);
+
+        }
+
+
+    }
+}
+
+function deleteMonitorSegment($param_1, $param_2)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+    if ($_SERVER["REQUEST_METHOD"] != 'DELETE') return array("status" => 405, "success" => false);
+    $monitor_id = htmlspecialchars($param_1);
+    $segment_id = htmlspecialchars($param_2);
+    if (!isset($monitor_id) || !isset($segment_id)) {
+
+        return array("status" => 400, "msg" => "Missing required parameters", "success" => false);
+    }
+    $db = getDB();
+    $monitor_id = mysqli_real_escape_string($db, $monitor_id);
+    $segment_id = mysqli_real_escape_string($db, $segment_id);
+    $sql = "DELETE FROM monitor_segments WHERE monitor_id = \"$monitor_id\" AND id = \"$segment_id\"";
+    queryDatabase($db, $sql);
+    return array("status" => 200, "msg" => "Deleted monitor segment", "success" => true);
+}
+
+function handlingMonitorId($param)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+
+    switch ($_SERVER["REQUEST_METHOD"]) {
+
+        case 'GET':
+            {
+                $db = getDB();
+                $monitor_id = mysqli_real_escape_string($db, $param);
+                $sql = "SELECT id, name, traffic, genders, impressions, active, created FROM monitors WHERE user_id=\"{$user->id}\" AND id=\"{$monitor_id}\"";
+                $rows = getAllRowsOfQuery($db, $sql);
+                return array("status" => 200, "msg" => "Retrieved monitor segments", "data" => $rows, "success" => true);
+            }
+            break;
+
+        case 'DELETE':
+        {
+            $db = getDB();
+            $monitor_id = mysqli_real_escape_string($db, $param);
+            $sql = "DELETE FROM monitors WHERE id=\"$monitor_id\" AND user_id=\"{$user->id}\"";
+            queryDatabase($db, $sql);
+            return array("status" => 200, "msg" => "Deleted monitor", "success" => true);
+        }
+
+    }
+}
+
+function toggleMonitors($param)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+    if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+        $db = getDB();
+        $monitor_id = mysqli_real_escape_string($db, $param);
+        $sql = "UPDATE monitors SET active = 1 - active WHERE id = \"$monitor_id\" AND user_id = \"{$user->id}\"";
+        queryDatabase($db, $sql);
+        return array("status" => 200, "msg" => "Toggled monitors", "success" => true);
+
+    }
+
+}
+
+function handlingMonitorThumbnail($param)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+    switch ($_SERVER["REQUEST_METHOD"]) {
+        case 'GET':
+            {
+
+                $db = getDB();
+                $monitor_id = mysqli_real_escape_string($db, $param);
+                $sql = "SELECT thumbnail FROM monitors WHERE user_id=\"{$user->id}\" AND id=\"$monitor_id\"";
+                var_dump($sql);
+                $rows = getAllRowsOfQuery($db, $sql);
+                return array("status" => 200, "msg" => "Retrieved thumbnail", "data" => $rows[0]["thumbnail"], "success" => true);
+            }
+            break;
+
+        case 'POST':
+        {
+            if (!isset($_FILES["thumbnail"])) {
+                return array("status" => 400, "msg" => "Missing input image", "success" => false);
+            }
+            $fileName = uniqid();
+            $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/thumbnails/";
+            $targetFilePath = $targetDir . $fileName;
+            $fileType = pathinfo($_FILES["thumbnail"]["name"], PATHINFO_EXTENSION);
+            $allowTypes = array('jpg', 'jpeg', 'png');
+            if (!in_array($fileType, $allowTypes)) {
+                return array("status" => 400, "msg" => "Incompatible filetype. Should be one of (jpg, jpeg, png)", "success" => false);
+            }
+            move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFilePath . "." . $fileType);
+            $hex_string = base_64_encode(file_get_contents($_FILES["thumbnail"]["tmp_name"]));
+            //$hex_string = base64_encode($bin_string);
+            $user_id = $user->id;
+            $db = getDB();
+            $monitor_id = mysqli_real_escape_string($db, $param);
+            $sql = "UPDATE monitors SET thumbnail = \"$hex_string\" WHERE id = \"$monitor_id\" AND user_id = \"$user_id\"";
+            queryDatabase($db, $sql);
+            return array("status" => 200, "msg" => "Set monitor thumbnail", "success" => true);
+        }
+
+
+    }
+}
+
+function getMonitorsDaily($param)
+{
+    $user = verify_user_token();
+    if (is_bool($user)) {
+        return array("status" => 401, "success" => false);
+    }
+
+    if (!isGet()) {
+        return array("status" => 405, "success" => false);
+    }
+    $db = getDB();
+    $time = get_micro_time();
+    $time = strtotime("today", $time);
+    $monitor_id = mysqli_real_escape_string($db, $param);
+    $sql = "SELECT (SELECT SUM(value) FROM traffic WHERE monitor_id = monitors.id AND created > $time) AS daily_traffic, (SELECT SUM(male) FROM genders  WHERE  monitor_id = monitors.id AND created > $time) 
+AS daily_males, (SELECT SUM(female) FROM genders WHERE monitor_id = monitors.id AND created > $time) AS daily_females, (SELECT SUM(z > 0) FROM impressions WHERE monitor_id = monitors.id AND created > $time) AS daily_impressions FROM monitors WHERE user_id = \"{$user->id}\" AND id = \"$monitor_id\"";
+    $rows = getAllRowsOfQuery($db, $sql);
+    if (!empty($rows)) {
+        return array("status" => 200, "msg" => "Retrieved monitor daily counts", "data" => $rows[0], "success" => true);
+    } else {
+        return array("status" => 400, "msg" => "Failed to retrieve daily counts for monitor", "success" => false);
+    }
+
+}

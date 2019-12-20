@@ -3,15 +3,13 @@ function handlingGender()
 {
     $user = verify_user_token();
     if (is_bool($user)) {
-        http_response_code(401);
-        return json_encode(array("status" => 401, "success" => false));
+        return array("status" => 401, "success" => false);
     }
     if (!isPost()) {
         $db = getDB();
         $params = array("start", "end", "monitor_id", "duration");
         if (!check_isset_body($_GET, $params) || !in_array($_GET["duration"], get_valid_durations())) {
-            http_response_code(400);
-            return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+            return array("status" => 400, "msg" => "Missing required query parameters", "success" => false);
         }
 
         $start = intval($_GET["start"]);
@@ -30,20 +28,17 @@ function handlingGender()
         #$sql = "SELECT created, SUM(value) AS total, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM traffic WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
         $sql = "SELECT created, SUM(male) AS males, SUM(female) AS females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" AND monitor_id = \"$monitor_id\" GROUP BY $duration (time), monitor_id";
         $rows = getAllRowsOfQuery($db, $sql);
-        http_response_code(200);
-        return json_encode(array("status" => 200, "msg" => "Retrieved gender entries in range for monitor", "data" => $rows, "success" => true));
+        return array("status" => 200, "msg" => "Retrieved gender entries in range for monitor", "data" => $rows, "success" => true);
     } else {
         $db = getDB();
         $params = array("male", "female", "monitor_id");
         if (!check_isset_body($_GET, $params)) {
-            http_response_code(400);
-            return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+            return array("status" => 400, "msg" => "Missing required query parameters", "success" => false);
         }
         $male = $_GET["male"];
         $female = $_GET["female"];
         if (!is_numeric($male) || $male < 0 || !is_numeric($female) || $female < 0) {
-            http_response_code(400);
-            return json_encode(array("status" => 400, "msg" => "Entries must be valid positive integers", "success" => false));
+            return array("status" => 400, "msg" => "Entries must be valid positive integers", "success" => false);
         }
         $monitor_id = mysqli_real_escape_string($db, $_GET["monitor_id"]);
         $male = mysqli_real_escape_string($db, $male);
@@ -51,11 +46,9 @@ function handlingGender()
         $sql = "INSERT INTO genders (monitor_id, user_id, male, female, created) VALUES (\"$monitor_id\", \"$user->id\", $male, $female, " . get_micro_time() . ")";
         queryDatabase($db, $sql);
         if (empty(mysqli_error($db))) {
-            http_response_code(200);
-            return json_encode(array("status" => 200, "msg" => "Inserted entry successfully", "success" => true));
+            return array("status" => 200, "msg" => "Inserted entry successfully", "success" => true);
         }
-        http_response_code(500);
-        return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+        return array("status" => 500, "msg" => "Server error", "success" => false);
 
     }
 }
@@ -65,15 +58,15 @@ function getGenderEntriesAll()
 
     $user = verify_user_token();
     if (is_bool($user)) {
-        http_response_code(401);
-        return json_encode(array("status" => 401, "success" => false));
+
+        return array("status" => 401, "success" => false);
     }
     $db = getDB();
     // shift param is not required
     $params = array("start", "end", "duration");
     if (!check_isset_body($_GET, $params) || !in_array($_GET["duration"], get_valid_durations())) {
-        http_response_code(400);
-        return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+
+        return array("status" => 400, "msg" => "Missing required query parameters", "success" => false);
     }
 
     $start = intval($_GET["start"]);
@@ -81,28 +74,26 @@ function getGenderEntriesAll()
     $duration = mysqli_real_escape_string($db, $_GET["duration"]);
     $sql = "SELECT created, SUM(male) AS males, SUM(female) as females, monitor_id, FROM_UNIXTIME(created/1000) AS time FROM genders WHERE created <= $end AND created >= $start AND user_id = \"{$user->id}\" GROUP BY $duration (time), monitor_id";
     $rows = getAllRowsOfQuery($db, $sql);
-    http_response_code(200);
-    return json_encode(array("status" => 200, "msg" => "Retrieved gender entries in range for monitor", "data" => $rows, "success" => true));
+    return array("status" => 200, "msg" => "Retrieved gender entries in range for monitor", "data" => $rows, "success" => true);
 }
 
 function getGendersTotal()
 {
     $user = verify_user_token();
     if (is_bool($user)) {
-        http_response_code(401);
-        return json_encode(array("status" => 401, "success" => false));
+
+        return array("status" => 401, "success" => false);
     }
     $params = array("start", "end");
     if (!check_isset_body($_GET, $params)) {
-        http_response_code(400);
-        return json_encode(array("status" => 400, "msg" => "Missing required query parameters", "success" => false));
+
+        return array("status" => 400, "msg" => "Missing required query parameters", "success" => false);
     }
 
     $start = $_GET["start"];
     $end = $_GET["end"];
     if (!is_numeric($start) || !is_numeric($end) || $start < 0 || $end < 0) {
-        http_response_code(400);
-        return json_encode(array("status" => 400, "msg" => "Date values must be valid timestamps", "success" => false));
+        return array("status" => 400, "msg" => "Date values must be valid timestamps", "success" => false);
     }
     $db = getDB();
     $start = mysqli_real_escape_string($db, $start);
@@ -113,33 +104,29 @@ function getGendersTotal()
         "males" => isset($rows[0]["males"]) ? $rows[0]["males"] : 0,
         "females" => isset($rows[0]["females"]) ? $rows[0]["females"] : 0
     );
-    http_response_code(200);
-    return json_encode(array("status" => 200, "msg" => "Retrieved gender entries in range for days", "data" => $data, "success" => true));
+    return array("status" => 200, "msg" => "Retrieved gender entries in range for days", "data" => $data, "success" => true);
 }
 
 function insertGendersInBulk()
 {
     $user = verify_user_token();
     if (is_bool($user)) {
-        http_response_code(401);
-        return json_encode(array("status" => 401, "success" => false));
+
+        return array("status" => 401, "success" => false);
     }
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     $body = json_decode(file_get_contents('php://input'), true);
 
     $params = array("data", "monitor_id");
     if (!check_isset_body($body, $params)) {
-        http_response_code(400);
-        return json_encode(array("status" => 400, "msg" => "Missing required body parameters", "success" => false));
+        return array("status" => 400, "msg" => "Missing required body parameters", "success" => false);
     }
 
     $data = $body["data"];
     if (!is_array($data)) {
-        http_response_code(400);
-        return json_encode(array("status" => 400, "msg" => "Need appropriately formatted data array for bulk insertion", "success" => false));
+        return array("status" => 400, "msg" => "Need appropriately formatted data array for bulk insertion", "success" => false);
     }
     $db = getDB();
     $sql = "INSERT INTO `genders` (monitor_id, user_id, male, female, created) VALUES (";
@@ -158,12 +145,10 @@ function insertGendersInBulk()
         queryDatabase($db, $query_var);
     }
     if (empty(mysqli_error($db))) {
-        http_response_code(200);
-        return json_encode(array("status" => 200, "msg" => "Bulk entries inserted successfully", "success" => true));
+        return array("status" => 200, "msg" => "Bulk entries inserted successfully", "success" => true);
     }
 
-    http_response_code(500);
-    return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+    return array("status" => 500, "msg" => "Server error", "success" => false);
 
 
 }

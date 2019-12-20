@@ -3,12 +3,11 @@ include_once('./util_logic/utils.html');
 function classifyImage()
 {
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     if (!isset($_FILES["image"])) {
         http_response_code(400);
-        $return_json = array("status" => 400, "msg" => "Missing input image", "success" => false);
+        return array("status" => 400, "msg" => "Missing input image", "success" => false);
 
     }
     $fileName = uniqid();
@@ -18,7 +17,7 @@ function classifyImage()
     $allowTypes = array('jpg', 'jpeg');
     if (!in_array($fileType, $allowTypes)) {
         http_response_code(400);
-        $return_json = array("status" => 400, "msg" => "Incompatible filetype. Should be one of (jpg, jpeg, png)", "success" => false);
+        return array("status" => 400, "msg" => "Incompatible filetype. Should be one of (jpg, jpeg, png)", "success" => false);
     }
     move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFilePath . "." . $fileType);
     shell_exec('./imid_ml ' . $targetFilePath . "." . $fileType . ' 1 ' . $targetFilePath . "_out.jpg");

@@ -8,21 +8,18 @@ function verifyUser($verify_token)
     if (!empty($res)) {
         $rows = $res;
         $user_id = mysqli_real_escape_string($db, $rows[0]["id"]);
-        $sql_update = 'UPDATE users SET active = true WHERE id = \"$user_id\"';
-        queryDatabase($db, $sql);
-        http_response_code(200);
-        return json_encode(array('msg' => "Verified user account", "success" => true));
+        $sql_update = "UPDATE users SET active = true WHERE id = \"$user_id\"";
+        queryDatabase($db, $sql_update);
+        return array("status" => 200, 'msg' => "Verified user account", "success" => true);
     } else {
-        http_response_code(400);
-        return json_encode(array('msg' => "No user with that token", "success" => false));
+        return array("status" => 401, 'msg' => "No user with that token", "success" => false);
     }
 }
 
 function loginUser()
 {
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     $body = json_decode(file_get_contents('php://input'), true);
     $email = $body["email"];
@@ -35,7 +32,6 @@ function loginUser()
         $rows = $res;
         $password_match = password_verify($password, $rows[0]["password"]);
         if ($password_match) {
-            http_response_code(200);
             $userId = 'some-user-id';
             // Get our server-side secret key from a secure location.
             $skey = 'super-secret-will-change-later';
@@ -47,15 +43,14 @@ function loginUser()
                 $pload['exp'] = $exp;
             }
             $token = JWT::encode($rows[0], $skey);
-            $data = array("msg" => "Successfully signed in!", "token" => $token, "success" => true);
-            return json_encode($data);
+            $data = array("status" => 200, "msg" => "Successfully signed in!", "token" => $token, "success" => true);
+            return $data;
         } else {
-            http_response_code(400);
-            return json_encode(array('msg' => "Email or password incorrect", "success" => false));
+            return array('msg' => "Email or password incorrect", "success" => false);
         }
     } else {
-        http_response_code(400);
-        return json_encode(array('msg' => "Email or password incorrect", "success" => false));
+
+        return array('msg' => "Email or password incorrect", "success" => false);
     }
 
 }
@@ -63,8 +58,7 @@ function loginUser()
 function createUser()
 {
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     $db = getDB();
     $config = getStripeConfig();
@@ -89,22 +83,19 @@ function createUser()
         $sql_insert = "REPLACE INTO users (id, email, password, created, customer_id, subscription_id, subscription_item_id, verify_token, mailing_list_only) 
 VALUES (\"$user_id\", \"$email\", \"$hash\", " . get_micro_time() . ", \"{$customer['id']}\", \"{$subscription['$id']}\",\"$subscription_item_id\", \"$verify_token\", 0)";
         if (empty(mysqli_error($db))) {
-            http_response_code(200);
-            return json_encode(array('msg' => "Successfully created user account! Please check your email.", "success" => true));
-        } else  return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+            return array("status" => 200, 'msg' => "Successfully created user account! Please check your email.", "success" => true);
+        } else  return array("status" => 500, "msg" => "Server error", "success" => false);
 
 
     } else {
-        http_response_code(400);
-        return json_encode(array('msg' => "Account already exists with that email", "success" => false));
+        return array('msg' => "Account already exists with that email", "success" => false);
     }
 }
 
 function resetPassword()
 {
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     $body = json_decode(file_get_contents('php://input'), true);
     $db = getDB();
@@ -117,13 +108,11 @@ function resetPassword()
         $sql_insert = "INSERT into password_resets (id, email, reset_token, created) VALUES ($reset_id, $email, $reset_token, " . get_micro_time() . ")";
         queryDatabase($db, $sql_insert);
         if (empty(mysqli_error($db))) {
-            http_response_code(200);
-            return json_encode(array('msg' => 'Reset request successfully submitted! Follow email instructions', "success" => true));
-        } else return json_encode(array("status" => 500, "msg" => "Server error", "success" => false));
+            return array("status" => 200, 'msg' => 'Reset request successfully submitted! Follow email instructions', "success" => true);
+        } else return array("status" => 500, "msg" => "Server error", "success" => false);
 
     } else {
-        http_response_code(400);
-        return json_encode(array('msg' => "Password reset request already exists!", "success" => false));
+        return array('msg' => "Password reset request already exists!", "success" => false);
     }
 
 }
@@ -131,8 +120,7 @@ function resetPassword()
 function resetPasswordByToken()
 {
     if (!isPost()) {
-        http_response_code(405);
-        return json_encode(array("status" => 405));
+        return array("status" => 405);
     }
     $body = json_decode(file_get_contents('php://input'), true);
 

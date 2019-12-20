@@ -15,8 +15,8 @@ function execute($routes, $url)
 function sendJson($json)
 {
     header('Content-type: application/json');
-    echo $json;
-
+    http_response_code($json["status"]);
+    echo json_encode($json);
 }
 
 function check_isset_body($body, $params)
@@ -28,9 +28,12 @@ function check_isset_body($body, $params)
     }
     return $set;
 }
-function subtract_from_date($timestamp, $duration, $unit) {
-    return strtotime("-".$unit." ".$duration."", $timestamp);
+
+function subtract_from_date($timestamp, $duration, $unit)
+{
+    return strtotime("-" . $unit . " " . $duration . "", $timestamp);
 }
+
 function getAuthorizationHeader()
 {
     $headers = null;
@@ -53,6 +56,12 @@ function getAuthorizationHeader()
 function isPost()
 {
     return ($_SERVER['REQUEST_METHOD'] === 'POST');
+
+}
+
+function isGet()
+{
+    return ($_SERVER['REQUEST_METHOD'] === 'GET');
 
 }
 
@@ -120,8 +129,7 @@ function getAllRowsOfQuery($connection, $query)
 {
 
     $query_results = queryDatabase($connection, $query);
-    while($row = $query_results->fetch_assoc())
-    {
+    while ($row = $query_results->fetch_assoc()) {
         $rows[] = $row;
     }
     return !empty($query_results) ? $rows : array();

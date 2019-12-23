@@ -7,8 +7,8 @@ function getStaticRoutes()
         '/api/v1/login' => 'loginUser',
         '/api/v1/register' => 'createUser',
         '/api/v1/password-reset' => 'resetPassword',
-        '/api/v1/mailing' => 'addToMailingList',
-        '/api/v1/contact' => 'add_to_mailing_list',
+        '/api/v1/mailing' => 'joinMailingList',
+        '/api/v1/contact' => 'submitContactForm',
         '/api/v1/monitors' => 'handlingMonitors',
         '/api/v1/traffic' => 'handlingTraffic',
         '/api/v1/traffic/all' => 'getTrafficEntriesAll',
@@ -16,7 +16,6 @@ function getStaticRoutes()
         '/api/v1/traffic/bulk' => 'insertTrafficInBulk',
         '/api/v1/traffic/total' => 'getTrafficTotal',
         '/api/v1/gender' => 'handlingGender',
-        '/api/v2/gender' => 'get_gender_entries_v2',
         '/api/v1/gender/all' => 'getGenderEntriesAll',
         '/api/v1/gender/bulk' => 'insertGendersInBulk',
         '/api/v1/gender/total' => 'getGendersTotal',
@@ -32,7 +31,6 @@ function getStaticRoutes()
         '/api/v1/account/usage/update' => 'updateUsage',
         '/api/v1/account/subscription' => 'handlingSubscription'
 
-
     );
 }
 
@@ -40,6 +38,7 @@ function getWildCardRoutes()
 {
     return array(
         "~\/api\/v1\/verify\/([a-zA-Z0-9-]+)~" => "verifyUser",
+        "~\/api\/v1\/files\/([a-zA-Z0-9-]+)~" => "getFile",
         "~\/api\/v1\/password-reset\/([a-zA-Z0-9-]+)~" => "resetPasswordByToken",
         "~\/api\/v1\/monitors\/daily\/([a-zA-Z0-9-]+)~" => "getMonitorsDaily",
         "~\/api\/v1\/monitors\/segments\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)~" => "deleteMonitorSegment",

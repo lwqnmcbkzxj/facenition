@@ -15,7 +15,7 @@ function defaultAction()
 function verifyUser($verify_token)
 {
     if (!isGet()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $db = getDB();
     $verify_token = mysqli_real_escape_string($db, $verify_token);
@@ -38,7 +38,7 @@ function verifyUser($verify_token)
 function loginUser()
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $body = json_decode(file_get_contents('php://input'), true);
     $email = $body["email"];
@@ -71,7 +71,7 @@ function loginUser()
 function createUser()
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $db = getDB();
     $body = json_decode(file_get_contents('php://input'), true);
@@ -109,7 +109,7 @@ VALUES (\"$user_id\", \"$email\", \"$hash\", " . get_micro_time() . ", \"{$custo
 function resetPassword()
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $body = json_decode(file_get_contents('php://input'), true);
     $db = getDB();
@@ -131,18 +131,93 @@ function resetPassword()
         } else return array("status" => 500, "msg" => "Server error", "success" => false);
 
     } else {
-        return array('msg' => "Password reset request already exists!", "success" => false);
+        return array("status" => 400, 'msg' => "Password reset request already exists!", "success" => false);
     }
-
 }
 
+/**/
 function resetPasswordByToken($param)
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $body = json_decode(file_get_contents('php://input'), true);
+    $db = getDB();
+    $token = mysqli_real_escape_string($db, $param);
+    $password = mysqli_real_escape_string($db, $body);
+    $sql = "SELECT * from password_resets where reset_token=\"$token\"";
+    $rows = getAllRowsOfQuery($db, $sql);
+    if (!$rows) return array("status" => 400, "msg" => "Failed to reset password, no reset request by that id", "success" => false);
+    $email = $rows[0]['email'];
+    $sql = "SELECT * from users where email=\"$email\"";
+    $rows = getAllRowsOfQuery($db, $sql);
+    $user_id = $rows[0]["id"];
+    $password = password_hash($password, PASSWORD_BCRYPT);
+    $sql = "UPDATE users SET password =\"$password\" WHERE id =\"$user_id\"";
+    queryDatabase($db, $sql);
+    $sql = "DELETE FROM password_resets WHERE reset_token=\"$token\"";
+    queryDatabase($db, $sql);
+    if (empty(mysqli_error($db))) {
+        $to = $email;
+        $subject = "Facenition";
+        $txt = "Password changed";
+        $headers = "From: admin@app.facenition.com" . "\r\n";
+        mail($to, $subject, $txt, $headers);
+        return array("status" => 200, 'msg' => 'Successfully changed password!', "success" => true);
+    } else return array("status" => 500, "msg" => "Server error", "success" => false);
 
+}
+
+function joinMailingList()
+{
+    if (!isGet()) return array("status" => 405, "success" => false);
+
+    $user_id = uniqid();
+    $db = getDB();
+    $email = mysqli_real_escape_string($db, $_GET["email"]);
+    $sql = "SELECT * from users where email = \"$email\"";
+    $rows = getAllRowsOfQuery($db, $sql);
+    if (!$rows) {
+        $created = get_micro_time();
+        $sql_insert = "INSERT INTO users (id, email, created, mailing_list_only) VALUES (\"$user_id\", \"$email\", \"$created\", true)";
+        queryDatabase($db, $sql_insert);
+        if (empty(mysqli_error($db)))
+            return array("status" => 200, 'msg' => "Succesfully signed up to mailing list", "success" => true);
+        else
+            return array("status" => 500, "success" => false);
+    } else {
+        return array("status" => 400, 'msg' => "Mail already exists", "success" => false);
+    }
+}
+
+function submitContactForm()
+{
+    if (!isPost()) {
+        return array("status" => 405, "success" => false);
+    }
+    $db = getDB();
+    $max_submissions = 5;
+    $params = array("email", "name", "message");
+    if (!check_isset_body($_POST, $params)) return array("status" => 400, "success" => false);
+    $email = mysqli_real_escape_string($db, $_POST["email"]);
+    $name = mysqli_real_escape_string($db, $_POST["name"]);
+    $message = mysqli_real_escape_string($db, $_POST["message"]);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $sql = "SELECT * FROM submitted_contact_forms WHERE ip = \"$ip\"";
+    $rows = getAllRowsOfQuery($db, $sql);
+    if ($rows <= $max_submissions) {
+        $sql_insert = "INSERT INTO submitted_contact_forms (ip) VALUES ($ip)";
+        if (!queryDatabase($db, $sql_insert)) return array("status" => 500, "success" => false);
+        $to = "info@facenition.com";
+        $subject = "Facenition";
+        $txt = "Resetting password reset $email $name $message";
+        $headers = "From: admin@app.facenition.com" . "\r\n";
+        mail($to, $subject, $txt, $headers);
+        return array("status" => 200, 'msg' => "Submitted contact form", "success" => true,
+            "data" => array("email" => $email, "name" => $name, "message" => $message, "ip" => $ip));
+    } else {
+        return array("status" => 400, 'msg' => "Submitted too many times already, please wait a day or so", "success" => false);
+    }
 }
 
 /*
@@ -168,12 +243,15 @@ function handlingMonitors()
                 $db = getDB();
                 $time = get_micro_time();
                 $time = strtotime("today", $time);
-                $sql = "SELECT id, name, traffic, genders, impressions, created, (SELECT SUM(value) from traffic WHERE monitor_id = monitors.id AND created > $time) as daily_count FROM monitors WHERE user_id= \"{$user_id}\" ORDER BY created ASC";
+                $sql = "SELECT id, name, traffic, genders, impressions, created, (SELECT SUM(value) from traffic WHERE monitor_id = monitors . id AND created > $time) as daily_count FROM monitors WHERE user_id = \"{
+    $user_id}\" ORDER BY created ASC";
                 $rows = getAllRowsOfQuery($db, $sql);
                 return array("status" => 200, "msg" => "Retrieved monitors", "data" => $rows, "success" => true);
             }
+
             break;
-        case 'POST':
+        case
+        'POST':
             {
                 $body = array_map('htmlspecialchars', json_decode(file_get_contents('php://input'), true));
                 $params = array("name", "genders", "traffic", "impressions");
@@ -310,7 +388,7 @@ function handlingMonitorId($param)
 function toggleMonitors($param)
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $user = json_decode(verify_user_token(), true);
     if (is_bool($user['id'])) {
@@ -609,7 +687,7 @@ function getTrafficTotal()
 function insertTrafficInBulk()
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $user = json_decode(verify_user_token(), true);
 
@@ -783,7 +861,7 @@ function getGendersTotal()
 function insertGendersInBulk()
 {
     if (!isPost()) {
-        return array("status" => 405);
+        return array("status" => 405, "success" => false);
     }
     $user = json_decode(verify_user_token(), true);
     if (is_bool($user['id'])) {
@@ -1218,7 +1296,21 @@ function updateUsage()
     else  return array("status" => 500, "success" => false);
 
 }
+
 /*
  * ACCOUNT
  */
+/*
+ * FILES
+ */
+function getFile($param)
+{
+    $file_id=$param;
+    $name = "files/$file_id";
+    if (!file_exists($name)) return array("status" => 400, "success" => false);
+    $fp = fopen($name, 'rb');
+    header("Content-Length: " . filesize($name));
+    fpassthru($fp);
+
+}
 

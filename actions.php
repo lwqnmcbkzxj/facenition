@@ -206,7 +206,7 @@ function submitContactForm()
     $sql = "SELECT * FROM submitted_contact_forms WHERE ip = \"$ip\"";
     $rows = getAllRowsOfQuery($db, $sql);
     if ($rows <= $max_submissions) {
-        $sql_insert = "INSERT INTO submitted_contact_forms (ip) VALUES ($ip)";
+        $sql_insert = "INSERT INTO submitted_contact_forms (ip) VALUES (\"$ip\")";
         if (!queryDatabase($db, $sql_insert)) return array("status" => 500, "success" => false);
         $to = "info@facenition.com";
         $subject = "Facenition";

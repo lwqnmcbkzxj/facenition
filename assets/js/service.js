@@ -327,7 +327,7 @@ function login(email, password) {
         var week = new Date();
         week.setDate(week.getDate() + 7);
         setCookie("auth_token", result.token, week);
-        window.location.replace("/dashboard/monitors.html");
+        window.location.replace("/dashboard/monitors");
     });
 }
 
@@ -476,7 +476,7 @@ var chart1_2_options = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample1 = {
-	data1: canvas => {
+	data1: function(canvas) {
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -521,7 +521,7 @@ var chartExample1 = {
 			]
 		};
 	},
-	data2: canvas => {
+	data2: function(canvas) {
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -566,7 +566,7 @@ var chartExample1 = {
 			]
 		};
 	},
-	data3: canvas => {
+	data3: function (canvas) {
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -618,7 +618,7 @@ var chartExample1 = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample2 = {
-	data: canvas => {
+	data: function (canvas) {
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -657,7 +657,7 @@ var chartExample2 = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample3 = {
-	data: canvas => {
+	data: function (canvas){
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -735,8 +735,8 @@ var chartExample3 = {
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
-const chartExample4 = {
-	data: canvas => {
+var chartExample4 = {
+	data: function (canvas) {
 		var ctx = canvas.getContext("2d");
 
 		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);

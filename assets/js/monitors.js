@@ -50,7 +50,7 @@ $(document).ready(function() {
                     "</tr>"
             );
         } else {
-            monitors.map((e, i) => {
+            monitors.map(function(e, i) {
                 monitorsTable.append(
                     "<tr id='mon-" +
                         i +
@@ -92,7 +92,7 @@ $(document).ready(function() {
         var id = monitors[index].id;
 
         request("GET_MONITOR_THUMBNAIL", { params: id }, function(r) {
-            let thumbnail = r.data;
+            var thumbnail = r.data;
             var image = "data:image/jpg;base64," + thumbnail;
             $("#mon-" + index + " #preview-" + index + " .l-w").remove();
             $(preview).append("<img src='" + image + "' alt='Preview'>");
@@ -153,29 +153,35 @@ $(document).ready(function() {
                 var cur = moment();
                 var n = 7;
                 var labels = [];
-                var data = Array(n).fill(0);
-                var impressionData = Array(n).fill(0);
-                var maleData = Array(n).fill(0);
-                var femaleData = Array(n).fill(0);
+                var data = [];
+                var impressionData = [];
+                var maleData = [];
+                var femaleData = [];
+                for (var i = 0; i < n; i++) {
+                    data.push(0);
+                    impressionData.push(0);
+                    maleData.push(0);
+                    femaleData.push(0);
+                }
                 while (n > 0) {
                     labels.push(cur.format("ddd"));
                     cur.subtract(1, "d");
                     n--;
                 }
-                trafficResult.data.map(x => {
+                trafficResult.data.map(function(x) {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
                     data[data.length - Math.floor(diff)] += x.total;
                 });
-                impressionResult.data.map(x => {
+                impressionResult.data.map(function(x) {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
                     impressionData[impressionData.length - Math.ceil(diff)] +=
                         x.total;
                 });
-                genderResult.data.map(x => {
+                genderResult.data.map(function(x) {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
@@ -207,7 +213,7 @@ $(document).ready(function() {
             gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
 
             var d = {
-                labels,
+                labels: labels,
                 datasets: [
                     {
                         label: "Counted",
@@ -226,7 +232,7 @@ $(document).ready(function() {
                         pointHoverBorderWidth: 15,
                         pointRadius: 4,
                         lineTension: 0.3,
-                        data
+                        data: data
                     },
                     {
                         label: "Views",

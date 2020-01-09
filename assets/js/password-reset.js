@@ -15,12 +15,11 @@ $(document).ready(function() {
                     },
                     function(r) {
                         if (!r.success) {
-                            console.log(r);
                             alertify.error(r.msg);
                             return;
                         } else {
                             alertify.success(r.msg).callback = function() {
-                                window.location.replace("/login.html");
+                                loadPage("login");
                             };
                         }
                     }

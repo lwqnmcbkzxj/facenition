@@ -1,12 +1,12 @@
 <div class="sidebar">
     <div class="sidebar-wrapper">
         <div class="logo-wrapper">
-            <a class="logo" href="/login.html">
+            <a class="logo" href="login" data-link="ajax">
                 <img src="/assets/img/primary-logo.png" />
             </a>
         </div>
         <div class="navbar-item">
-            <a class="navbar-item-wrapper" href="/dashboard/monitors.html">
+            <a class="navbar-item-wrapper" href="/dashboard/monitors" data-link="ajax">
                 <i class="tim-icons icon-camera-18"></i>
                 <p>
                     Monitors
@@ -14,7 +14,7 @@
             </a>
         </div>
         <div class="navbar-item">
-            <a class="navbar-item-wrapper" href="/dashboard/analytics.html">
+            <a class="navbar-item-wrapper" href="/dashboard/analytics" data-link="ajax">
                 <i class="tim-icons icon-chart-pie-36"></i>
                 <p>
                     Analytics
@@ -22,7 +22,7 @@
             </a>
         </div>
         <div class="navbar-item">
-            <a class="navbar-item-wrapper" href="/dashboard/settings.html">
+            <a class="navbar-item-wrapper" href="/dashboard/settings" data-link="ajax">
                 <i class="tim-icons icon-settings"></i>
                 <p>
                     Settings
@@ -35,19 +35,13 @@
 <div class="navbar">
     <div class="navbar-toggle">
         <button class="navbar-toggler" type="button">
-            <span class="navbar-toggler-bar bar1"></span
-            ><span class="navbar-toggler-bar bar2"></span
-            ><span class="navbar-toggler-bar bar3"></span>
+            <span class="navbar-toggler-bar bar1"></span><span class="navbar-toggler-bar bar2"></span><span
+                class="navbar-toggler-bar bar3"></span>
         </button>
     </div>
-    <button
-        class="nav-toggler"
-        id="navigation"
-        type="button"
-    >
-        <span class="navbar-toggler-bar navbar-kebab"></span
-        ><span class="navbar-toggler-bar navbar-kebab"></span
-        ><span class="navbar-toggler-bar navbar-kebab"></span>
+    <button class="nav-toggler" id="navigation" type="button">
+        <span class="navbar-toggler-bar navbar-kebab"></span><span class="navbar-toggler-bar navbar-kebab"></span><span
+            class="navbar-toggler-bar navbar-kebab"></span>
     </button>
     <div class="navbar-wrapper">
         <div class="user">
@@ -62,3 +56,5 @@
         </div>
     </div>
 </div>
+
+<script src="/assets/js/dashboard-header.js"></script>

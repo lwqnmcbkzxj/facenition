@@ -39,10 +39,6 @@ $(document).ready(function() {
     });
 
     $("#register").click(function() {
-        registrate();
-    });
-
-    function registrate() {
         var e = email.val();
         var p = pass.val();
         var c = confirm.val();
@@ -51,6 +47,7 @@ $(document).ready(function() {
                 "REGISTER",
                 { email: e, password: p, plan: "FREELANCER" },
                 function(result) {
+                    console.log(result);
                     if (!result.success) {
                         alertify.error(result.msg);
                         return;
@@ -60,13 +57,13 @@ $(document).ready(function() {
                 }
             );
         }
+    });
 
-        function isValid(email, pass, confirm) {
-            var isValid =
-                validateEmail(email) === true &&
-                validatePassword(pass) === true &&
-                confirm === pass;
-            return isValid;
-        }
+    function isValid(email, pass, confirm) {
+        var isValid =
+            validateEmail(email) === true &&
+            validatePassword(pass) === true &&
+            confirm === pass;
+        return isValid;
     }
 });

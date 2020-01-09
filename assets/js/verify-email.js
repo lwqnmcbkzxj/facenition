@@ -8,7 +8,7 @@ $(document).ready(function() {
             message = alertify.success(r.msg);
         }
         message.callback = function() {
-            window.location.replace("/login.html");
+            loadPage("login");
         };
     });
 });

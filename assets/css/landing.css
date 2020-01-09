@@ -400,6 +400,19 @@
     color: red;
 }
 
+.notfound {
+    min-height: calc(100% - 200px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.notfound img {
+    width: 100%;
+    height: auto;
+    max-width: 600px;
+}
+
 @media screen and (max-width: 785px) {
     .navbar-landing .burger {
         display: block;

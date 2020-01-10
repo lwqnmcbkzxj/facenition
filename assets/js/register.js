@@ -1,10 +1,10 @@
-$(document).ready(function() {
-    var email = $('input[name="email"]');
-    var emailValid = email.next(".content-error");
-    var pass = $('input[name="password"]');
-    var passValid = pass.next(".content-error");
-    var confirm = $('input[name="confirm"]');
-    var confirmValid = confirm.next(".content-error");
+function RegisterInit() {
+    var email = $('#register-page input[name="email"]');
+    var emailValid = email.next("#register-page .content-error");
+    var pass = $('#register-page input[name="password"]');
+    var passValid = pass.next("#register-page .content-error");
+    var confirm = $('#register-page input[name="confirm"]');
+    var confirmValid = confirm.next("#register-page .content-error");
 
     email.on("input", function(e) {
         var valid = validateEmail(email.val());
@@ -38,7 +38,7 @@ $(document).ready(function() {
         }
     });
 
-    $("#register").click(function() {
+    $("#register-page #register").click(function() {
         var e = email.val();
         var p = pass.val();
         var c = confirm.val();
@@ -66,4 +66,4 @@ $(document).ready(function() {
             confirm === pass;
         return isValid;
     }
-});
+}

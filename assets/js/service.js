@@ -1,3 +1,4 @@
+alertify.set('notifier','position', 'top-right');
 var api_routes = {
     LOGIN: {
         path: "/login",
@@ -273,7 +274,8 @@ function request(key, body, cb, o) {
     if (r.secure) {
         var token = getCookie("auth_token");
         if (!token) {
-            window.location.href = "/login";
+            loadPage("/login");
+            // window.location.href = "/login";
             return;
         }
         headers["Authorization"] = "Bearer " + token;
@@ -302,7 +304,8 @@ function request(key, body, cb, o) {
         data: payload.body,
         statusCode: {
             401: function() {
-                window.location.href = "/login";
+                loadPage("/login");
+                // window.location.href = "/login";
                 return;
             }
         },
@@ -327,7 +330,9 @@ function login(email, password) {
         var week = new Date();
         week.setDate(week.getDate() + 7);
         setCookie("auth_token", result.token, week);
-        window.location.replace("/dashboard/monitors");
+        setCookie("mail", email.toLowerCase(), week);
+		// window.location.replace("/dashboard/monitors");
+		loadPage("/dashboard/monitors")
     });
 }
 
@@ -369,454 +374,461 @@ function getUrlParameter(sParam) {
     }
 }
 
-
+function includes(container, value) {
+    var returnValue = false;
+    var pos = container.indexOf(value);
+    if (pos >= 0) {
+        returnValue = true;
+    }
+    return returnValue;
+}
 
 var chart1_2_options = {
-	maintainAspectRatio: false,
-	legend: {
-		display: false
-	},
-	tooltips: {
-		backgroundColor: "#f5f5f5",
-		titleFontColor: "#333",
-		bodyFontColor: "#666",
-		bodySpacing: 4,
-		xPadding: 12,
-		mode: "nearest",
-		intersect: 0,
-		position: "nearest"
-	},
-	responsive: true,
-	scales: {
-		yAxes: [
-			{
-				barPercentage: 1.6,
-				gridLines: {
-					drawBorder: false,
-					color: "rgba(29,140,248,0.0)",
-					zeroLineColor: "transparent"
-				},
-				ticks: {
-					suggestedMin: 60,
-					suggestedMax: 125,
-					padding: 20,
-					fontColor: "#9a9a9a"
-				}
-			}
-		],
-		xAxes: [
-			{
-				barPercentage: 1.6,
-				gridLines: {
-					drawBorder: false,
-					color: "rgba(29,140,248,0.1)",
-					zeroLineColor: "transparent"
-				},
-				ticks: {
-					padding: 20,
-					fontColor: "#9a9a9a"
-				}
-			}
-		]
-	}
+    maintainAspectRatio: false,
+    legend: {
+        display: false
+    },
+    tooltips: {
+        backgroundColor: "#f5f5f5",
+        titleFontColor: "#333",
+        bodyFontColor: "#666",
+        bodySpacing: 4,
+        xPadding: 12,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest"
+    },
+    responsive: true,
+    scales: {
+        yAxes: [
+            {
+                barPercentage: 1.6,
+                gridLines: {
+                    drawBorder: false,
+                    color: "rgba(29,140,248,0.0)",
+                    zeroLineColor: "transparent"
+                },
+                ticks: {
+                    suggestedMin: 60,
+                    suggestedMax: 125,
+                    padding: 20,
+                    fontColor: "#9a9a9a"
+                }
+            }
+        ],
+        xAxes: [
+            {
+                barPercentage: 1.6,
+                gridLines: {
+                    drawBorder: false,
+                    color: "rgba(29,140,248,0.1)",
+                    zeroLineColor: "transparent"
+                },
+                ticks: {
+                    padding: 20,
+                    fontColor: "#9a9a9a"
+                }
+            }
+        ]
+    }
 };
 
 // chartExample1 and chartExample2 options
 var chart1_2_options = {
-	maintainAspectRatio: false,
-	legend: {
-		display: false
-	},
-	tooltips: {
-		backgroundColor: "#f5f5f5",
-		titleFontColor: "#333",
-		bodyFontColor: "#666",
-		bodySpacing: 4,
-		xPadding: 12,
-		mode: "nearest",
-		intersect: 0,
-		position: "nearest"
-	},
-	responsive: true,
-	scales: {
-		yAxes: [
-			{
-				barPercentage: 1.6,
-				gridLines: {
-					drawBorder: false,
-					color: "rgba(29,140,248,0.0)",
-					zeroLineColor: "transparent"
-				},
-				ticks: {
-					suggestedMin: 60,
-					suggestedMax: 125,
-					padding: 20,
-					fontColor: "#9a9a9a"
-				}
-			}
-		],
-		xAxes: [
-			{
-				barPercentage: 1.6,
-				gridLines: {
-					drawBorder: false,
-					color: "rgba(29,140,248,0.1)",
-					zeroLineColor: "transparent"
-				},
-				ticks: {
-					padding: 20,
-					fontColor: "#9a9a9a"
-				}
-			}
-		]
-	}
+    maintainAspectRatio: false,
+    legend: {
+        display: false
+    },
+    tooltips: {
+        backgroundColor: "#f5f5f5",
+        titleFontColor: "#333",
+        bodyFontColor: "#666",
+        bodySpacing: 4,
+        xPadding: 12,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest"
+    },
+    responsive: true,
+    scales: {
+        yAxes: [
+            {
+                barPercentage: 1.6,
+                gridLines: {
+                    drawBorder: false,
+                    color: "rgba(29,140,248,0.0)",
+                    zeroLineColor: "transparent"
+                },
+                ticks: {
+                    suggestedMin: 60,
+                    suggestedMax: 125,
+                    padding: 20,
+                    fontColor: "#9a9a9a"
+                }
+            }
+        ],
+        xAxes: [
+            {
+                barPercentage: 1.6,
+                gridLines: {
+                    drawBorder: false,
+                    color: "rgba(29,140,248,0.1)",
+                    zeroLineColor: "transparent"
+                },
+                ticks: {
+                    padding: 20,
+                    fontColor: "#9a9a9a"
+                }
+            }
+        ]
+    }
 };
 
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample1 = {
-	data1: function(canvas) {
-		var ctx = canvas.getContext("2d");
+    data1: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-		gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-		gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+        gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+        gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+        gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
-		return {
-			labels: [
-				"JAN",
-				"FEB",
-				"MAR",
-				"APR",
-				"MAY",
-				"JUN",
-				"JUL",
-				"AUG",
-				"SEP",
-				"OCT",
-				"NOV",
-				"DEC"
-			],
-			datasets: [
-				{
-					label: "My First dataset",
-					fill: true,
-					backgroundColor: gradientStroke,
-					borderColor: "#1f8ef1",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					pointBackgroundColor: "#1f8ef1",
-					pointBorderColor: "rgba(255,255,255,0)",
-					pointHoverBackgroundColor: "#1f8ef1",
-					pointBorderWidth: 20,
-					pointHoverRadius: 4,
-					pointHoverBorderWidth: 15,
-					pointRadius: 4,
-					data: [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100]
-				}
-			]
-		};
-	},
-	data2: function(canvas) {
-		var ctx = canvas.getContext("2d");
+        return {
+            labels: [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: "#1f8ef1",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: "#1f8ef1",
+                    pointBorderColor: "rgba(255,255,255,0)",
+                    pointHoverBackgroundColor: "#1f8ef1",
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100]
+                }
+            ]
+        };
+    },
+    data2: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-		gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-		gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+        gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+        gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+        gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
-		return {
-			labels: [
-				"JAN",
-				"FEB",
-				"MAR",
-				"APR",
-				"MAY",
-				"JUN",
-				"JUL",
-				"AUG",
-				"SEP",
-				"OCT",
-				"NOV",
-				"DEC"
-			],
-			datasets: [
-				{
-					label: "My First dataset",
-					fill: true,
-					backgroundColor: gradientStroke,
-					borderColor: "#1f8ef1",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					pointBackgroundColor: "#1f8ef1",
-					pointBorderColor: "rgba(255,255,255,0)",
-					pointHoverBackgroundColor: "#1f8ef1",
-					pointBorderWidth: 20,
-					pointHoverRadius: 4,
-					pointHoverBorderWidth: 15,
-					pointRadius: 4,
-					data: [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120]
-				}
-			]
-		};
-	},
-	data3: function (canvas) {
-		var ctx = canvas.getContext("2d");
+        return {
+            labels: [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: "#1f8ef1",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: "#1f8ef1",
+                    pointBorderColor: "rgba(255,255,255,0)",
+                    pointHoverBackgroundColor: "#1f8ef1",
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120]
+                }
+            ]
+        };
+    },
+    data3: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-		gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-		gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+        gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+        gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+        gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
-		return {
-			labels: [
-				"JAN",
-				"FEB",
-				"MAR",
-				"APR",
-				"MAY",
-				"JUN",
-				"JUL",
-				"AUG",
-				"SEP",
-				"OCT",
-				"NOV",
-				"DEC"
-			],
-			datasets: [
-				{
-					label: "My First dataset",
-					fill: true,
-					backgroundColor: gradientStroke,
-					borderColor: "#1f8ef1",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					pointBackgroundColor: "#1f8ef1",
-					pointBorderColor: "rgba(255,255,255,0)",
-					pointHoverBackgroundColor: "#1f8ef1",
-					pointBorderWidth: 20,
-					pointHoverRadius: 4,
-					pointHoverBorderWidth: 15,
-					pointRadius: 4,
-					data: [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130]
-				}
-			]
-		};
-	},
-	options: chart1_2_options
+        return {
+            labels: [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: "#1f8ef1",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: "#1f8ef1",
+                    pointBorderColor: "rgba(255,255,255,0)",
+                    pointHoverBackgroundColor: "#1f8ef1",
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130]
+                }
+            ]
+        };
+    },
+    options: chart1_2_options
 };
 
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample2 = {
-	data: function (canvas) {
-		var ctx = canvas.getContext("2d");
+    data: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
-		gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
-		gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+        gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+        gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+        gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
-		return {
-			labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-			datasets: [
-				{
-					label: "Data",
-					fill: true,
-					backgroundColor: gradientStroke,
-					borderColor: "#1f8ef1",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					pointBackgroundColor: "#1f8ef1",
-					pointBorderColor: "rgba(255,255,255,0)",
-					pointHoverBackgroundColor: "#1f8ef1",
-					pointBorderWidth: 20,
-					pointHoverRadius: 4,
-					pointHoverBorderWidth: 15,
-					pointRadius: 4,
-					data: [80, 100, 70, 80, 120, 80]
-				}
-			]
-		};
-	},
-	options: chart1_2_options
+        return {
+            labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+            datasets: [
+                {
+                    label: "Data",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: "#1f8ef1",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: "#1f8ef1",
+                    pointBorderColor: "rgba(255,255,255,0)",
+                    pointHoverBackgroundColor: "#1f8ef1",
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: [80, 100, 70, 80, 120, 80]
+                }
+            ]
+        };
+    },
+    options: chart1_2_options
 };
 
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample3 = {
-	data: function (canvas){
-		var ctx = canvas.getContext("2d");
+    data: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(72,72,176,0.1)");
-		gradientStroke.addColorStop(0.4, "rgba(72,72,176,0.0)");
-		gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
+        gradientStroke.addColorStop(1, "rgba(72,72,176,0.1)");
+        gradientStroke.addColorStop(0.4, "rgba(72,72,176,0.0)");
+        gradientStroke.addColorStop(0, "rgba(119,52,169,0)"); //purple colors
 
-		return {
-			labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
-			datasets: [
-				{
-					label: "Countries",
-					fill: true,
-					backgroundColor: gradientStroke,
-					hoverBackgroundColor: gradientStroke,
-					borderColor: "#d048b6",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					data: [53, 20, 10, 80, 100, 45]
-				}
-			]
-		};
-	},
-	options: {
-		maintainAspectRatio: false,
-		legend: {
-			display: false
-		},
-		tooltips: {
-			backgroundColor: "#f5f5f5",
-			titleFontColor: "#333",
-			bodyFontColor: "#666",
-			bodySpacing: 4,
-			xPadding: 12,
-			mode: "nearest",
-			intersect: 0,
-			position: "nearest"
-		},
-		responsive: true,
-		scales: {
-			yAxes: [
-				{
-					gridLines: {
-						drawBorder: false,
-						color: "rgba(225,78,202,0.1)",
-						zeroLineColor: "transparent"
-					},
-					ticks: {
-						suggestedMin: 60,
-						suggestedMax: 120,
-						padding: 20,
-						fontColor: "#9e9e9e"
-					}
-				}
-			],
-			xAxes: [
-				{
-					gridLines: {
-						drawBorder: false,
-						color: "rgba(225,78,202,0.1)",
-						zeroLineColor: "transparent"
-					},
-					ticks: {
-						padding: 20,
-						fontColor: "#9e9e9e"
-					}
-				}
-			]
-		}
-	}
+        return {
+            labels: ["USA", "GER", "AUS", "UK", "RO", "BR"],
+            datasets: [
+                {
+                    label: "Countries",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    hoverBackgroundColor: gradientStroke,
+                    borderColor: "#d048b6",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    data: [53, 20, 10, 80, 100, 45]
+                }
+            ]
+        };
+    },
+    options: {
+        maintainAspectRatio: false,
+        legend: {
+            display: false
+        },
+        tooltips: {
+            backgroundColor: "#f5f5f5",
+            titleFontColor: "#333",
+            bodyFontColor: "#666",
+            bodySpacing: 4,
+            xPadding: 12,
+            mode: "nearest",
+            intersect: 0,
+            position: "nearest"
+        },
+        responsive: true,
+        scales: {
+            yAxes: [
+                {
+                    gridLines: {
+                        drawBorder: false,
+                        color: "rgba(225,78,202,0.1)",
+                        zeroLineColor: "transparent"
+                    },
+                    ticks: {
+                        suggestedMin: 60,
+                        suggestedMax: 120,
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                    }
+                }
+            ],
+            xAxes: [
+                {
+                    gridLines: {
+                        drawBorder: false,
+                        color: "rgba(225,78,202,0.1)",
+                        zeroLineColor: "transparent"
+                    },
+                    ticks: {
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                    }
+                }
+            ]
+        }
+    }
 };
 
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample4 = {
-	data: function (canvas) {
-		var ctx = canvas.getContext("2d");
+    data: function(canvas) {
+        var ctx = canvas.getContext("2d");
 
-		var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+        var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-		gradientStroke.addColorStop(1, "rgba(66,134,121,0.15)");
-		gradientStroke.addColorStop(0.4, "rgba(66,134,121,0.0)"); //green colors
-		gradientStroke.addColorStop(0, "rgba(66,134,121,0)"); //green colors
+        gradientStroke.addColorStop(1, "rgba(66,134,121,0.15)");
+        gradientStroke.addColorStop(0.4, "rgba(66,134,121,0.0)"); //green colors
+        gradientStroke.addColorStop(0, "rgba(66,134,121,0)"); //green colors
 
-		return {
-			labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
-			datasets: [
-				{
-					label: "My First dataset",
-					fill: true,
-					backgroundColor: gradientStroke,
-					borderColor: "#00d6b4",
-					borderWidth: 2,
-					borderDash: [],
-					borderDashOffset: 0.0,
-					pointBackgroundColor: "#00d6b4",
-					pointBorderColor: "rgba(255,255,255,0)",
-					pointHoverBackgroundColor: "#00d6b4",
-					pointBorderWidth: 20,
-					pointHoverRadius: 4,
-					pointHoverBorderWidth: 15,
-					pointRadius: 4,
-					data: [90, 27, 60, 12, 80]
-				}
-			]
-		};
-	},
-	options: {
-		maintainAspectRatio: false,
-		legend: {
-			display: false
-		},
+        return {
+            labels: ["JUL", "AUG", "SEP", "OCT", "NOV"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: "#00d6b4",
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: "#00d6b4",
+                    pointBorderColor: "rgba(255,255,255,0)",
+                    pointHoverBackgroundColor: "#00d6b4",
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: [90, 27, 60, 12, 80]
+                }
+            ]
+        };
+    },
+    options: {
+        maintainAspectRatio: false,
+        legend: {
+            display: false
+        },
 
-		tooltips: {
-			backgroundColor: "#f5f5f5",
-			titleFontColor: "#333",
-			bodyFontColor: "#666",
-			bodySpacing: 4,
-			xPadding: 12,
-			mode: "nearest",
-			intersect: 0,
-			position: "nearest"
-		},
-		responsive: true,
-		scales: {
-			yAxes: [
-				{
-					barPercentage: 1.6,
-					gridLines: {
-						drawBorder: false,
-						color: "rgba(29,140,248,0.0)",
-						zeroLineColor: "transparent"
-					},
-					ticks: {
-						suggestedMin: 50,
-						suggestedMax: 125,
-						padding: 20,
-						fontColor: "#9e9e9e"
-					}
-				}
-			],
+        tooltips: {
+            backgroundColor: "#f5f5f5",
+            titleFontColor: "#333",
+            bodyFontColor: "#666",
+            bodySpacing: 4,
+            xPadding: 12,
+            mode: "nearest",
+            intersect: 0,
+            position: "nearest"
+        },
+        responsive: true,
+        scales: {
+            yAxes: [
+                {
+                    barPercentage: 1.6,
+                    gridLines: {
+                        drawBorder: false,
+                        color: "rgba(29,140,248,0.0)",
+                        zeroLineColor: "transparent"
+                    },
+                    ticks: {
+                        suggestedMin: 50,
+                        suggestedMax: 125,
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                    }
+                }
+            ],
 
-			xAxes: [
-				{
-					barPercentage: 1.6,
-					gridLines: {
-						drawBorder: false,
-						color: "rgba(0,242,195,0.1)",
-						zeroLineColor: "transparent"
-					},
-					ticks: {
-						padding: 20,
-						fontColor: "#9e9e9e"
-					}
-				}
-			]
-		}
-	}
+            xAxes: [
+                {
+                    barPercentage: 1.6,
+                    gridLines: {
+                        drawBorder: false,
+                        color: "rgba(0,242,195,0.1)",
+                        zeroLineColor: "transparent"
+                    },
+                    ticks: {
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                    }
+                }
+            ]
+        }
+    }
 };

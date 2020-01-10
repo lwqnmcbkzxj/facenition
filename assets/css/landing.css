@@ -1,4 +1,4 @@
-.container {
+.landing .container {
     width: 100%;
     position: relative;
     display: flex;
@@ -7,7 +7,7 @@
     padding-bottom: 200px;
 }
 
-.navbar-landing {
+.landing .navbar-landing {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,11 +19,10 @@
     top: 0;
     left: 0;
     border-top: 2px solid #1f8ef1;
-    box-shadow: 0 2px 22px 0 rgba(0, 0, 0, 0.1),
-        0 4px 20px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 22px 0 rgba(0, 0, 0, 0.1), 0 4px 20px 0 rgba(0, 0, 0, 0.15);
 }
 
-.navbar-landing .logo {
+.landing .navbar-landing .logo {
     padding: 0 12px;
     cursor: pointer;
     display: flex;
@@ -31,44 +30,44 @@
     align-items: center;
 }
 
-.navbar-landing .logo img {
+.landing .navbar-landing .logo img {
     width: 140px;
 }
 
-.navbar-landing .nav {
+.landing .navbar-landing .nav {
     display: flex;
     align-items: center;
 }
 
-.navbar-landing .nav__links {
+.landing .navbar-landing .nav__links {
     margin: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.navbar-landing .nav__link {
+.landing .navbar-landing .nav__link {
     font-size: 14px;
     padding: 8px;
 }
 
-.navbar-landing .nav__items {
+.landing .navbar-landing .nav__items {
     align-items: center;
     display: flex;
 }
 
-.navbar-landing .nav__items .dropmenu {
+.landing .navbar-landing .nav__items .dropmenu {
     top: 110%;
     right: 10px;
 }
 
-.navbar-landing .burger {
+.landing .navbar-landing .burger {
     display: none;
     font-size: 32px;
     color: #525f7f;
 }
 
-.b-menu {
+.landing .b-menu {
     position: fixed;
     z-index: 11;
     top: 0;
@@ -81,12 +80,12 @@
     padding: 54px 37px 0;
 }
 
-.b-menu.active {
+.landing .b-menu.active {
     display: block;
     left: 0;
 }
 
-.b-menu-close {
+.landing .b-menu-close {
     color: #000;
     position: absolute;
     right: 8px;
@@ -99,7 +98,7 @@
     cursor: pointer;
 }
 
-.b-logo img {
+.landing .b-logo img {
     width: 200px;
     display: block;
     padding: 14px 0;
@@ -107,22 +106,22 @@
     cursor: pointer;
 }
 
-.b-nav__links {
+.landing .b-nav__links {
     display: flex;
     flex-direction: column;
 }
 
-.b-nav__links .nav__link {
+.landing .b-nav__links .nav__link {
     font-size: 16px;
     line-height: 24px;
     padding: 8px;
 }
 
-.navbar {
+.landing .navbar {
     padding: 10px 30px 10px 15px;
 }
 
-.b-overlay {
+.landing .b-overlay {
     opacity: 0;
     position: fixed;
     z-index: -1;
@@ -134,12 +133,12 @@
     background: rgba(0, 0, 0, 0.301);
 }
 
-.b-overlay.active {
+.landing .b-overlay.active {
     opacity: 1;
     z-index: 5;
 }
 
-.button {
+.landing .button {
     padding: 6px 12px;
     background-color: #fff;
     color: #000;
@@ -149,7 +148,7 @@
     transition: all 0.2s ease 0s;
 }
 
-.button-nav {
+.landing .button-nav {
     text-transform: uppercase;
     margin-left: 12px;
     background-color: #1f8ef1;
@@ -161,45 +160,45 @@
     height: 33px;
 }
 
-.button-nav:focus,
-.button-nav:hover {
+.landing .button-nav:focus,
+.landing .button-nav:hover {
     background-color: #fff;
     color: #1f8ef1;
 }
 
-.button-footer {
+.landing .button-footer {
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 700;
 }
 
-.button-login {
+.landing .button-login {
     background: #000;
     color: #fff;
     padding: 12px;
     font-weight: 700;
 }
 
-.button-reg {
+.landing .button-reg {
     padding: 12px;
     margin: 24px 0;
     text-align: center;
 }
 
-.button-registration {
+.landing .button-registration {
     color: #fff;
     background: #000;
     padding: 12px 0;
 }
 
-.link {
+.landing .link {
     text-decoration: none;
     color: #000;
     font-size: 14px;
     font-weight: 300;
 }
 
-.link-user {
+.landing .link-user {
     background: none;
     border: none;
     display: block;
@@ -210,12 +209,12 @@
     transition: all 0.15s linear;
 }
 
-.link-user:focus,
-.link-user:hover {
+.landing .link-user:focus,
+.landing .link-user:hover {
     background-color: rgba(222, 222, 222, 0.3);
 }
 
-.input {
+.landing .input {
     line-height: 21px;
     border-radius: 4px;
     border: 1px solid #ccc;
@@ -225,26 +224,26 @@
     outline: none;
 }
 
-.input:focus {
+.landing .input:focus {
     border: 1px solid #1f8ef1;
 }
 
-.input-landing {
+.landing .input-landing {
     margin-bottom: 12px;
 }
 
-.input-footer {
+.landing .input-footer {
     margin-top: 12px;
 }
 
-.user {
+.landing .user {
     color: #000;
     position: relative;
     padding: 8px 26px 8px 28px;
     cursor: pointer;
 }
 
-.user .dropmenu {
+.landing .user .dropmenu {
     position: absolute;
     will-change: transform;
     opacity: 0;
@@ -264,7 +263,7 @@
     color: #9a9a9a;
 }
 
-.user .dropmenu:before {
+.landing .user .dropmenu:before {
     display: inline-block;
     position: absolute;
     width: 0;
@@ -279,43 +278,43 @@
     border-left: 0.4em solid transparent;
 }
 
-.user .dropmenu.show {
+.landing .user .dropmenu.show {
     opacity: 1;
     visibility: visible;
 }
 
-.user .dropmenu .drop__items {
+.landing .user .dropmenu .drop__items {
     padding: 8px 1rem;
 }
 
-.footer {
+.landing .footer {
     display: flex;
     color: #fff;
     background: #000;
 }
 
-.footer-col-20 {
+.landing .footer-col-20 {
     width: 20%;
 }
 
-.footer-col-40 {
+.landing .footer-col-40 {
     width: 40%;
 }
 
-.footer-hd {
+.landing .footer-hd {
     padding: 12px 0;
     font-size: 13px;
     font-weight: 700;
 }
 
-.footer-td {
+.landing .footer-td {
     font-size: 14px;
     padding: 4px 0;
     color: #fff;
     display: block;
 }
 
-.footer-wrapper {
+.landing .footer-wrapper {
     padding: 12px;
     width: 90%;
     display: flex;
@@ -323,35 +322,34 @@
     margin: 0 auto;
 }
 
-.copy-wrapper {
+.landing .copy-wrapper {
     width: 100%;
     font-size: 16px;
     text-align: center;
     background: #000;
 }
 
-.copy-wrapper,
-.promo {
+.landing .copy-wrapper,
+.landing .promo {
     padding: 24px;
     color: #fff;
 }
 
-.promo {
+.landing .promo {
     font-size: 24px;
     font-weight: 700;
     background: #1f8ef1;
 }
 
-.promo-wrapper {
+.landing .promo-wrapper {
     text-align: center;
     background: none;
     margin: 0 auto;
 }
 
-.content-wrapper {
+.landing .content-wrapper {
     border-radius: 4px;
-    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.01),
-        -1px 3px 5px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.01), -1px 3px 5px 0 rgba(0, 0, 0, 0.15);
     font-size: 14px;
     width: 26em;
     padding: 28px 18px 24px;
@@ -360,7 +358,7 @@
     flex-direction: column;
 }
 
-.content-title {
+.landing .content-title {
     margin-bottom: 24px;
     font-size: 38px;
     color: #000;
@@ -368,7 +366,7 @@
     font-variant: all-small-caps;
 }
 
-.content-link {
+.landing .content-link {
     padding-top: 24px;
     padding-bottom: 12px;
     width: 100%;
@@ -376,18 +374,18 @@
     justify-content: center;
 }
 
-.content-link-item {
+.landing .content-link-item {
     color: #0070ba;
 }
 
-.content-divide {
+.landing .content-divide {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.content-divider {
+.landing .content-divider {
     background: #ddd;
     height: 1px;
     flex: 0.4 1 0%;
@@ -395,73 +393,73 @@
     margin: 1rem;
 }
 
-.content-error {
+.landing .content-error {
     margin-bottom: 12px;
     color: red;
 }
 
-.notfound {
+.landing .notfound {
     min-height: calc(100% - 200px);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.notfound img {
+.landing .notfound img {
     width: 100%;
     height: auto;
     max-width: 600px;
 }
 
 @media screen and (max-width: 785px) {
-    .navbar-landing .burger {
+    .landing .navbar-landing .burger {
         display: block;
         cursor: pointer;
     }
 
-    .navbar-landing .logo,
-    .navbar-landing .nav__links {
+    .landing .navbar-landing .logo,
+    .landing .navbar-landing .nav__links {
         display: none;
     }
 }
 
 @media screen and (max-width: 830px) {
-    .footer-col-40 {
+    .landing .footer-col-40 {
         width: 100%;
     }
 
-    .footer-col-20 {
+    .landing .footer-col-20 {
         width: 33%;
     }
 }
 
 @media screen and (max-width: 580px) {
-    .footer-hd {
+    .landing .footer-hd {
         padding: 24px 0 6px;
         font-size: 16px;
         font-weight: 700;
     }
 
-    .footer-td {
+    .landing .footer-td {
         padding: 0;
         font-size: 16px;
         color: #fff;
         display: block;
     }
 
-    .footer-col-20 {
+    .landing .footer-col-20 {
         width: 100%;
     }
 
-    .promo-wrapper {
+    .landing .promo-wrapper {
         text-align: left;
     }
 
-    .content-wrapper {
+    .landing .content-wrapper {
         width: 100%;
     }
 
-    .content-title {
+    .landing .content-title {
         margin-top: 54px;
     }
 }

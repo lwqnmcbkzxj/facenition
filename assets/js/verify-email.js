@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function VerifyEmailInit() {
     var token = getUrlParameter("t");
     request("VERIFY_EMAIL", { params: token }, function(r) {
         var message;
@@ -8,7 +8,7 @@ $(document).ready(function() {
             message = alertify.success(r.msg);
         }
         message.callback = function() {
-            loadPage("login");
+            loadPage("/login");
         };
     });
-});
+}

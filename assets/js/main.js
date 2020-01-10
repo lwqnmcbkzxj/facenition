@@ -1,104 +1,88 @@
-var config = {};
+var pagesMap = {};
+var urlIdMap = {};
+var $pages;
+var $headers;
+var $footers;
+var $header;
+var $footer;
+var $dashboardHeader;
+var $dashboardFooter;
 
-var ui = {};
-
-var headerType = { type: "login" };
-
-// Загрузка контента по странице
-function loadPage(p) {
-    var page = p;
-    if (p.charAt(0) === "/") {
-        page = p.substr(1);
+function loadPage(pageName) {
+    var pName = pageName.substr(1); //remove first /
+    if (includes(pName, "?")) {
+        pName = pName.split("?")[0];
     }
-    var url = "/static/" + page + ".html",
-        pageTitle = config.pages[page].title;
-    var h = config.pages[page].header;
-
-    $.get(url, function(html) {
-        document.title = pageTitle + " | " + config.siteTitle;
-        ui.$content.html(html);
-    });
-
-    if (h !== headerType.type) {
-        headerType.type = h;
-        if (h) {
-            $.get("/static/dashboard-header.html", function(html) {
-                ui.$header.html(html);
-                setActiveNav();
-            });
-            $.get("/static/dashboard-footer.html", function(html) {
-                ui.$footer.html(html);
-            });
-        } else {
-            $.get("/static/header.html", function(html) {
-                ui.$header.html(html);
-            });
-            $.get("/static/footer.html", function(html) {
-                ui.$footer.html(html);
-            });
-        }
+    $pages.hide();
+    $headers.hide();
+    $footers.hide();
+    if (includes(pageName, "dashboard")) {
+        $dashboardHeader.show();
+        $dashboardFooter.show();
+        DashboardHeaderInit();
+    } else {
+        $header.show();
+        $footer.show();
+        HeaderInit();
     }
-    if (h) {
-        setActiveNav();
-    }
-
-    function setActiveNav() {
-        var url = page.split("/");
-        var u = url[url.length - 1];
-        u = u.replace(".html", "");
-        u = u.charAt(0).toUpperCase() + u.slice(1);
-        $(".navbar-item").map(function(i, e) {
-            $(e).removeClass("active");
-        });
-        var navbarItem = $(".navbar-item:contains(" + u + ")");
-        navbarItem.addClass("active");
-    }
-
-    history.pushState({ page: p }, "", p);
+    var currentPage = $("#" + urlIdMap[pName]);
+    currentPage.show();
+    pagesMap[pName]();
+    history.pushState({ page: pageName }, "", pageName);
 }
 
-// Клик по ссылке
-
-// Кнопки Назад/Вперед
 function popState(e) {
     var page = (e.state && e.state.page) || config.mainPage;
     loadPage(page);
 }
 
-// Привязка событий
 function bindHandlers() {
-    ui.$body.on("click", 'a[data-link="ajax"]', navigate);
+    $(document.body).on("click", 'a[data-link="ajax"]', navigate);
     window.onpopstate = popState;
 }
 
-// Старт приложения: привязка событий
 function start() {
     bindHandlers();
 }
 
-// Инициализация приложения: загрузка конфига и старт
 function init() {
-    $.getJSON("/data/config.json", function(data) {
-        config = data;
-        start();
-        loadPage(window.location.pathname);
-    });
+    $header = $("#header");
+    $footer = $("#footer");
+    $dashboardHeader = $("#dashboard-header");
+    $dashboardFooter = $("#dashboard-footer");
+    $pages = $("div[data-page=true]");
+    $headers = $("div[data-header=true]");
+    $footers = $("div[data-footer=true]");
+    pagesMap = {
+        login: LoginInit,
+        register: RegisterInit,
+        "forgot-password": ForgotPasswordInit,
+        "verify-email": VerifyEmailInit,
+        "password-reset": PasswordResetInit,
+        "dashboard/monitors": MonitorsInit,
+        "dashboard/settings": SettingsInit
+    };
+
+    urlIdMap = {
+        login: "login-page",
+        register: "register-page",
+        "forgot-password": "forgot-password-page",
+        "verify-email": "verify-email-page",
+        "password-reset": "password-reset-page",
+        "dashboard/monitors": "monitors-page",
+        "dashboard/settings": "settings-page"
+    };
+    
+    loadPage(window.location.pathname + window.location.search);
+    start();
 }
 
 function navigate(e) {
     e.stopPropagation();
     e.preventDefault();
-    var page = $(e.target).attr("href");
     loadPage(e.currentTarget.pathname);
 }
 
-// Запуск приложения
 $(document).ready(function() {
     init();
-    ui = {
-        $body: $(document.body),
-        $content: $("#c"),
-        $header: $("#header"),
-        $footer: $("#footer")
-    };
 });

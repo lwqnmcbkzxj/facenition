@@ -1,6 +1,6 @@
-$(document).ready(function() {
-    var main = $(".main");
-    var monitorsTable = $(".monitors-data");
+function MonitorsInit() {
+    var main = $("#monitors-page .main");
+    var monitorsTable = $(".card-data");
     main.hide();
     var body = $(document.body);
     var loader = "<div class='loader'></div>";
@@ -85,8 +85,8 @@ $(document).ready(function() {
         .valueOf();
     var end = moment().valueOf();
     function renderChart(index) {
-        var body = $("#mon-" + index + " .trand .chart-area");
-        var preview = $("#mon-" + index + " #preview-" + index);
+        var body = $("#monitors-page #mon-" + index + " .trand .chart-area");
+        var preview = $("#monitors-page #mon-" + index + " #preview-" + index);
         body.append("<div class='l-w'>" + loader + "</div>");
         preview.append("<div class='l-w'>" + loader + "</div>");
         var id = monitors[index].id;
@@ -94,7 +94,9 @@ $(document).ready(function() {
         request("GET_MONITOR_THUMBNAIL", { params: id }, function(r) {
             var thumbnail = r.data;
             var image = "data:image/jpg;base64," + thumbnail;
-            $("#mon-" + index + " #preview-" + index + " .l-w").remove();
+            $(
+                "#monitors-page #mon-" + index + " #preview-" + index + " .l-w"
+            ).remove();
             $(preview).append("<img src='" + image + "' alt='Preview'>");
         });
 
@@ -196,7 +198,7 @@ $(document).ready(function() {
                     maleData,
                     femaleData
                 );
-                $("#mon-" + index + " .trand .l-w").remove();
+                $("#monitors-page #mon-" + index + " .trand .l-w").remove();
             });
         })();
 
@@ -205,7 +207,6 @@ $(document).ready(function() {
                 '<canvas class="chartjs-render-monitor monitor-graphic-1"></canvas>'
             );
             var canvas = $("#mon-" + index + " .trand canvas")[0];
-            console.log(canvas);
             var ctx = canvas.getContext("2d");
             var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
             gradientStroke.addColorStop(1, "rgba(72,72,176,0.1)");
@@ -291,7 +292,7 @@ $(document).ready(function() {
                     }
                 ]
             };
-            var options = chartExample2.options;
+            var options = JSON.parse(JSON.stringify(chartExample2.options));
             options.scales.yAxes = [
                 {
                     ticks: { beginAtZero: true, precision: 0 },
@@ -302,7 +303,6 @@ $(document).ready(function() {
                     }
                 }
             ];
-            console.log(options);
             var chart = new Chart(ctx, {
                 type: "line",
                 data: d,
@@ -310,4 +310,4 @@ $(document).ready(function() {
             });
         }
     }
-});
+}

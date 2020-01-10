@@ -1,14 +1,14 @@
-$(document).ready(function() {
-    var element = $(".nav__items");
+function HeaderInit() {
+    var element = $("#header .nav__items");
     element.empty();
     if (isLoggedIn()) {
         element.append(
-            "<a href='/dashboard/monitors' class='button button-nav'>Dashboard</a>" +
+            "<a href='/dashboard/monitors' data-link='ajax' class='button button-nav'>Dashboard</a>" +
                 "<div class='user'>" +
                 "<i class='far fa-user'></i>" +
                 "<ul class='dropmenu'>" +
                 "<li class='drop__items'>" +
-                "<a class='link-user' href='/dashboard/settings'>Account settings</a>" +
+                "<a class='link-user' href='/dashboard/settings' data-link='ajax'>Account settings</a>" +
                 "<a class='link-user' href='#' id='logout'>Log out</a>" +
                 "</li>" +
                 "</ul>" +
@@ -20,20 +20,20 @@ $(document).ready(function() {
                 '<a href="login" data-link="ajax" class="button button-nav">Login</a>'
         );
     }
-    var overlay = $(".b-overlay");
-    var b_menu = $(".b-menu");
-    $(".burger").click(function() {
+    var overlay = $("#header .b-overlay");
+    var b_menu = $("#header .b-menu");
+    $("#header .burger").click(function() {
         overlay.addClass("active");
         b_menu.addClass("active");
     });
 
-    overlay.add($(".b-menu-close")).click(function() {
+    overlay.add($("#header .b-menu-close")).click(function() {
         overlay.removeClass("active");
         b_menu.removeClass("active");
     });
 
-    var user = $(".user");
-    var drop = $(".dropmenu");
+    var user = $("#header .user");
+    var drop = $("#header .dropmenu");
     user.click(function(e) {
         e.stopPropagation();
         drop.toggleClass("show");
@@ -43,9 +43,9 @@ $(document).ready(function() {
         drop.removeClass("show");
     });
 
-    $("#logout").click(function(e) {
+    $("#header #logout").click(function(e) {
         e.preventDefault();
         logout();
-        loadPage("login");
+        loadPage("/login");
     });
-});
+}

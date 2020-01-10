@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-
-Disallow: /data/
-Disallow: /pages/
-Disallow: /tpl/
-
-Host: https://spa.webdevkin.ru
-Sitemap: https://spa.webdevkin.ru/sitemap.xml

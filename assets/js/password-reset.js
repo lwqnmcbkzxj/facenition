@@ -1,8 +1,8 @@
-$(document).ready(function() {
+function PasswordResetInit() {
     var token = getUrlParameter("t");
-    var pass = $("input[name='password']");
-    var confirm = $("input[name='confirm']");
-    var reset = $("#reset");
+    var pass = $("#password-reset-page input[name='password']");
+    var confirm = $("#password-reset-page input[name='confirm']");
+    var reset = $("#password-reset-page #reset");
     reset.click(function(e) {
         if (pass.val() === confirm.val()) {
             var isVaild = validatePassword(pass.val());
@@ -19,7 +19,7 @@ $(document).ready(function() {
                             return;
                         } else {
                             alertify.success(r.msg).callback = function() {
-                                loadPage("login");
+                                loadPage("/login");
                             };
                         }
                     }
@@ -31,4 +31,4 @@ $(document).ready(function() {
             alertify.error("Passwords don't match");
         }
     });
-});
+}

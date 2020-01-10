@@ -1,4 +1,4 @@
-function SettingsInit() {
+function bindSettings() {
     var body = $(document.body);
     var reset = $("#settings-page #reset-pwd");
     var updateCard = $("#settings-page #upd-card");
@@ -11,28 +11,6 @@ function SettingsInit() {
 
     modal.click(function(e) {
         e.stopPropagation();
-    });
-
-    var card;
-    var mail = $("#settings-page #billing-email");
-    var email = $("#settings-page #email");
-    mail.val(getCookie("mail"));
-    email.val(getCookie("mail"));
-    request("GET_CARD", {}, function(r) {
-        if (!r.success) {
-            alertify.error(r.msg);
-            return;
-        }
-        card = r.data;
-        $("#settings-page #billing-card-details").val(
-            card.brand +
-                " **** " +
-                card.last4 +
-                " exp. " +
-                card.exp_month +
-                "/" +
-                card.exp_year
-        );
     });
 
     reset.click(function(e) {
@@ -104,5 +82,34 @@ function SettingsInit() {
     close.click(function(e) {
         e.stopPropagation();
         modal.fadeOut();
+    });
+}
+
+function SettingsInit() {
+    var modal = $("#settings-page .modal");
+    modal.hide();
+    var mail = $("#settings-page #billing-email");
+    var email = $("#settings-page #email");
+    var cardInput = $("#settings-page #billing-card-details");
+    cardInput.val("No card set");
+    mail.val("");
+    email.val("");
+    mail.val(getCookie("mail"));
+    email.val(getCookie("mail"));
+    request("GET_CARD", {}, function(r) {
+        if (!r.success) {
+            alertify.error(r.msg);
+            return;
+        }
+        var card = r.data;
+        cardInput.val(
+            card.brand +
+                " **** " +
+                card.last4 +
+                " exp. " +
+                card.exp_month +
+                "/" +
+                card.exp_year
+        );
     });
 }

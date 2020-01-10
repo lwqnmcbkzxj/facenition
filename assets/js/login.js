@@ -1,6 +1,13 @@
 function LoginInit() {
-    var email = $('input[name="email"]');
-    var pass = $('input[name="password"]');
+    var email = $('#login-page input[name="email"]');
+    var pass = $('#login-page input[name="password"]');
+    email.val("");
+    pass.val("");
+}
+
+function bindLogin() {
+    var email = $('#login-page input[name="email"]');
+    var pass = $('#login-page input[name="password"]');
     email.add(pass).on("keypress", function(e) {
         if (e.which == 13) {
             try {

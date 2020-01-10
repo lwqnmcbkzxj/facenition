@@ -1,4 +1,7 @@
 function DashboardHeaderInit() {
+
+}
+function bindDashboardHeader() {
     var burger = $("#dashboard-header .navbar-toggler");
     var body = $(document.body);
     var sidebar = $("#dashboard-header .sidebar");

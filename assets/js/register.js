@@ -1,4 +1,10 @@
 function RegisterInit() {
+    var inputs = $('#register-page input');
+    inputs.map(function(i, e) {
+        $(e).val("")
+    })
+}
+function bindRegister() {
     var email = $('#register-page input[name="email"]');
     var emailValid = email.next("#register-page .content-error");
     var pass = $('#register-page input[name="password"]');

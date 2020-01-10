@@ -2,7 +2,7 @@ function MonitorsInit() {
     var main = $("#monitors-page .main");
     var monitorsTable = $(".card-data");
     main.hide();
-    var body = $(document.body);
+    var body = $("#monitors-page");
     var loader = "<div class='loader'></div>";
     body.append(loader);
     var monitors = null;
@@ -36,6 +36,7 @@ function MonitorsInit() {
     })();
 
     function charts() {
+        monitorsTable.empty();
         if (monitors.length == 0) {
             monitorsTable.append(
                 "<tr>" +

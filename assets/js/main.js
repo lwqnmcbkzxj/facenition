@@ -36,13 +36,23 @@ function popState(e) {
     loadPage(page);
 }
 
-function bindHandlers() {
+function bindLinks() {
     $(document.body).on("click", 'a[data-link="ajax"]', navigate);
     window.onpopstate = popState;
 }
 
+function bindActions() {
+    bindHeader();
+    bindLogin();
+    bindRegister();
+    bindSettings();
+    bindForgotPassword();
+    bindDashboardHeader();
+}
+
 function start() {
-    bindHandlers();
+    bindLinks();
+    bindActions();
 }
 
 function init() {

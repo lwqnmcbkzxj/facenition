@@ -41,7 +41,7 @@ function HeaderInit() {
         );
     }
 }
-console.log("object")
+
 function bindHeader() {
     var overlay = $("#header .b-overlay");
     var b_menu = $("#header .b-menu");

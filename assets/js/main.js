@@ -18,16 +18,20 @@ function loadPage(pageName) {
     $footers.hide();
     if (includes(pageName, "dashboard")) {
         $dashboardHeader.show();
-        $dashboardFooter.show();
         DashboardHeaderInit();
     } else {
         $header.show();
-        $footer.show();
         HeaderInit();
     }
     var currentPage = $("#" + urlIdMap[pName]);
     currentPage.show();
     pagesMap[pName]();
+
+    if (includes(pageName, "dashboard")) {
+        $dashboardFooter.show();
+    } else {
+        $footer.show();
+    }
     history.pushState({ page: pageName }, "", pageName);
 }
 
@@ -48,6 +52,8 @@ function bindActions() {
     bindSettings();
     bindForgotPassword();
     bindDashboardHeader();
+    bindMonitorsView();
+    bindAnalytics();
 }
 
 function start() {
@@ -70,7 +76,9 @@ function init() {
         "verify-email": VerifyEmailInit,
         "password-reset": PasswordResetInit,
         "dashboard/monitors": MonitorsInit,
-        "dashboard/settings": SettingsInit
+        "dashboard/settings": SettingsInit,
+        "dashboard/analytics": AnalyticsInit,
+        "dashboard/monitors/view": MonitorsViewInit
     };
 
     urlIdMap = {
@@ -80,9 +88,11 @@ function init() {
         "verify-email": "verify-email-page",
         "password-reset": "password-reset-page",
         "dashboard/monitors": "monitors-page",
-        "dashboard/settings": "settings-page"
+        "dashboard/settings": "settings-page",
+        "dashboard/analytics": "analytics-page",
+        "dashboard/monitors/view": "view-page"
     };
-    
+
     loadPage(window.location.pathname + window.location.search);
     start();
 }

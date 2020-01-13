@@ -1,6 +1,4 @@
-.dashboard {
-    overflow: hidden;
-}
+.dashboard {}
 
 .dashboard .sidebar {
     overflow: hidden;
@@ -88,7 +86,7 @@
 }
 
 .dashboard .footer {
-    width: 100vw;
+    width: 100%;
     box-shadow: rgba(0, 0, 0, 0.1) 2px 22px 0px,
         rgba(0, 0, 0, 0.15) 0px 4px 20px 0px;
     border-top: 2px solid #1f8ef1;
@@ -156,8 +154,8 @@
     border-radius: 1px;
 }
 
-.dashboard .navbar-toggler-bar + .navbar-toggler-bar {
-    margin-top: 7px;
+.dashboard .navbar-toggler-bar+.navbar-toggler-bar {
+    margin-top: 5px;
 }
 
 .dashboard .bar1,
@@ -193,7 +191,7 @@
     animation-fill-mode: forwards;
 }
 
-.dashboard .nav-opened .bar1 {
+.nav-opened .bar1 {
     top: 6px;
     -webkit-animation: topbar-x 500ms linear 0s;
     -moz-animation: topbar-x 500ms linear 0s;
@@ -203,11 +201,11 @@
     animation-fill-mode: forwards;
 }
 
-.dashboard .nav-opened .bar2 {
+.nav-opened .bar2 {
     opacity: 0;
 }
 
-.dashboard .nav-opened .bar3 {
+.nav-opened .bar3 {
     bottom: 6px;
     -webkit-animation: bottombar-x 500ms linear 0s;
     -moz-animation: bottombar-x 500ms linear 0s;
@@ -353,13 +351,12 @@
     animation: rotation 0.8s linear infinite;
 }
 
-.dashboard .content {
+.dashboard div[data-page="true"] {
     position: relative;
     top: 0;
     left: 0;
     -webkit-transition: 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     transition: 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
-    overflow: hidden;
 }
 
 .dashboard .main {
@@ -443,11 +440,15 @@
     text-align: center;
 }
 
-.dashboard .card-data > tr {
+.dashboard .card-data>tr {
     height: 140px;
 }
 
-.dashboard .card-data > tr > td {
+#monitors-page {
+    min-height: calc(100vh - 59px);
+}
+
+.dashboard .card-data>tr>td {
     border-color: rgba(34, 42, 66, 0.2);
     padding: 12px 7px;
     vertical-align: middle;
@@ -455,7 +456,7 @@
     border-top: 0.0625rem solid #e3e3e3;
 }
 
-.dashboard .card-data > tr > td > img {
+.dashboard .card-data>tr>td>img {
     max-width: 100%;
     width: 140px;
     min-width: 140px;
@@ -465,7 +466,7 @@
     border-radius: 0;
 }
 
-.dashboard .card-data > tr > td > .name {
+.dashboard .card-data>tr>td>.name {
     text-align: left;
     margin: auto;
     max-width: 300px;
@@ -473,11 +474,11 @@
     font-size: 14px;
 }
 
-.dashboard .card-data > tr > td > .trand > .chart-area {
+.dashboard .card-data>tr>td>.trand>.chart-area {
     position: relative;
 }
 
-.dashboard .card-data > tr > td.m-btns {
+.dashboard .card-data>tr>td.m-btns {
     margin-top: 10px;
     vertical-align: top;
 }
@@ -488,19 +489,17 @@
 
 .dashboard .view-btn:hover {
     box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-    top:-1px;
+    top: -1px;
 }
 
 .dashboard .view-btn {
     position: relative;
     font-weight: 600;
     background: #00f;
-    background-image: -webkit-linear-gradient(
-        to bottom left,
-        #00f,
-        #0000a0,
-        #00f
-    );
+    background-image: -webkit-linear-gradient(to bottom left,
+            #00f,
+            #0000a0,
+            #00f);
     background-image: -webkit-linear-gradient(top right, #00f, #0000a0, #00f);
     background-image: linear-gradient(to bottom left, #00f, #0000a0, #00f);
     background-size: 210% 210%;
@@ -564,7 +563,7 @@
         top: 25px;
     }
 
-    .dashboard .user-opened .navbar-wrapper {
+    .user-opened .navbar-wrapper {
         top: 0px;
     }
 
@@ -597,11 +596,24 @@
         display: block;
     }
 
-    .dashboard body.nav-opened .content {
+    #dashboard-footer,
+    #dashboard-header {
+        width: 100%;
+        left: 0px;
+        position: absolute;
+        transition: 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    }
+
+    body.nav-opened #dashboard-footer,
+    body.nav-opened #dashboard-header {
         left: 260px;
     }
 
-    .dashboard body.nav-opened .sidebar {
+    body.nav-opened div[data-page="true"] {
+        left: 260px;
+    }
+
+    body.nav-opened .sidebar {
         left: 260px;
     }
 
@@ -688,12 +700,10 @@
     cursor: pointer;
     border: none;
     border-width: 2px;
-    background-image: linear-gradient(
-        to bottom left,
-        #344675,
-        #263148,
-        #344675
-    );
+    background-image: linear-gradient(to bottom left,
+            #344675,
+            #263148,
+            #344675);
     background-size: 210% 210%;
     background-position: top right;
     background-color: #344675;
@@ -777,26 +787,20 @@
     cursor: pointer;
     padding: 0 16px;
     background: #1f8ef1;
-    background-image: -webkit-linear-gradient(
-        to bottom left,
-        #1f8ef1,
-        #00f,
-        #1f8ef1
-    );
-    background-image: -webkit-gradient(
-        linear,
-        right top,
-        left bottom,
-        from(#1f8ef1),
-        color-stop(#00f),
-        to(#1f8ef1)
-    );
-    background-image: -webkit-linear-gradient(
-        top right,
-        #1f8ef1,
-        #00f,
-        #1f8ef1
-    );
+    background-image: -webkit-linear-gradient(to bottom left,
+            #1f8ef1,
+            #00f,
+            #1f8ef1);
+    background-image: -webkit-gradient(linear,
+            right top,
+            left bottom,
+            from(#1f8ef1),
+            color-stop(#00f),
+            to(#1f8ef1));
+    background-image: -webkit-linear-gradient(top right,
+            #1f8ef1,
+            #00f,
+            #1f8ef1);
     background-image: linear-gradient(to bottom left, #1f8ef1, #00f, #1f8ef1);
     background-size: 210% 210%;
     background-position: top right;
@@ -849,6 +853,7 @@
 }
 
 @media screen and (max-width: 773px) {
+
     .dashboard .card-details,
     .dashboard .form-col {
         width: 100%;

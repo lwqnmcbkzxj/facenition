@@ -53,9 +53,10 @@ function bindRegister() {
                 "REGISTER",
                 { email: e, password: p, plan: "FREELANCER" },
                 function(result) {
-                    console.log(result);
+                    loadPage("/login")
                     if (!result.success) {
                         alertify.error(result.msg);
+
                         return;
                     } else {
                         alertify.success("Please check your email");

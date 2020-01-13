@@ -25,453 +25,687 @@ if ($action == "default_action") {
 
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Facenition</title>
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link
+            href="https://use.fontawesome.com/releases/v5.0.6/css/all.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"
+        />
+        <link rel="stylesheet" href="/assets/css/general.css" />
+        <link rel="stylesheet" href="/assets/css/landing.css" />
+        <link rel="stylesheet" href="/assets/css/dashboard.css" />
+        <link rel="stylesheet" href="/assets/css/general.css" />
+        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+        <script
+            type="text/javascript"
+            src="/assets/js/chart.bundle.min.js"
+        ></script>
+        <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+        <script
+            type="text/javascript"
+            src="/assets/js/jquery.formance.min.js"
+        ></script>
+        <script type="text/javascript" src="/assets/js/service.js"></script>
+        <script type="text/javascript" src="/assets/js/main.js"></script>
+        <script type="text/javascript" src="/assets/js/header.js"></script>
+        <script
+            type="text/javascript"
+            src="/assets/js/dashboard-header.js"
+        ></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Facenition</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
-    <link rel="stylesheet" href="/assets/css/general.css" />
-    <link rel="stylesheet" href="/assets/css/landing.css" />
-    <link rel="stylesheet" href="/assets/css/dashboard.css" />
-    <link rel="stylesheet" href="/assets/css/general.css" />
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-    <script type="text/javascript" src="/assets/js/chart.bundle.min.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery.formance.min.js"></script>
-    <script type="text/javascript" src="/assets/js/service.js"></script>
-    <script type="text/javascript" src="/assets/js/main.js"></script>
-    <script type="text/javascript" src="/assets/js/header.js"></script>
-    <script type="text/javascript" src="/assets/js/dashboard-header.js"></script>
-</head>
-
-<body>
-    <div class="landing">
-        <div id="header" data-header="true">
-            <div class="navbar navbar-landing">
-                <div class="burger">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <a href="login" data-link="ajax" class="logo">
-                    <img src="/assets/img/logo-name.png" alt="Logo img" />
-                </a>
-                <div class="nav">
-                    <div class="nav__links">
-                        <a class="nav__link" href="https://www.facenition.com/" target="_blank">Home</a>
-                        <a class="nav__link" href="https://www.facenition.com/#strategy" target="_blank">How it
-                            Works</a>
-                        <a class="nav__link" href="https://www.facenition.com/#pricing" target="_blank">Pricing</a>
-                        <a class="nav__link" href="https://www.facenition.com/#about-us" target="_blank">About us</a>
-                        <a class="nav__link" href="https://blog.billboardapps.com/" target="_blank">Blog</a>
+    <body>
+        <div class="landing">
+            <div id="header" data-header="true">
+                <div class="navbar navbar-landing">
+                    <div class="burger">
+                        <i class="fas fa-bars"></i>
                     </div>
-                    <div class="nav__items"></div>
-                </div>
-            </div>
-
-            <div class="b-overlay"></div>
-            <div class="b-menu">
-                <div class="b-menu-close">
-                    <i class="fas fa-times"></i>
-                </div>
-                <a href="login" data-link="ajax" class="b-logo">
-                    <img src="/assets/img/logo-name.png" alt="Logo img" />
-                </a>
-                <div class="b-nav__links">
-                    <a class="nav__link" data-link="ajax" href="login">Login</a>
-                    <a class="nav__link" data-link="ajax" href="register">Register</a>
-                    <a class="nav__link" href="https://www.facenition.com/#strategy" target="_blank">How it Works</a>
-                    <a class="nav__link" href="https://www.facenition.com/#pricing" target="_blank">Pricing</a>
-                    <a class="nav__link" href="https://www.facenition.com/#about-us" target="_blank">About us</a>
-                    <a class="nav__link" href="https://blog.billboardapps.com/" target="_blank">Blog</a>
-                </div>
-            </div>
-        </div>
-        <div id="login-page" data-page="true">
-            <div class="main container">
-                <div class="content-wrapper">
-                    <div class="content-title">
-                        Sign In
-                    </div>
-                    <input class="input input-landing" placeholder="Email" type="email" name="email" /><input
-                        class="input input-landing" placeholder="Password" type="password" name="password" /><button
-                        class="button button-login" id="login">
-                        Login
-                    </button>
-                    <div class="content-link">
-                        <a href="forgot-password" data-link="ajax" class="content-link-item">Forgot password?</a>
-                    </div>
-                    <div class="content-divide">
-                        <hr class="content-divider" />
-                        <div class="content-divide-text">or</div>
-                        <hr class="content-divider" />
-                    </div>
-                    <a color="black" class="button button-footer button-reg" href="register" data-link="ajax">
-                        Register
+                    <a href="login" data-link="ajax" class="logo">
+                        <img src="/assets/img/logo-name.png" alt="Logo img" />
                     </a>
-                </div>
-            </div>
-        </div>
-        <div id="register-page" data-page="true">
-            <div class="main container">
-                <div class="content-wrapper">
-                    <div class="content-title">
-                        Register
-                    </div>
-                    <input class="input input-landing" placeholder="Email" type="email" name="email" />
-                    <div class="content-error"></div>
-                    <input class="input input-landing" placeholder="Password" type="password" name="password" />
-                    <div class="content-error"></div>
-                    <input class="input input-landing" placeholder="Confirm Password" type="password" name="confirm" />
-                    <div class="content-error"></div>
-                    <button class="button button-footer button-registration" id="register">
-                        Register
-                    </button>
-                    <div class="content-link">
-                        <a href="login" data-link="ajax" class="content-link-item">Have and account?</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="forgot-password-page" data-page="true">
-            <div class="main container forgot-password">
-                <div class="content-wrapper">
-                    <div class="content-title">
-                        Forgot password
-                    </div>
-                    <input class="input input-landing" placeholder="Email" type="email" name="email" />
-                    <button class="button button-footer button-registration" id="reset">
-                        Reset password
-                    </button>
-                    <div class="content-link">
-                        <a href="login" data-link="ajax" class="content-link-item">Remember your password</a>
+                    <div class="nav">
+                        <div class="nav__links">
+                            <a
+                                class="nav__link"
+                                href="https://www.facenition.com/"
+                                target="_blank"
+                                >Home</a
+                            >
+                            <a
+                                class="nav__link"
+                                href="https://www.facenition.com/#strategy"
+                                target="_blank"
+                                >How it Works</a
+                            >
+                            <a
+                                class="nav__link"
+                                href="https://www.facenition.com/#pricing"
+                                target="_blank"
+                                >Pricing</a
+                            >
+                            <a
+                                class="nav__link"
+                                href="https://www.facenition.com/#about-us"
+                                target="_blank"
+                                >About us</a
+                            >
+                            <a
+                                class="nav__link"
+                                href="https://blog.billboardapps.com/"
+                                target="_blank"
+                                >Blog</a
+                            >
+                        </div>
+                        <div class="nav__items"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="password-reset-page" data-page="true">
-            <div class="main container">
-                <div class="content-wrapper">
-                    <div class="content-title">
-                        Reset password
+
+                <div class="b-overlay"></div>
+                <div class="b-menu">
+                    <div class="b-menu-close">
+                        <i class="fas fa-times"></i>
                     </div>
-                    <input class="input input-landing" placeholder="Password" type="password" name="password" />
-                    <input class="input input-landing" placeholder="Confirm Password" type="password" name="confirm" />
-                    <button class="button button-footer button-registration" id="reset">
-                        Reset Password
-                    </button>
-                    <div class="content-link">
-                        <a href="login" data-link="ajax" class="content-link-item">Remember your password?</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="verify-email-page" data-page="true">
-            <div class="main container">
-                <div class="content-wrapper">
-                    <div class="content-title">
-                        Sign In
-                    </div>
-                    <input class="input input-landing" placeholder="Email" type="email" name="email" /><input
-                        class="input input-landing" placeholder="Password" type="password" name="password" /><button
-                        class="button button-login" id="login">
-                        Login
-                    </button>
-                    <div class="content-link">
-                        <a href="forgot-password" data-link="ajax" class="content-link-item">Forgot password?</a>
-                    </div>
-                    <div class="content-divide">
-                        <hr class="content-divider" />
-                        <div class="content-divide-text">or</div>
-                        <hr class="content-divider" />
-                    </div>
-                    <a color="black" class="button button-footer button-reg" href="register" data-link="ajax">
-                        Register
+                    <a href="login" data-link="ajax" class="b-logo">
+                        <img src="/assets/img/logo-name.png" alt="Logo img" />
                     </a>
+                    <div class="b-nav__links">
+                        <a class="nav__link" data-link="ajax" href="login"
+                            >Login</a
+                        >
+                        <a class="nav__link" data-link="ajax" href="register"
+                            >Register</a
+                        >
+                        <a
+                            class="nav__link"
+                            href="https://www.facenition.com/#strategy"
+                            target="_blank"
+                            >How it Works</a
+                        >
+                        <a
+                            class="nav__link"
+                            href="https://www.facenition.com/#pricing"
+                            target="_blank"
+                            >Pricing</a
+                        >
+                        <a
+                            class="nav__link"
+                            href="https://www.facenition.com/#about-us"
+                            target="_blank"
+                            >About us</a
+                        >
+                        <a
+                            class="nav__link"
+                            href="https://blog.billboardapps.com/"
+                            target="_blank"
+                            >Blog</a
+                        >
+                    </div>
+                </div>
+            </div>
+            <div id="login-page" data-page="true">
+                <div class="main container">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            Sign In
+                        </div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Email"
+                            type="email"
+                            name="email"
+                        /><input
+                            class="input input-landing"
+                            placeholder="Password"
+                            type="password"
+                            name="password"
+                        /><button class="button button-login" id="login">
+                            Login
+                        </button>
+                        <div class="content-link">
+                            <a
+                                href="forgot-password"
+                                data-link="ajax"
+                                class="content-link-item"
+                                >Forgot password?</a
+                            >
+                        </div>
+                        <div class="content-divide">
+                            <hr class="content-divider" />
+                            <div class="content-divide-text">or</div>
+                            <hr class="content-divider" />
+                        </div>
+                        <a
+                            color="black"
+                            class="button button-footer button-reg"
+                            href="register"
+                            data-link="ajax"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="register-page" data-page="true">
+                <div class="main container">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            Register
+                        </div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Email"
+                            type="email"
+                            name="email"
+                        />
+                        <div class="content-error"></div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Password"
+                            type="password"
+                            name="password"
+                        />
+                        <div class="content-error"></div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Confirm Password"
+                            type="password"
+                            name="confirm"
+                        />
+                        <div class="content-error"></div>
+                        <button
+                            class="button button-footer button-registration"
+                            id="register"
+                        >
+                            Register
+                        </button>
+                        <div class="content-link">
+                            <a
+                                href="login"
+                                data-link="ajax"
+                                class="content-link-item"
+                                >Have and account?</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="forgot-password-page" data-page="true">
+                <div class="main container forgot-password">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            Forgot password
+                        </div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Email"
+                            type="email"
+                            name="email"
+                        />
+                        <button
+                            class="button button-footer button-registration"
+                            id="reset"
+                        >
+                            Reset password
+                        </button>
+                        <div class="content-link">
+                            <a
+                                href="login"
+                                data-link="ajax"
+                                class="content-link-item"
+                                >Remember your password</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="password-reset-page" data-page="true">
+                <div class="main container">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            Reset password
+                        </div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Password"
+                            type="password"
+                            name="password"
+                        />
+                        <input
+                            class="input input-landing"
+                            placeholder="Confirm Password"
+                            type="password"
+                            name="confirm"
+                        />
+                        <button
+                            class="button button-footer button-registration"
+                            id="reset"
+                        >
+                            Reset Password
+                        </button>
+                        <div class="content-link">
+                            <a
+                                href="login"
+                                data-link="ajax"
+                                class="content-link-item"
+                                >Remember your password?</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="verify-email-page" data-page="true">
+                <div class="main container">
+                    <div class="content-wrapper">
+                        <div class="content-title">
+                            Sign In
+                        </div>
+                        <input
+                            class="input input-landing"
+                            placeholder="Email"
+                            type="email"
+                            name="email"
+                        /><input
+                            class="input input-landing"
+                            placeholder="Password"
+                            type="password"
+                            name="password"
+                        /><button class="button button-login" id="login">
+                            Login
+                        </button>
+                        <div class="content-link">
+                            <a
+                                href="forgot-password"
+                                data-link="ajax"
+                                class="content-link-item"
+                                >Forgot password?</a
+                            >
+                        </div>
+                        <div class="content-divide">
+                            <hr class="content-divider" />
+                            <div class="content-divide-text">or</div>
+                            <hr class="content-divider" />
+                        </div>
+                        <a
+                            color="black"
+                            class="button button-footer button-reg"
+                            href="register"
+                            data-link="ajax"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="footer" data-footer="true">
+                <div class="promo">
+                    <div class="promo-wrapper">
+                        Increase your Business Impact
+                    </div>
+                </div>
+                <div class="footer footer-landing">
+                    <div class="footer-wrapper">
+                        <div class="footer-col footer-col-20">
+                            <h2
+                                font-size="20px,13px"
+                                font-weight="bold"
+                                class="footer-hd"
+                            >
+                                Contact Us
+                            </h2>
+                            <div class="footer-td">
+                                +64 22 465 338 7
+                            </div>
+                            <div class="footer-td">
+                                infonz@facenition.com
+                            </div>
+                        </div>
+                        <div class="footer-col footer-col-20">
+                            <h2 class="footer-hd">
+                                Customer Service
+                            </h2>
+                            <a href="https://facenition.com/" class="footer-td"
+                                >Home</a
+                            ><a href="login" data-link="ajax" class="footer-td"
+                                >Login</a
+                            ><a
+                                href="register"
+                                data-link="ajax"
+                                class="footer-td"
+                                >Register</a
+                            ><a
+                                href="https://www.facenition.com/#strategy"
+                                class="footer-td"
+                                >How Facenition Works</a
+                            ><a
+                                href="https://www.facenition.com/#pricing"
+                                class="footer-td"
+                                >Pricing</a
+                            ><a
+                                href="https://www.facenition.com/#about-us"
+                                class="footer-td"
+                                >About us</a
+                            ><a
+                                href="https://blog.billboardapps.com/"
+                                class="footer-td"
+                                >Contact Us</a
+                            >
+                        </div>
+                        <div class="footer-col footer-col-20">
+                            <h2 class="footer-hd">
+                                Information
+                            </h2>
+                            <a
+                                href="https://facenition.com/privacy"
+                                class="footer-td"
+                                >Privacy Policy</a
+                            ><a
+                                href="https://facenition.com/terms"
+                                class="footer-td"
+                                >Terms &amp; Conditions</a
+                            >
+                        </div>
+                        <div class="footer-col footer-col-40">
+                            <h2 class="footer-hd">
+                                Stay up to date with Facenition
+                            </h2>
+                            <div class="footer-td">
+                                Stay up to date with the latest news and updates
+                                from us here at Facenition
+                            </div>
+                            <input
+                                class="input input-landing input-footer"
+                                placeholder="Enter email"
+                                name="mailing-email"
+                                type="email"
+                                value=""
+                            /><button
+                                color="black"
+                                class="button button-footer"
+                            >
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="copy-wrapper">
+                    © Facenition 2019
                 </div>
             </div>
         </div>
-        <div id="footer" data-footer="true">
-            <div class="promo">
-                <div class="promo-wrapper">
-                    Increase your Business Impact
+        <div class="dashboard">
+            <div id="dashboard-header" data-header="true">
+                <div class="sidebar">
+                    <div class="sidebar-wrapper">
+                        <div class="logo-wrapper">
+                            <a class="logo" href="/login" data-link="ajax">
+                                <img src="/assets/img/primary-logo.png" />
+                            </a>
+                        </div>
+                        <div class="navbar-item">
+                            <a
+                                class="navbar-item-wrapper"
+                                href="/dashboard/monitors"
+                                data-link="ajax"
+                            >
+                                <i class="tim-icons icon-camera-18"></i>
+                                <p>
+                                    Monitors
+                                </p>
+                            </a>
+                        </div>
+                        <div class="navbar-item">
+                            <a
+                                class="navbar-item-wrapper"
+                                href="/dashboard/analytics"
+                                data-link="ajax"
+                            >
+                                <i class="tim-icons icon-chart-pie-36"></i>
+                                <p>
+                                    Analytics
+                                </p>
+                            </a>
+                        </div>
+                        <div class="navbar-item">
+                            <a
+                                class="navbar-item-wrapper"
+                                href="/dashboard/settings"
+                                data-link="ajax"
+                            >
+                                <i class="tim-icons icon-settings"></i>
+                                <p>
+                                    Settings
+                                </p>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="footer footer-landing">
-                <div class="footer-wrapper">
-                    <div class="footer-col footer-col-20">
-                        <h2 font-size="20px,13px" font-weight="bold" class="footer-hd">
-                            Contact Us
-                        </h2>
-                        <div class="footer-td">
-                            +64 22 465 338 7
-                        </div>
-                        <div class="footer-td">
-                            infonz@facenition.com
-                        </div>
-                    </div>
-                    <div class="footer-col footer-col-20">
-                        <h2 class="footer-hd">
-                            Customer Service
-                        </h2>
-                        <a href="https://facenition.com/" class="footer-td">Home</a><a href="login" data-link="ajax"
-                            class="footer-td">Login</a><a href="register" data-link="ajax"
-                            class="footer-td">Register</a><a href="https://www.facenition.com/#strategy"
-                            class="footer-td">How Facenition Works</a><a href="https://www.facenition.com/#pricing"
-                            class="footer-td">Pricing</a><a href="https://www.facenition.com/#about-us"
-                            class="footer-td">About us</a><a href="https://blog.billboardapps.com/"
-                            class="footer-td">Contact Us</a>
-                    </div>
-                    <div class="footer-col footer-col-20">
-                        <h2 class="footer-hd">
-                            Information
-                        </h2>
-                        <a href="https://facenition.com/privacy" class="footer-td">Privacy Policy</a><a
-                            href="https://facenition.com/terms" class="footer-td">Terms &amp; Conditions</a>
-                    </div>
-                    <div class="footer-col footer-col-40">
-                        <h2 class="footer-hd">
-                            Stay up to date with Facenition
-                        </h2>
-                        <div class="footer-td">
-                            Stay up to date with the latest news and updates
-                            from us here at Facenition
-                        </div>
-                        <input class="input input-landing input-footer" placeholder="Enter email" name="mailing-email"
-                            type="email" value="" /><button color="black" class="button button-footer">
-                            Send
+
+                <div class="navbar">
+                    <div class="navbar-toggle">
+                        <button class="navbar-toggler" type="button">
+                            <span class="navbar-toggler-bar bar1"></span
+                            ><span class="navbar-toggler-bar bar2"></span
+                            ><span class="navbar-toggler-bar bar3"></span>
                         </button>
                     </div>
-                </div>
-            </div>
-            <div class="copy-wrapper">
-                © Facenition 2019
-            </div>
-        </div>
-    </div>
-    <div class="dashboard">
-        <div id="dashboard-header" data-header="true">
-            <div class="sidebar">
-                <div class="sidebar-wrapper">
-                    <div class="logo-wrapper">
-                        <a class="logo" href="/login" data-link="ajax">
-                            <img src="/assets/img/primary-logo.png" />
-                        </a>
-                    </div>
-                    <div class="navbar-item">
-                        <a class="navbar-item-wrapper" href="/dashboard/monitors" data-link="ajax">
-                            <i class="tim-icons icon-camera-18"></i>
-                            <p>
-                                Monitors
-                            </p>
-                        </a>
-                    </div>
-                    <div class="navbar-item">
-                        <a class="navbar-item-wrapper" href="/dashboard/analytics" data-link="ajax">
-                            <i class="tim-icons icon-chart-pie-36"></i>
-                            <p>
-                                Analytics
-                            </p>
-                        </a>
-                    </div>
-                    <div class="navbar-item">
-                        <a class="navbar-item-wrapper" href="/dashboard/settings" data-link="ajax">
-                            <i class="tim-icons icon-settings"></i>
-                            <p>
-                                Settings
-                            </p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="navbar">
-                <div class="navbar-toggle">
-                    <button class="navbar-toggler" type="button">
-                        <span class="navbar-toggler-bar bar1"></span><span class="navbar-toggler-bar bar2"></span><span
-                            class="navbar-toggler-bar bar3"></span>
+                    <button class="nav-toggler" id="navigation" type="button">
+                        <span class="navbar-toggler-bar navbar-kebab"></span
+                        ><span class="navbar-toggler-bar navbar-kebab"></span
+                        ><span class="navbar-toggler-bar navbar-kebab"></span>
                     </button>
-                </div>
-                <button class="nav-toggler" id="navigation" type="button">
-                    <span class="navbar-toggler-bar navbar-kebab"></span><span
-                        class="navbar-toggler-bar navbar-kebab"></span><span
-                        class="navbar-toggler-bar navbar-kebab"></span>
-                </button>
-                <div class="navbar-wrapper">
-                    <div class="user">
-                        <i class="far fa-user"></i>
-                        <p class="user-logout">LOG OUT</p>
-                        <b class="trig" style="color: rgb(68, 68, 68);"></b>
-                        <ul class="dropmenu">
-                            <li class="drop__items">
-                                <a class="link-user" href="#" id="logout">Log out</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="monitors-page" data-page="true">
-            <div class="main">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-cathegory">
-                            Active/Inactive Monitors
-                        </div>
-                        <div class="monitors-title">Monitors</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table-mon">
-                                <thead class="text-primary">
-                                    <tr>
-                                        <th>Preview</th>
-                                        <th>Name</th>
-                                        <th>Trend</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="card-data"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="settings-page" data-page="true">
-            <div class="main">
-                <div class="card-wrappers">
-                    <div class="card card-details">
-                        <div class="card-header">
-                            <div class="card-cathegory">
-                                Settings & Details
-                            </div>
-                            <div class="card-title">Facenition Details</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-subtitle">Billing</div>
-                            <hr />
-                            <form>
-                                <div class="form-group">
-                                    <label for="billing-email">
-                                        Billing email address</label
+                    <div class="navbar-wrapper">
+                        <div class="user">
+                            <i class="far fa-user"></i>
+                            <p class="user-logout">LOG OUT</p>
+                            <b class="trig" style="color: rgb(68, 68, 68);"></b>
+                            <ul class="dropmenu">
+                                <li class="drop__items">
+                                    <a class="link-user" href="#" id="logout"
+                                        >Log out</a
                                     >
-                                    <input
-                                        type="email"
-                                        disabled
-                                        id="billing-email"
-                                        type="email"
-                                        class="form-control"
-                                    />
-                                </div>
-                                <div class="form-card">
-                                    <div class="form-group form-col">
-                                        <label for="billing-card-details">
-                                            Credit card details</label
-                                        >
-                                        <input
-                                            type="text"
-                                            disabled
-                                            class="form-control"
-                                            id="billing-card-details"
-                                            value="No card set"
-                                        />
-                                    </div>
-                                    <div class="form-group form-col-2">
-                                        <label for="billing-last-name"
-                                            >Update card details</label
-                                        >
-                                        <button
-                                            class="btn-secondary"
-                                            id="upd-card"
-                                        >
-                                            Update
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="card-footer"></div>
                     </div>
-                    <div class="card card-user">
+                </div>
+            </div>
+            <div id="monitors-page" data-page="true">
+                <div class="main">
+                    <div class="card">
                         <div class="card-header">
                             <div class="card-cathegory">
-                                User Settings & Options
+                                Active/Inactive Monitors
                             </div>
-                            <div class="card-title">User Details</div>
+                            <div class="monitors-title">Monitors</div>
                         </div>
                         <div class="card-body">
-                            <form>
-                                <div class="form-group">
-                                    <label>
-                                        User email
+                            <div class="table-responsive">
+                                <table class="table-mon">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>Preview</th>
+                                            <th>Name</th>
+                                            <th>Trend</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="card-data"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-page" data-page="true">
+                <div class="main">
+                    <div class="card-wrappers">
+                        <div class="card card-details">
+                            <div class="card-header">
+                                <div class="card-cathegory">
+                                    Settings & Details
+                                </div>
+                                <div class="card-title">Facenition Details</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-subtitle">Billing</div>
+                                <hr />
+                                <form>
+                                    <div class="form-group">
+                                        <label for="billing-email">
+                                            Billing email address</label
+                                        >
                                         <input
                                             type="email"
                                             disabled
-                                            id="email"
+                                            id="billing-email"
+                                            type="email"
                                             class="form-control"
                                         />
-                                    </label>
+                                    </div>
+                                    <div class="form-card">
+                                        <div class="form-group form-col">
+                                            <label for="billing-card-details">
+                                                Credit card details</label
+                                            >
+                                            <input
+                                                type="text"
+                                                disabled
+                                                class="form-control"
+                                                id="billing-card-details"
+                                                value="No card set"
+                                            />
+                                        </div>
+                                        <div class="form-group form-col-2">
+                                            <label for="billing-last-name"
+                                                >Update card details</label
+                                            >
+                                            <button
+                                                class="btn-secondary"
+                                                id="upd-card"
+                                            >
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-footer"></div>
+                        </div>
+                        <div class="card card-user">
+                            <div class="card-header">
+                                <div class="card-cathegory">
+                                    User Settings & Options
                                 </div>
-                                <div class="form-group">
-                                    <label>
-                                        Reset password
-                                    </label>
-                                    <button
-                                        class="btn-secondary"
-                                        id="reset-pwd"
-                                    >
-                                        Reset
-                                    </button>
-                                </div>
-                            </form>
+                                <div class="card-title">User Details</div>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label>
+                                            User email
+                                            <input
+                                                type="email"
+                                                disabled
+                                                id="email"
+                                                class="form-control"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            Reset password
+                                        </label>
+                                        <button
+                                            class="btn-secondary"
+                                            id="reset-pwd"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal">
+                        <div class="modal-wrapper">
+                            <div class="modal-header">
+                                <div class="modal-title"></div>
+                                <div class="modal-close"><span>×</span></div>
+                            </div>
+                            <div class="modal-body"></div>
+                            <div class="modal-footer"></div>
                         </div>
                     </div>
                 </div>
-                <div class="modal">
-                    <div class="modal-wrapper">
-                        <div class="modal-header">
-                            <div class="modal-title"></div>
-                            <div class="modal-close"><span>×</span></div>
-                        </div>
-                        <div class="modal-body"></div>
-                        <div class="modal-footer"></div>
-                    </div>
-                </div>
             </div>
-        </div>
-        <div id="dashboard-footer" data-footer="true">
-            <div class="footer">
-                <ul class="footer-nav">
-                    <li class="nav-item">
-                        <a href="https://www.facenition.com/#about" class="nav-link">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://www.facenition.com/#strategy" class="nav-link">How Facenition Works</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://www.facenition.com" class="nav-link">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://www.facenition.com" class="nav-link">Terms &amp; Conditions</a>
-                    </li>
-                </ul>
-                <div class="copyright">
-                    © 2020
-                    <a href="https://www.facenition.com" rel="noopener noreferrer" target="_blank">Facenition</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="/assets/js/login.js"></script>
-    <script src="/assets/js/register.js"></script>
-    <script src="/assets/js/forgot-password.js"></script>
-    <script src="/assets/js/password-reset.js"></script>
-    <script src="/assets/js/verify-email.js"></script>
-    <script src="/assets/js/monitors.js"></script>
-    <script src="/assets/js/settings.js"></script>
-</body>
 
+            <div id="view-page" data-page="true">
+                <div class="main">View Page</div>
+            </div>
+            <div id="analytics-page" data-page="true">
+                <div class="main">Analytics Page</div>
+            </div>
+            <div id="dashboard-footer" data-footer="true">
+                <div class="footer">
+                    <ul class="footer-nav">
+                        <li class="nav-item">
+                            <a
+                                href="https://www.facenition.com/#about"
+                                class="nav-link"
+                                >About</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                href="https://www.facenition.com/#strategy"
+                                class="nav-link"
+                                >How Facenition Works</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                href="https://www.facenition.com"
+                                class="nav-link"
+                                >Privacy</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                href="https://www.facenition.com"
+                                class="nav-link"
+                                >Terms &amp; Conditions</a
+                            >
+                        </li>
+                    </ul>
+                    <div class="copyright">
+                        © 2020
+                        <a
+                            href="https://www.facenition.com"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            >Facenition</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/assets/js/login.js"></script>
+        <script src="/assets/js/register.js"></script>
+        <script src="/assets/js/forgot-password.js"></script>
+        <script src="/assets/js/password-reset.js"></script>
+        <script src="/assets/js/verify-email.js"></script>
+        <script src="/assets/js/monitors.js"></script>
+        <script src="/assets/js/settings.js"></script>
+        <script src="/assets/js/monitors-view.js"></script>
+        <script src="/assets/js/analytics.js"></script>
+    </body>
 </html>

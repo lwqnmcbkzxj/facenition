@@ -69,9 +69,9 @@ function MonitorsInit() {
                         "<div class='chart-area'></div>" +
                         "</td>" +
                         "<td class='m-btns'>" +
-                        "<a href='dashboard/monitors/view-" +
+                        "<a href='/dashboard/monitors/view' id='view-b-i' data-monitor-token='" +
                         e.id +
-                        "' id='view-b-i' class='view-btn'>View</a>" +
+                        "' class='view-btn'>View</a>" +
                         "</td>" +
                         "</tr>"
                 );
@@ -86,6 +86,14 @@ function MonitorsInit() {
         .valueOf();
     var end = moment().valueOf();
     function renderChart(index) {
+        var viewBtn = $("#monitors-page #mon-" + index + " #view-b-i");
+        viewBtn.click(function(e) {
+            e.preventDefault();
+            var week = new Date();
+            week.setDate(week.getDate() + 7);
+            setCookie("view_token", $(this).data("monitor-token"), week);
+            loadPage("/dashboard/monitors/view")
+        });
         var body = $("#monitors-page #mon-" + index + " .trand .chart-area");
         var preview = $("#monitors-page #mon-" + index + " #preview-" + index);
         body.append("<div class='l-w'>" + loader + "</div>");
@@ -281,7 +289,7 @@ function MonitorsInit() {
                         borderWidth: 2,
                         borderDash: [],
                         borderDashOffset: 0.0,
-                        pointBackgroundColor: "#f11f92",
+                        pointBackgroundColor: "#f11f92",                        
                         pointBorderColor: "rgba(255,255,255,0)",
                         pointHoverBackgroundColor: "#f11f92",
                         pointBorderWidth: 20,

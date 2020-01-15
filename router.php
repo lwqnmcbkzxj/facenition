@@ -1,7 +1,7 @@
 <?php
 require_once("include.php");
 require_once("actions.php");
-require_once("stripe_fun.php");
+// require_once("stripe_fun.php");
 $route = $_SERVER['REQUEST_URI'];
 $route = preg_replace('/\?.*/', '', $route);
 $route = rtrim($route, '/\\');

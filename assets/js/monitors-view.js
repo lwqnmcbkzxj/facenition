@@ -53,20 +53,104 @@ function MonitorsViewInit() {
             showSegments(monitor.id);
 
 
-            var toggleMonitor = $('#view-page .switch input');
-            toggleMonitor.click(function (e) {
+            var toggleMonitorBtn = $('#view-page .switch input');
+            toggleMonitorBtn.click(function (e) {
                 monitorToggle(e.target.dataset.id)
             });
-            var addSegment = $('#view-page .add-segment');
-            addSegment.click(function () {
+            var addSegmentBtn = $('#view-page .add-segment');
+            addSegmentBtn.click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
                 showModal();
+
             });
         });
     })();
 }
 
+function showModal() {
+    var modal = $("#view-page .modal");
+    var title = $("#view-page .modal .modal-title");
+    var content = $("#view-page .modal .modal-body");
+    var footer = $("#view-page .modal .modal-footer");
+
+
+
+    title.html("Create segment");
+    content.html(
+        '<form class=""> <div class="position-relative form-group"><label for="segment_name" class="">Name</label><input id="segment_name" name="segment_name" type="text" class="form-control"value=""> </div><div class="position-relative form-group"><label for="segment_start" class="">Start date</label><input id="segment_start" name="segment_start" max="2020-01-14" type="date" class="form-control" value="2020-01-14"> </div><div class="position-relative form-group"><label for="segment_end" class="">End date</label><input id="segment_end"name="segment_end" min="2020-01-14" type="date" class="form-control"value="2020-01-14"></div></form>'
+    );
+    footer.html(
+        '<button class="btn-secondary btn-cancel">Cancel</button>' +
+        '<button class="btn-primary btn-sumbit" id="update-card">Create segment</button>'
+    );
+
+    var segmentName = $("#view-page #segment_name");
+    var segmentStart = $("#view-page #segment_start");
+    var segmentEnd = $("#view-page #segment_end");
+    var id = getCookie("view_token");
+
+    segmentStart.formance("format_dd_mm_yyyy");
+    segmentEnd.formance("format_dd_mm_yyyy");
+
+
+    var cancel = $("#view-page .modal .btn-cancel");
+    cancel.click(function (e) {
+        e.stopPropagation();
+        modal.fadeOut();
+    });
+    var createSegment = $("#view-page .modal .btn-sumbit");
+    createSegment.click(function (e) {
+        e.stopPropagation();
+        $.when(
+            $.ajax(request("CREATE_MONITOR_SEGMENT", {
+                params: id,
+                name: segmentName.val(),
+                start: dateToTimestamp(segmentStart.val()),
+                end: dateToTimestamp(segmentEnd.val())
+            }, function (r1) { }, true)),
+
+        ).done(function (r1) {
+            console.log(r1);
+            if (!r1.success) {
+                alertify.error("Failed to create segment");
+                return;
+            } else {
+                alertify.success("Segment created");
+                showSegments(id);
+            }
+        });
+
+        modal.fadeOut();
+    });
+
+    modal.fadeIn();
+
+
+
+
+}
 
 function bindMonitorsView() {
+    var body = $(document.body);
+    var modal = $("#view-page .modal");
+    var close = $('#view-page .modal-close');
+
+
+    modal.hide();
+
+    modal.click(function (e) {
+        e.stopPropagation();
+    });
+
+    body.click(function (e) {
+        modal.fadeOut();
+    });
+
+    close.click(function (e) {
+        e.stopPropagation();
+        modal.fadeOut();
+    });
 
 }
 
@@ -83,9 +167,6 @@ function monitorToggle(id) {
     });
 }
 
-function showModal() {
-
-}
 
 function showSegments(id) {
     var main = $("#view-page .main");
@@ -139,4 +220,10 @@ function timestampToDate(ts) {
     var d = new Date();
     d.setTime(ts);
     return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+}
+
+
+function dateToTimestamp(date) {
+    var dateInMs = (new Date(date)).getTime();
+    return dateInMs;
 }

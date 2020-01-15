@@ -1022,6 +1022,48 @@ input:checked+.slider:before {
     font-weight: 500;
 }
 
+.alert-block {
+	top: 10px;
+	right: 0px;
+	position: fixed;
+	width: 0;
+	overflow: visible;
+	z-index: 1982;	
+}
+.alert-block .message {
+	right: -320px;
+	position: relative;
+	width: 260px;
+	max-height: 0;
+	padding: 0;
+	opacity: 0;
+	margin: 0;
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	-webkit-transition-duration: 250ms;
+	transition-duration: 250ms;
+	-webkit-transition-timing-function: linear;
+	transition-timing-function: linear;
+}
+.alert-block .message.visible {
+	opacity: 1;
+	max-height: 100%;
+	padding: 15px;
+	margin-top: 10px;
+	-webkit-transition-duration: 500ms;
+	transition-duration: 500ms;
+	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.alert-block .message.success {
+	background: rgba(91, 189, 114, 0.95);
+}
+.alert-block .message.error {
+	background: rgba(217, 92, 92, 0.95);
+}
+.alert-block .message.warning {
+	background: rgba(252, 248, 215, 0.95);
+}
 
 
 

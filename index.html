@@ -1,28 +1,3 @@
-<?php
-require_once("include.php");
-require_once("actions.php");
-require_once("stripe_fun.php");
-$route = $_SERVER['REQUEST_URI'];
-$route = preg_replace('/\?.*/', '', $route);
-$route = rtrim($route, '/\\');
-$action = "default_action";
-$static_routes = getStaticRoutes();
-if (array_key_exists($route, $static_routes)) {
-    $action = $static_routes[$route];
-    if (is_callable($action)) $json_info = $action();
-    if (isset($json_info)) sendJson($json_info);
-
-} else {
-    list($action, $params) = execute(getWildCardRoutes(), $route);
-    if (is_callable($action) && isset($params))
-        sendJson(call_user_func_array($action, array_values($params)));
-    else $action = "default_action";
-}
-if ($action == "default_action") {
-    sendJson(defaultAction());
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -442,41 +417,19 @@ if ($action == "default_action") {
                         </table>
                     </div>
                 </div>
-                <div class="modal fade show" role="dialog" tabindex="-1" style="display: block;">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Create segment</h5>
-                                <button type="button" class="modal-close" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form class="">
-                                    <div class="position-relative form-group">
-                                        <label for="segment_name" class="">Name</label>
-                                        <input id="segment_name" name="segment_name" type="text" class="form-control"
-                                            value="">
-                                    </div>
-                                    <div class="position-relative form-group">
-                                        <label for="segment_start" class="">Start date</label>
-                                        <input id="segment_start" name="segment_start" max="2020-01-14" type="date"
-                                            class="form-control" value="2020-01-14">
-                                    </div>
-                                    <div class="position-relative form-group">
-                                        <label for="segment_end" class="">End date</label><input id="segment_end"
-                                            name="segment_end" min="2020-01-14" type="date" class="form-control"
-                                            value="2020-01-14">
-                                    </div>
-                                </form>
-                            </div>
+
+                <div class="modal">
+                    <div class="modal-wrapper">
+                        <div class="modal-header">
+                            <div class="modal-title"></div>
+                            <div class="modal-close"><span>×</span></div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary">Cancel</button>
-                            <button type="button" class="btn btn-primary">Create segment</button>
-                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer"></div>
                     </div>
-                </div>
+                </div>               
+
+
             </div>
         </div>
         <div id="analytics-page" data-page="true">
@@ -504,7 +457,8 @@ if ($action == "default_action") {
                 </div>
             </div>
         </div>
-    </div>
+        <div class='alert-block'></div>
+    </divcl>
     <script src="/assets/js/login.js"></script>
     <script src="/assets/js/register.js"></script>
     <script src="/assets/js/forgot-password.js"></script>

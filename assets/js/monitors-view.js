@@ -18,15 +18,13 @@ function MonitorsViewInit() {
             $.ajax(request("GET_MONITOR", { params: id }, function (r) { }, true)),
             $.ajax(request("GET_MONITOR_THUMBNAIL", { params: id }, function (r) { }, true)),
 
-        ).done(function (r1, r2) {
-            console.log(r1);
-            console.log(r2);
+        ).done(function (r1, r2) {            
             if (!r1[0].success) {
-                alertify.error("Failed to load monitor");
+                showAlert('Failed to load monitor', 'error');
                 return;
             }
             if (!r2[0].success) {
-                alertify.error("Failed to load thumbnail");
+                showAlert('Failed to load thumbnail', 'error');
                 return;
             }
 
@@ -62,10 +60,65 @@ function MonitorsViewInit() {
                 e.preventDefault();
                 e.stopPropagation();
                 showModal();
-
             });
         });
+
+
+
+
+
+
+
+
+
+
+
+
+        var duration = "day";
+        var start = 1577826000000;  //01.01.2020
+        var end = 1579121999999;    //15.01.2020
+        var period = 1577826000000; //01.01.2020
+
+        let query = `monitor_id=${id}&start=${start}&end=${end}&period=day`;
+
+        
+        $.when(
+            $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
+            $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
+            $.ajax(request("GET_GENDER_ENTRIES_V2", { query }, function (r) { }, true)),
+           
+          
+        ).done(function (r1,r2,r3) {
+            console.log(r1);
+            console.log(r2);
+            console.log(r3);
+           
+            if (!r1[0].success) {
+                showAlert('Failed to load info', 'error');
+                return;
+            }
+            if (!r2[0].success) {
+                showAlert('Failed to load info', 'error');
+                return;
+            }
+            if (!r3[0].success) {
+                showAlert('Failed to load info', 'error');
+                return;
+            }
+
+            traficResults = r1[0].data;            
+            impressionResults = r2[0].data;
+            genderResults = r3[0].data;
+
+            
+            loadChart();
+        });
     })();
+}
+
+
+function loadChart() {
+
 }
 
 function showModal() {
@@ -74,11 +127,13 @@ function showModal() {
     var content = $("#view-page .modal .modal-body");
     var footer = $("#view-page .modal .modal-footer");
 
-
+    var nowDate = new Date();
+    var stringDate = dateForInput(nowDate);
+    console.log(stringDate)
 
     title.html("Create segment");
     content.html(
-        '<form class=""> <div class="position-relative form-group"><label for="segment_name" class="">Name</label><input id="segment_name" name="segment_name" type="text" class="form-control"value=""> </div><div class="position-relative form-group"><label for="segment_start" class="">Start date</label><input id="segment_start" name="segment_start" max="2020-01-14" type="date" class="form-control" value="2020-01-14"> </div><div class="position-relative form-group"><label for="segment_end" class="">End date</label><input id="segment_end"name="segment_end" min="2020-01-14" type="date" class="form-control"value="2020-01-14"></div></form>'
+        '<form class=""> <div class="position-relative form-group"><label for="segment_name" class="">Name</label><input id="segment_name" name="segment_name" type="text" class="form-control"value=""> </div><div class="position-relative form-group"><label for="segment_start" class="">Start date</label><input id="segment_start" name="segment_start" max="'+ stringDate +'" type="date" class="form-control" value="'+ stringDate +'"> </div><div class="position-relative form-group"><label for="segment_end" class="">End date</label><input id="segment_end"name="segment_end" min="'+ stringDate +'" type="date" class="form-control"value="'+ stringDate +'"></div></form>'
     );
     footer.html(
         '<button class="btn-secondary btn-cancel">Cancel</button>' +
@@ -90,10 +145,7 @@ function showModal() {
     var segmentEnd = $("#view-page #segment_end");
     var id = getCookie("view_token");
 
-    segmentStart.formance("format_dd_mm_yyyy");
-    segmentEnd.formance("format_dd_mm_yyyy");
-
-
+   
     var cancel = $("#view-page .modal .btn-cancel");
     cancel.click(function (e) {
         e.stopPropagation();
@@ -113,10 +165,10 @@ function showModal() {
         ).done(function (r1) {
             console.log(r1);
             if (!r1.success) {
-                alertify.error("Failed to create segment");
+                showAlert('Failed to create segment', 'error');
                 return;
             } else {
-                alertify.success("Segment created");
+                showAlert('Segment created', 'success');
                 showSegments(id);
             }
         });
@@ -125,11 +177,8 @@ function showModal() {
     });
 
     modal.fadeIn();
-
-
-
-
 }
+
 
 function bindMonitorsView() {
     var body = $(document.body);
@@ -159,10 +208,10 @@ function monitorToggle(id) {
         $.ajax(request("MONITOR_TOGGLE", { params: id }, function (r) { }, true))
     ).done(function (r1) {
         if (!r1.success) {
-            alertify.error("Failed to toggle monitor");
+            showAlert('Failed to toggle monitor', 'error');
             return;
         } else {
-            alertify.success("Monitor toggled");
+            showAlert('Monitor toggled', 'success');
         }
     });
 }
@@ -176,7 +225,7 @@ function showSegments(id) {
         $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) { }, true)),
     ).done(function (r1) {
         if (!r1.success) {
-            alertify.error("Failed to monitor segments");
+            showAlert('Failed to monitor segments', 'error')
             return;
         }
 
@@ -208,9 +257,9 @@ function deleteSegment(segment_id) {
     var id = getCookie("view_token");
     $.ajax(request("DELETE_MONITOR_SEGMENT", { params: `${id}/${segment_id}` }, function (r) {
         if (!r.success) {
-            alertify.error("Failed to delete monitor");
+            showAlert('Failed to delete monitor', 'error')
         } else {
-            alertify.success("Deleted monitor segment");
+            showAlert('Deleted monitor segment', 'success')
             showSegments(id);
         }
     }, true));
@@ -226,4 +275,13 @@ function timestampToDate(ts) {
 function dateToTimestamp(date) {
     var dateInMs = (new Date(date)).getTime();
     return dateInMs;
+}
+
+
+function dateForInput(date) {
+
+    var stringDate = date.getFullYear();
+    stringDate += '-' + (('0' + (date.getMonth() + 1)).slice(-2));
+    stringDate += '-' + date.getDate();
+    return stringDate;
 }

@@ -9,11 +9,11 @@ function bindSettings() {
     var close = $("#settings-page .modal .modal-close");
     modal.hide();
 
-    modal.click(function(e) {
+    modal.click(function (e) {
         e.stopPropagation();
     });
 
-    reset.click(function(e) {
+    reset.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         title.html("Reset Password");
@@ -22,23 +22,23 @@ function bindSettings() {
         );
         footer.html(
             '<button class="btn-secondary btn-cancel">Cancel</button>' +
-                '<button class="btn-primary btn-sumbit" id="reset-pass">Reset Password</button>'
+            '<button class="btn-primary btn-sumbit" id="reset-pass">Reset Password</button>'
         );
 
         var cancel = $("#settings-page .modal .btn-cancel");
         var reset = $("#settings-page .modal #reset-pass");
-        cancel.click(function(e) {
+        cancel.click(function (e) {
             e.stopPropagation();
             modal.fadeOut();
         });
 
-        reset.click(function(e) {
+        reset.click(function (e) {
             e.stopPropagation();
         });
         modal.fadeIn();
     });
 
-    updateCard.click(function(e) {
+    updateCard.click(function (e) {
         e.preventDefault();
         e.stopPropagation();
         title.html("Change / Add Card");
@@ -47,39 +47,66 @@ function bindSettings() {
         );
         footer.html(
             '<button class="btn-secondary btn-cancel">Cancel</button>' +
-                '<button class="btn-primary btn-sumbit" id="update-card">Update</button>'
+            '<button class="btn-primary btn-sumbit" id="update-card">Update</button>'
         );
 
         var cnum = $("#settings-page #c-number");
         var cvc = $("#settings-page #cvc");
         var cexp = $("#settings-page #c-exp");
-        cvc.formance("format_credit_card_cvc");
-        cnum.formance("format_credit_card_number");
-        cexp.formance("format_credit_card_expiry");
-        cnum.on("input", function() {
-            var isvalid = cnum.formance("validate_credit_card_number");
+        
+        checkFormat(cnum, 'validate_credit_card_number');
+      
+        
+        cnum.on("input", function () {
+            var isvalid = checkFormat(cnum, 'validate_credit_card_number');
             if (cnum.val().length === 19) {
                 if (!isvalid) {
                     cnum.css({ color: "red" });
                 }
-            } else {
-                cnum.css({ color: "#222a42" });
+                else {
+                    cnum.css({ color: "#222a42" });
+                }
             }
         });
 
         var cancel = $("#settings-page .modal .btn-cancel");
-        cancel.click(function(e) {
+        cancel.click(function (e) {
             e.stopPropagation();
             modal.fadeOut();
         });
+        
+
+        var submitUpdate = $("#settings-page .modal .btn-sumbit");
+        submitUpdate.click(function (e) {
+            var id = null;
+            e.stopPropagation();
+            // id = ??????
+            
+            $.when(               
+                $.ajax(request("UPDATE_CARD", { tokenId: id, }, function (r1) { }, true)),
+            ).done(function (r1) {               
+                if (!r1.success) {
+                    showAlert('Failed to update card', 'error');
+                    return;
+                } else {
+                    showAlert('Card updated', 'success');
+                }
+            });
+
+            modal.fadeOut();
+        });
+       
+
+
+
         modal.fadeIn();
     });
 
-    body.click(function(e) {
+    body.click(function (e) {
         modal.fadeOut();
     });
 
-    close.click(function(e) {
+    close.click(function (e) {
         e.stopPropagation();
         modal.fadeOut();
     });
@@ -96,20 +123,21 @@ function SettingsInit() {
     email.val("");
     mail.val(getCookie("mail"));
     email.val(getCookie("mail"));
-    request("GET_CARD", {}, function(r) {
+    request("GET_CARD", {}, function (r) {
         if (!r.success) {
-            alertify.error(r.msg);
+            showAlert(r.msg, 'error');            
             return;
-        }
+        }       
+        
         var card = r.data;
         cardInput.val(
             card.brand +
-                " **** " +
-                card.last4 +
-                " exp. " +
-                card.exp_month +
-                "/" +
-                card.exp_year
+            " **** " +
+            card.last4 +
+            " exp. " +
+            card.exp_month +
+            "/" +
+            card.exp_year
         );
     });
 }

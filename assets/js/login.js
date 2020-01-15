@@ -14,7 +14,7 @@ function bindLogin() {
                 login(email.val(), pass.val());
             } catch (error) {
                 console.error(error);
-                alertify.error("Something went wrong...");
+                showAlert('Something went wrong...', 'error');
             }
         }
     });
@@ -23,7 +23,7 @@ function bindLogin() {
             login(email.val(), pass.val());
         } catch (error) {
             console.error(error);
-            alertify.error("Something went wrong...");
+            showAlert('Something went wrong...', 'error');
         }
     });
 }

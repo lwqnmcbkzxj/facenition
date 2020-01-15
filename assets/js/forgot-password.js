@@ -7,11 +7,11 @@ function bindForgotPassword() {
     var mail = $("#forgot-password-page input[name='email']");
     $("#forgot-password-page #reset").click(function(e) {
         request("PASSWORD_RESET", { email: mail.val() }, function(result) {
-            if (!result.success) {
-                alertify.error(result.msg);
+            if (!result.success) {               
+                showAlert(result.msg, 'error');
                 return;
-            }
-            alertify.success(result.msg);
+            } else 
+                showAlert(result.msg, 'success');            
         });
     });
 }

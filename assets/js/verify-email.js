@@ -2,13 +2,16 @@ function VerifyEmailInit() {
     var token = getUrlParameter("t");
     request("VERIFY_EMAIL", { params: token }, function(r) {
         var message;
+        console.log(r)
         if (!r.success) {
-            message = alertify.error(r.msg);
+            message = showAlert(r.msg, 'error');
+            // message = alertify.error(r.msg);
         } else {
-            message = alertify.success(r.msg);
+            message = showAlert(r.msg, 'success');
+            // message = alertify.success(r.msg);
         }
-        message.callback = function() {
+        // message.callback = function() {
             loadPage("/login");
-        };
+        // };
     });
 }

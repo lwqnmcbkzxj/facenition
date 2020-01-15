@@ -20,11 +20,11 @@ function MonitorsInit() {
             )
         ).done(function(r1, r2) {
             if (!r1[0].success) {
-                alertify.error("Failed to load monitors");
+                showAlert('Failed to load monitors', 'error');
                 return;
             }
             if (!r2[0].success) {
-                alertify.error("Failed to load monitors");
+                showAlert('Failed to load monitors', 'error');
                 return;
             }
             monitors = r1[0].data;

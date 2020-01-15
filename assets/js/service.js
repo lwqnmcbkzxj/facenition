@@ -1,4 +1,4 @@
-alertify.set('notifier','position', 'top-right');
+alertify.set('notifier', 'position', 'top-right');
 var api_routes = {
     LOGIN: {
         path: "/login",
@@ -303,7 +303,7 @@ function request(key, body, cb, o) {
         type: r.method,
         data: payload.body,
         statusCode: {
-            401: function() {
+            401: function () {
                 loadPage("/login");
                 // window.location.href = "/login";
                 return;
@@ -311,7 +311,7 @@ function request(key, body, cb, o) {
         },
         headers: headers,
         success: cb,
-        error: function(e) {
+        error: function (e) {
             cb(e.responseJSON);
         }
     };
@@ -322,17 +322,18 @@ function request(key, body, cb, o) {
 }
 
 function login(email, password) {
-    request("LOGIN", { password: password, email: email }, function(result) {
+    request("LOGIN", { password: password, email: email }, function (result) {
         if (!result.success) {
-            alertify.error(result.msg);
+            showAlert(result.msg, 'error');
+            // alertify.error(result.msg);
             return;
         }
         var week = new Date();
         week.setDate(week.getDate() + 7);
         setCookie("auth_token", result.token, week);
         setCookie("mail", email.toLowerCase(), week);
-		// window.location.replace("/dashboard/monitors");
-		loadPage("/dashboard/monitors")
+        // window.location.replace("/dashboard/monitors");
+        loadPage("/dashboard/monitors")
     });
 }
 
@@ -488,7 +489,7 @@ var chart1_2_options = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample1 = {
-    data1: function(canvas) {
+    data1: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -533,7 +534,7 @@ var chartExample1 = {
             ]
         };
     },
-    data2: function(canvas) {
+    data2: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -578,7 +579,7 @@ var chartExample1 = {
             ]
         };
     },
-    data3: function(canvas) {
+    data3: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -630,7 +631,7 @@ var chartExample1 = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample2 = {
-    data: function(canvas) {
+    data: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -669,7 +670,7 @@ var chartExample2 = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample3 = {
-    data: function(canvas) {
+    data: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -748,7 +749,7 @@ var chartExample3 = {
 // // // used inside src/views/Dashboard.jsx
 // #########################################
 var chartExample4 = {
-    data: function(canvas) {
+    data: function (canvas) {
         var ctx = canvas.getContext("2d");
 
         var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -832,3 +833,72 @@ var chartExample4 = {
         }
     }
 };
+
+
+function showAlert(text, type) {
+	var alertBlock = document.querySelector('.alert-block');
+	var alert = document.createElement('div');
+
+	alert.classList.add('visible');
+	alert.classList.add('message');
+	$(alert).animate({'right': '300px'}, 300);
+
+	alert.textContent = text;
+	switch (type) {
+		case 'success':
+		alert.classList.add('success');
+		break;
+		case 'error':
+		alert.classList.add('error');
+		break;
+		case 'warning':
+		alert.classList.add('warning');
+		break;
+		default:			
+		break;
+	}
+	alertBlock.append(alert);
+	setTimeout(function() {
+		$(alert).animate({'right': '-320px'}, 600);
+		setTimeout(function() {
+			alert.classList.remove('visible');
+			alert.classList.remove('message');		
+			alert.remove()
+		}, 1000);
+		
+	}, 5000);
+
+	alert.addEventListener('click', () => {
+		$(alert).animate({'right': '-320px'}, 600);
+		setTimeout(function() {
+			alert.classList.remove('visible');
+			alert.classList.remove('message');		
+			alert.remove()
+		}, 1000);
+	});
+}
+
+
+function checkFormat(input, type) {
+    var value = input.val().replace(/\s/g, ''); //Deleting spaces
+
+    switch (type) {
+        case 'validate_credit_card_number':
+            var regExp = /(\d{4}([-]|)\d{4}([-]|)\d{4}([-]|)\d{4})/g;
+            if (regExp.test(value)) {
+               
+                input.css({ color: "#222a42" });
+                return true;
+            } else {
+                input.css({ color: "red" });
+
+                return false;
+            }            
+    
+        default:
+            break;
+    }
+   
+    
+    return true;
+}

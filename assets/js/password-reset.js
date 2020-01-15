@@ -18,22 +18,26 @@ function PasswordResetInit() {
                         params: token,
                         password: pass.val()
                     },
-                    function(r) {
+                    function (r) {
+                        console.log(r)
                         if (!r.success) {
-                            alertify.error(r.msg);
+                            showAlert(r, 'error');                            
                             return;
                         } else {
-                            alertify.success(r.msg).callback = function() {
+                            showAlert(r.msg, 'success').callback = function() {
                                 loadPage("/login");
                             };
+                            // alertify.success(r.msg).callback = function() {
+                            //     loadPage("/login");
+                            // };
                         }
                     }
                 );
             } else {
-                alertify.error(isVaild);
+                showAlert(isVaild, 'error')                
             }
         } else {
-            alertify.error("Passwords don't match");
+            showAlert("Passwords don't match",'error')
         }
     });
 }

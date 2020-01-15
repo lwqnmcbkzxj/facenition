@@ -55,11 +55,11 @@ function bindRegister() {
                 function(result) {
                     loadPage("/login")
                     if (!result.success) {
-                        alertify.error(result.msg);
-
+                        console.log(result)
+                        showAlert(result.msg, 'error');
                         return;
                     } else {
-                        alertify.success("Please check your email");
+                        showAlert('Please check your email', 'success');
                     }
                 }
             );

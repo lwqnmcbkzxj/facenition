@@ -146,15 +146,15 @@ function MonitorsInit() {
                 )
             ).done(function(r1, r2, r3) {
                 if (!r1[0].success) {
-                    alertify.error(r1[0].msg);
+                    showAlert(r1[0].msg, 'error');        
                     return;
                 }
                 if (!r2[0].success) {
-                    alertify.error(r2[0].msg);
+                    showAlert(r2[0].msg, 'error');    
                     return;
                 }
-                if (!r3[0].success) {
-                    alertify.error(r3[0].msg);
+                if (!r3[0].success) {                    
+                    showAlert(r3[0].msg, 'error');    
                     return;
                 }
                 trafficResult = r1[0];

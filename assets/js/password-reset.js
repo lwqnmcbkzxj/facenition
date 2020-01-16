@@ -24,12 +24,8 @@ function PasswordResetInit() {
                             showAlert(r, 'error');                            
                             return;
                         } else {
-                            showAlert(r.msg, 'success').callback = function() {
-                                loadPage("/login");
-                            };
-                            // alertify.success(r.msg).callback = function() {
-                            //     loadPage("/login");
-                            // };
+                            showAlert(r.msg, 'success');
+                            loadPage("/login");                           
                         }
                     }
                 );

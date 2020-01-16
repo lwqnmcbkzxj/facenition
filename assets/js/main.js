@@ -23,6 +23,10 @@ function loadPage(pageName) {
         $header.show();
         HeaderInit();
     }
+    if (pName == '') {
+        pageName = 'login';
+        pName = 'login';
+    }
     var currentPage = $("#" + urlIdMap[pName]);
     currentPage.show();
     pagesMap[pName]();

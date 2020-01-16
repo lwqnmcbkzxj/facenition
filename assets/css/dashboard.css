@@ -360,7 +360,7 @@
 }
 
 .dashboard .main {
-    padding: 80px 20px;
+    padding: 70px 15px;
     min-height: calc(100vh - 59px);
     width: 100%;
 }
@@ -474,8 +474,10 @@
     font-size: 14px;
 }
 
-.dashboard .card-data>tr>td>.trand>.chart-area {
+.dashboard .card-data .chart-area {
     position: relative;
+    width: 100%;
+
 }
 
 .dashboard .card-data>tr>td.m-btns {
@@ -662,9 +664,7 @@
     margin-bottom: 10px;
 }
 
-.dashboard form .form-control {
-    margin-bottom: 20px;
-}
+
 
 .dashboard .form-control {
     color: #222a42;
@@ -854,7 +854,7 @@
     outline: none;
 }
 
-.dashboard #view-page  {
+.dashboard #view-page {
     min-height: calc(100vh - 59px);
 }
 
@@ -971,6 +971,147 @@ input:checked+.slider:before {
     -webkit-transform: translateX(26px);
     transform: translateX(26px);
 }
+
+.chart-block {
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%;
+}
+
+.chart-block .chart-area {
+    height: 500px;
+}
+
+.options-block .live-button {
+    border-radius: 5px;
+    padding: 4px 8px;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+.options-block .live-button.active {
+   
+    animation: live-button 4s linear 1s infinite;
+}
+
+.options-block {
+    flex: 0 0 33.33334%;
+    max-width: 33.33334%;
+    min-height: 300px;
+    height: 100%;
+    padding: 15px;
+    color: #1d253b !important;
+    color: #525f7f !important;
+}
+
+.options-block h4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.options-block .stats div {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    height: 24px;
+}
+
+.options-block .stats div span {
+    width: 50px;
+    margin-right: 5px;
+    text-align: left;
+    height: 24px;
+    font-size: 14px;
+}
+
+
+.options-block .stats div div {
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 10px;
+}
+
+.options-block i {
+    font-size: 24px;
+    margin: 5px;
+
+}
+
+
+
+.options-block .options select {
+    align-items: center;
+    background-color: hsl(0, 0%, 100%);
+
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    cursor: default;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    min-height: 38px;
+    outline: 0 !important;
+    position: relative;
+    transition: all 100ms;
+    box-sizing: border-box;
+    width: 100%;
+    position: relative;
+    padding: 10px 0 10px 10px;
+}
+
+.options-block input {
+    margin-bottom: 0;
+
+}
+
+.options-block .options select:focus {
+    box-shadow: 0 0 0 1px #2684ff;
+    border-color: #2684ff;
+}
+
+.options-block .options select:hover {
+    border-color: #b3b3b3;
+}
+
+.dashboard #view-page .card:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+}
+
+.chart-selector {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+}
+
+.chart-selector div {
+    display: flex;
+    flex: 1 1;
+    background: #f3f3f3;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    border-top: 2px solid transparent;
+    outline: none !important;
+}
+
+.chart-selector div:hover {
+    cursor: pointer;
+}
+
+.chart-selector div.active {
+    border-top: 2px solid #1f8ef1;
+    background: none;
+}
+
+
+
+
+
 .dashboard h1 {
     font-weight: normal;
 }
@@ -989,13 +1130,14 @@ input:checked+.slider:before {
     height: auto;
     border-collapse: collapse;
 }
-.dashboard  .table th {
+
+.dashboard .table th {
     vertical-align: top;
     text-align: left;
     text-transform: uppercase;
     border-top: none;
     font-size: 12px;
-   
+
 }
 
 .table>thead>tr>th,
@@ -1003,17 +1145,16 @@ input:checked+.slider:before {
 .table>tfoot>tr>th,
 .table>thead>tr>td,
 .table>tbody>tr>td,
-.table>tfoot>tr>td {    
+.table>tfoot>tr>td {
     border-top: 0.0625rem solid #e3e3e3;
     font-size: 14px;
     border-color: rgba(34, 42, 66, 0.2);
     padding: 12px 7px;
     vertical-align: top;
     color: rgba(34, 42, 66, 0.7) !important;
-    /* height: 100%; */
 }
 
-.dashboard  .table .delete-btn {
+.dashboard .table .delete-btn {
     margin: 0;
     color: #fd5d93;
     border: 1px solid #fd5d93;
@@ -1023,46 +1164,51 @@ input:checked+.slider:before {
 }
 
 .alert-block {
-	top: 10px;
-	right: 0px;
-	position: fixed;
-	width: 0;
-	overflow: visible;
-	z-index: 1982;	
+    top: 10px;
+    right: 0px;
+    position: fixed;
+    width: 0;
+    overflow: visible;
+    z-index: 1982;
 }
+
 .alert-block .message {
-	right: -320px;
-	position: relative;
-	width: 260px;
-	max-height: 0;
-	padding: 0;
-	opacity: 0;
-	margin: 0;
-	-webkit-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
-	-webkit-transition-duration: 250ms;
-	transition-duration: 250ms;
-	-webkit-transition-timing-function: linear;
-	transition-timing-function: linear;
+    right: -320px;
+    position: relative;
+    width: 260px;
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    margin: 0;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transition-duration: 250ms;
+    transition-duration: 250ms;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
 }
+
 .alert-block .message.visible {
-	opacity: 1;
-	max-height: 100%;
-	padding: 15px;
-	margin-top: 10px;
-	-webkit-transition-duration: 500ms;
-	transition-duration: 500ms;
-	-webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 1;
+    max-height: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    -webkit-transition-duration: 500ms;
+    transition-duration: 500ms;
+    -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
 .alert-block .message.success {
-	background: rgba(91, 189, 114, 0.95);
+    background: rgba(91, 189, 114, 0.95);
 }
+
 .alert-block .message.error {
-	background: rgba(217, 92, 92, 0.95);
+    background: rgba(217, 92, 92, 0.95);
 }
+
 .alert-block .message.warning {
-	background: rgba(252, 248, 215, 0.95);
+    background: rgba(252, 248, 215, 0.95);
 }
 
 
@@ -1337,5 +1483,20 @@ input:checked+.slider:before {
 
     100% {
         -moz-transform: rotate(-135deg);
+    }
+}
+
+
+@keyframes live-button {
+    0% {
+        background: #fff;
+    }
+
+    50% {
+        background: #c0413b
+    }
+
+    100% {
+        background: #fff;
     }
 }

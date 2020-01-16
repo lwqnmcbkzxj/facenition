@@ -1,4 +1,3 @@
-alertify.set('notifier', 'position', 'top-right');
 var api_routes = {
     LOGIN: {
         path: "/login",
@@ -325,7 +324,6 @@ function login(email, password) {
     request("LOGIN", { password: password, email: email }, function (result) {
         if (!result.success) {
             showAlert(result.msg, 'error');
-            // alertify.error(result.msg);
             return;
         }
         var week = new Date();

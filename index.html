@@ -8,12 +8,10 @@
     <title>Facenition</title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <link rel="stylesheet" href="/assets/css/general.css" />
     <link rel="stylesheet" href="/assets/css/landing.css" />
     <link rel="stylesheet" href="/assets/css/dashboard.css" />
     <link rel="stylesheet" href="/assets/css/general.css" />
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script type="text/javascript" src="/assets/js/chart.bundle.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.formance.min.js"></script>
@@ -395,7 +393,36 @@
         <div id="view-page" data-page="true">
             <div class="main">
                 <div class="card"></div>
-                <div class="card"></div>
+                <div class="card">
+                    <div class="chart-block">
+                        <div class="chart-selector">
+                            <div>Pedestrians</div>
+                            <div class='active'>Views</div>
+                            <div>Gender</div>
+                        </div>
+                        <div class="chart-area"></div>
+                    </div>
+                    <div class="options-block">
+                        <h4>Period summary <span class='live-button active'>live</span></h4>
+                        <div class="stats">
+                            <div>
+                                <div><i class="fa fa-male" aria-hidden="true"></i></div>
+                                <span>0</span>
+                            </div>
+                            <div>
+                                <div><i class="fa fa-eye" aria-hidden="true"></i></div>
+                                <span>0</span>
+                            </div>
+                            <div>
+                                <div><i class="fa fa-mars" aria-hidden="true"></i> / <i class="fa fa-venus"
+                                        aria-hidden="true"></i></div>
+                                <span>0</span>
+                            </div>
+                        </div>
+                        <div class="options"> </div>
+                        <button class="btn-secondary refresh-btn" id="refresh-pwd"> Refresh </button>
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card-header">
                         <h2>Segments</h2>
@@ -417,7 +444,6 @@
                         </table>
                     </div>
                 </div>
-
                 <div class="modal">
                     <div class="modal-wrapper">
                         <div class="modal-header">
@@ -427,9 +453,7 @@
                         <div class="modal-body"></div>
                         <div class="modal-footer"></div>
                     </div>
-                </div>               
-
-
+                </div>
             </div>
         </div>
         <div id="analytics-page" data-page="true">
@@ -458,16 +482,15 @@
             </div>
         </div>
         <div class='alert-block'></div>
-    </divcl>
-    <script src="/assets/js/login.js"></script>
-    <script src="/assets/js/register.js"></script>
-    <script src="/assets/js/forgot-password.js"></script>
-    <script src="/assets/js/password-reset.js"></script>
-    <script src="/assets/js/verify-email.js"></script>
-    <script src="/assets/js/monitors.js"></script>
-    <script src="/assets/js/settings.js"></script>
-    <script src="/assets/js/monitors-view.js"></script>
-    <script src="/assets/js/analytics.js"></script>
+        </divcl>
+        <script src="/assets/js/login.js"></script>
+        <script src="/assets/js/register.js"></script>
+        <script src="/assets/js/forgot-password.js"></script>
+        <script src="/assets/js/password-reset.js"></script>
+        <script src="/assets/js/verify-email.js"></script>
+        <script src="/assets/js/monitors.js"></script>
+        <script src="/assets/js/settings.js"></script>
+        <script src="/assets/js/monitors-view.js"></script>
+        <script src="/assets/js/analytics.js"></script>
 </body>
-
 </html>

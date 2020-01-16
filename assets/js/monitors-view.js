@@ -18,7 +18,7 @@ function MonitorsViewInit() {
             $.ajax(request("GET_MONITOR", { params: id }, function (r) { }, true)),
             $.ajax(request("GET_MONITOR_THUMBNAIL", { params: id }, function (r) { }, true)),
 
-        ).done(function (r1, r2) {            
+        ).done(function (r1, r2) {
             if (!r1[0].success) {
                 showAlert('Failed to load monitor', 'error');
                 return;
@@ -63,62 +63,241 @@ function MonitorsViewInit() {
             });
         });
 
+        var displayOptions = ['Custom', 'By segment'];
+        var displaySelect = '<select name="" id="displayTypeSelect">';
+        for (var i = 0; i < displayOptions.length; i++) {
+            displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
+        }
+        displaySelect += '</select>';
+        var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
+        var periodSelect = '<select name="" id="timePeriodSelect">';
+        for (var i = 0; i < periodOptions.length; i++) {
+            periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
+        }
+        periodSelect += '</select>';
 
+        var stringDate = dateForInput(new Date());
+        var optionsContent = $('#view-page .options-block .options');
 
+        optionsContent.append(
+            '<form class="">' +
+            '<div class= "position-relative form-group">' +
+            '<label  class="">Display type</label>' +
+            displaySelect +
+            '</div> ' +
+            '<div class= "position-relative form-group" >' +
+            '<label class="">Group by time period</label>' +
+            periodSelect +
+            '</div> ' +
+            '<div class= "position-relative form-group" > ' +
+            '<label for="segment_start" class="">Start date</label>' +
+            '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
+            '</div>' +
+            '<div class="position-relative form-group">' +
+            '<label for="segment_end" class="">End date</label>' +
+            '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
+            '</div>' +
+            '</form>'
+        );
 
-
-
-
-
-
-
-
-
-        var duration = "day";
-        var start = 1577826000000;  //01.01.2020
-        var end = 1579121999999;    //15.01.2020
-        var period = 1577826000000; //01.01.2020
-
-        let query = `monitor_id=${id}&start=${start}&end=${end}&period=day`;
-
-        
-        $.when(
-            $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
-            $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
-            $.ajax(request("GET_GENDER_ENTRIES_V2", { query }, function (r) { }, true)),
-           
-          
-        ).done(function (r1,r2,r3) {
-            console.log(r1);
-            console.log(r2);
-            console.log(r3);
-           
-            if (!r1[0].success) {
-                showAlert('Failed to load info', 'error');
-                return;
-            }
-            if (!r2[0].success) {
-                showAlert('Failed to load info', 'error');
-                return;
-            }
-            if (!r3[0].success) {
-                showAlert('Failed to load info', 'error');
-                return;
-            }
-
-            traficResults = r1[0].data;            
-            impressionResults = r2[0].data;
-            genderResults = r3[0].data;
-
-            
-            loadChart();
+        loadChartData(id);
+        $('#view-page .refresh-btn').click(function () {
+            loadChartData(id);
         });
+        $('#view-page #startInput').change(function () { loadChartData(id); })
+        $('#view-page #endInput').change(function () { loadChartData(id); })
+
+        $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
+        $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
     })();
 }
 
 
-function loadChart() {
+function loadChartData(id) {
+    var chartData = null;
 
+    var start = dateToTimestamp($('#view-page #startInput')[0].value);
+    var end = dateToTimestamp($('#view-page #endInput')[0].value) + 86400000 - 1;
+    var period = $('#view-page #timePeriodSelect')[0].value;
+
+    let query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
+
+    $.when(
+        $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
+        $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
+        $.ajax(request("GET_GENDER_ENTRIES_V2", { query }, function (r) { }, true))
+
+    ).done(function (r1, r2, r3) {
+        if (!r1[0].success) {
+            showAlert('Failed to load info', 'error');
+            return;
+        }
+        if (!r2[0].success) {
+            showAlert('Failed to load info', 'error');
+            return;
+        }
+        if (!r3[0].success) {
+            showAlert('Failed to load info', 'error');
+            return;
+        }
+
+        trafficResult = r1[0].data;
+        impressionResult = r2[0].data;
+        genderResult = r3[0].data;
+
+        var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length);
+        var labels = [];
+        var trafficData = [];
+
+        var postitveData = [];
+        var negativeData = [];
+
+        var maleData = [];
+        var femaleData = [];
+        for (var i = 0; i < n; i++) {
+            trafficData.push(0);
+
+            postitveData.push(0);
+            negativeData.push(0);
+
+            maleData.push(0);
+            femaleData.push(0);
+        }
+
+        var labels = getLabels(period, n);
+        labels = labels.reverse();
+
+        for (var i = 0; i < trafficResult.length; i++) {
+            trafficData[i] = trafficResult[i].count;
+        }
+
+        for (var i = 0; i < impressionResult.length; i++) {
+            postitveData[i] = impressionResult[i].positive;
+            negativeData[i] = impressionResult[i].negative;
+
+        }
+        for (var i = 0; i < genderResult.length; i++) {
+            maleData[i] = genderResult[i].males;
+            femaleData[i] = genderResult[i].females;
+        }
+
+        var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
+        dataGend(chartData);
+
+        $('#view-page .chart-selector div').click(function (e) {
+            var selectorBlock = $('#view-page .chart-selector');
+            for (selector of selectorBlock[0].children) {
+                if (e.target == selector)
+                    selector.classList.add('active');
+                else
+                    selector.classList.remove('active');
+
+                dataGend(chartData);
+            }
+        });
+    });
+}
+
+function dataGend(chartData) {
+    var labels = chartData.labels;
+    var trafficData = chartData.trafficData;
+    var postitveData = chartData.postitveData;
+    var negativeData = chartData.negativeData;
+    var maleData = chartData.maleData;
+    var femaleData = chartData.femaleData;
+
+    showStats(chartData);
+
+    $("#view-page .main .chart-area").show();
+    var body = $('#view-page .card:nth-child(2) .chart-area');
+
+    body.append(
+        '<canvas class="chartjs-render-monitor monitor-graphic-1"></canvas>'
+    );
+    var canvas = $("#view-page canvas")[0];
+    var ctx = canvas.getContext("2d");
+
+    var activePage = $('#view-page .chart-block .chart-selector .active').text();
+
+    var datasets = null;
+    var options = null;
+    switch (activePage) {
+        case 'Pedestrians':
+            datasets = [{
+                label: 'Pedestrians',
+                backgroundColor: 'rgba(255,99,132,0.2)',
+                borderColor: 'rgba(255,99,132,1)',
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+                hoverBorderColor: 'rgba(255,99,132,1)',
+                data: trafficData
+            }];
+            break;
+        case 'Views':
+            datasets = [{
+                label: 'Viewed',
+                backgroundColor: 'rgba(99, 177, 255,0.2)',
+                borderColor: 'rgba(99, 177, 255,1)',
+                borderWidth: 1,
+                stack: 0,
+                hoverBackgroundColor: 'rgba(99, 177, 255,0.4)',
+                hoverBorderColor: 'rgba(99, 177, 255,1)',
+                data: postitveData
+            }, {
+                label: 'Not viewed',
+                backgroundColor: 'rgba(255,99,132,0.2)',
+                borderColor: 'rgba(255,99,132,1)',
+                borderWidth: 1,
+                stack: 0,
+                hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+                hoverBorderColor: 'rgba(255,99,132,1)',
+                data: negativeData
+            }];
+            break;
+        case 'Gender':
+            datasets = [{
+                label: 'Male',
+                backgroundColor: 'rgba(99, 177, 255,0.2)',
+                borderColor: 'rgba(99, 177, 255,1)',
+                borderWidth: 1,
+                stack: 0,
+                hoverBackgroundColor: 'rgba(99, 177, 255,0.4)',
+                hoverBorderColor: 'rgba(99, 177, 255,1)',
+                data: maleData
+            }, {
+                label: 'Female',
+                backgroundColor: 'rgba(255,99,132,0.2)',
+                borderColor: 'rgba(255,99,132,1)',
+                borderWidth: 1,
+                stack: 0,
+                hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+                hoverBorderColor: 'rgba(255,99,132,1)',
+                data: femaleData
+            }];
+        default:
+            break;
+    }
+
+    var options = {
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    min: 0
+                }
+            }]
+        }
+    }
+
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: datasets,
+        },
+        options: options
+    });
 }
 
 function showModal() {
@@ -129,11 +308,10 @@ function showModal() {
 
     var nowDate = new Date();
     var stringDate = dateForInput(nowDate);
-    console.log(stringDate)
 
     title.html("Create segment");
     content.html(
-        '<form class=""> <div class="position-relative form-group"><label for="segment_name" class="">Name</label><input id="segment_name" name="segment_name" type="text" class="form-control"value=""> </div><div class="position-relative form-group"><label for="segment_start" class="">Start date</label><input id="segment_start" name="segment_start" max="'+ stringDate +'" type="date" class="form-control" value="'+ stringDate +'"> </div><div class="position-relative form-group"><label for="segment_end" class="">End date</label><input id="segment_end"name="segment_end" min="'+ stringDate +'" type="date" class="form-control"value="'+ stringDate +'"></div></form>'
+        '<form class=""> <div class="position-relative form-group"><label for="segment_name" class="">Name</label><input id="segment_name" name="segment_name" type="text" class="form-control"value=""> </div><div class="position-relative form-group"><label for="segment_start" class="">Start date</label><input id="segment_start" name="segment_start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> </div><div class="position-relative form-group"><label for="segment_end" class="">End date</label><input id="segment_end"name="segment_end" min="' + stringDate + '" type="date" class="form-control"value="' + stringDate + '"></div></form>'
     );
     footer.html(
         '<button class="btn-secondary btn-cancel">Cancel</button>' +
@@ -145,7 +323,6 @@ function showModal() {
     var segmentEnd = $("#view-page #segment_end");
     var id = getCookie("view_token");
 
-   
     var cancel = $("#view-page .modal .btn-cancel");
     cancel.click(function (e) {
         e.stopPropagation();
@@ -160,10 +337,8 @@ function showModal() {
                 name: segmentName.val(),
                 start: dateToTimestamp(segmentStart.val()),
                 end: dateToTimestamp(segmentEnd.val())
-            }, function (r1) { }, true)),
-
+            }, function (r1) { }, true))
         ).done(function (r1) {
-            console.log(r1);
             if (!r1.success) {
                 showAlert('Failed to create segment', 'error');
                 return;
@@ -172,7 +347,6 @@ function showModal() {
                 showSegments(id);
             }
         });
-
         modal.fadeOut();
     });
 
@@ -180,11 +354,17 @@ function showModal() {
 }
 
 
+function showStats(chartData) {
+    $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = getSum(chartData.trafficData);
+    $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = getSum(chartData.postitveData);
+    $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = getSum(chartData.maleData) + "/" + getSum(chartData.femaleData);
+}
+
+
 function bindMonitorsView() {
     var body = $(document.body);
     var modal = $("#view-page .modal");
     var close = $('#view-page .modal-close');
-
 
     modal.hide();
 
@@ -200,7 +380,6 @@ function bindMonitorsView() {
         e.stopPropagation();
         modal.fadeOut();
     });
-
 }
 
 function monitorToggle(id) {
@@ -271,17 +450,61 @@ function timestampToDate(ts) {
     return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
 }
 
-
 function dateToTimestamp(date) {
     var dateInMs = (new Date(date)).getTime();
     return dateInMs;
 }
 
-
 function dateForInput(date) {
-
     var stringDate = date.getFullYear();
     stringDate += '-' + (('0' + (date.getMonth() + 1)).slice(-2));
     stringDate += '-' + date.getDate();
     return stringDate;
+}
+
+function getLabels(period, n) {
+    var formatString = '';
+    var cur = moment();
+    var labels = [];
+
+    switch (period) {
+        case 'hour':
+            formatString = 'ddd HH-HH';
+            break;
+        case 'day':
+            formatString = 'ddd DD/MM'
+            break;
+        case 'week':
+            formatString = 'W'
+            break;
+        case 'fortnight':
+            formatString = ''
+            break;
+        case 'month':
+            formatString = 'MM'
+            break;
+        case 'year':
+            formatString = 'Y'
+            break;
+
+        default:
+            formatString = 'ddd DD/MM';
+            break;
+    }
+
+    while (n > 0) {
+        var date = cur.format(formatString);
+        labels.push(date);
+        cur.subtract(1, "d");
+        n--;
+    }
+    return labels;
+}
+
+function getSum(array) {
+    var sum = 0;
+    for (var i = 0; i < array.length; i++) {
+        sum += array[i];
+    }
+    return sum;
 }

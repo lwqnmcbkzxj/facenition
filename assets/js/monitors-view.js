@@ -51,9 +51,15 @@ function MonitorsViewInit() {
             showSegments(monitor.id);
 
 
+            if (monitor.active)
+                $('#view-page .options-block .live-button')[0].classList.add('active');
+            else
+                $('#view-page .options-block .live-button')[0].classList.remove('active');
+            
             var toggleMonitorBtn = $('#view-page .switch input');
             toggleMonitorBtn.click(function (e) {
-                monitorToggle(e.target.dataset.id)
+                monitorToggle(e.target.dataset.id);
+                $('#view-page .options-block .live-button')[0].classList.toggle('active');               
             });
             var addSegmentBtn = $('#view-page .add-segment');
             addSegmentBtn.click(function (e) {
@@ -114,8 +120,6 @@ function MonitorsViewInit() {
 
 
 function loadChartData(id) {
-    var chartData = null;
-
     var start = dateToTimestamp($('#view-page #startInput')[0].value);
     var end = dateToTimestamp($('#view-page #endInput')[0].value) + 86400000 - 1;
     var period = $('#view-page #timePeriodSelect')[0].value;
@@ -163,7 +167,7 @@ function loadChartData(id) {
             maleData.push(0);
             femaleData.push(0);
         }
-
+        
         var labels = getLabels(period, n);
         labels = labels.reverse();
 
@@ -207,10 +211,14 @@ function dataGend(chartData) {
     var femaleData = chartData.femaleData;
 
     showStats(chartData);
-
-    $("#view-page .main .chart-area").show();
+    var chart = null;
+    $("#view-page .main .chart-area").show();    
+    
+    if ($('#view-page canvas')[0]) {        
+        $('#view-page canvas')[0].remove();
+        $('#view-page .chartjs-size-monitor').remove()
+    }
     var body = $('#view-page .card:nth-child(2) .chart-area');
-
     body.append(
         '<canvas class="chartjs-render-monitor monitor-graphic-1"></canvas>'
     );
@@ -289,8 +297,8 @@ function dataGend(chartData) {
             }]
         }
     }
-
-    var chart = new Chart(ctx, {
+   
+    chart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -353,11 +361,11 @@ function showModal() {
     modal.fadeIn();
 }
 
-
 function showStats(chartData) {
-    $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = getSum(chartData.trafficData);
-    $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = getSum(chartData.postitveData);
-    $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = getSum(chartData.maleData) + "/" + getSum(chartData.femaleData);
+    
+    $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = numberWithCommas(getSum(chartData.trafficData));
+    $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = numberWithCommas(getSum(chartData.postitveData));
+    $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = numberWithCommas(getSum(chartData.maleData)) + "/" + numberWithCommas(getSum(chartData.femaleData));
 }
 
 
@@ -451,8 +459,9 @@ function timestampToDate(ts) {
 }
 
 function dateToTimestamp(date) {
-    var dateInMs = (new Date(date)).getTime();
-    return dateInMs;
+    var dateInMs = (new Date(date));
+    dateInMs.setHours(0);
+    return dateInMs.getTime();
 }
 
 function dateForInput(date) {
@@ -463,28 +472,38 @@ function dateForInput(date) {
 }
 
 function getLabels(period, n) {
-    var formatString = '';
-    var cur = moment();
     var labels = [];
+
+    var formatString = '';
+    var additionalFormat = '';
+    var cur = moment();
+    var cur1 = moment();
+    cur1.add(1, period);
 
     switch (period) {
         case 'hour':
-            formatString = 'ddd HH-HH';
+            formatString = 'ddd h a';
+            additionalFormat = 'h a';
             break;
         case 'day':
-            formatString = 'ddd DD/MM'
+            formatString = 'ddd DD/MM';            
             break;
         case 'week':
-            formatString = 'W'
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
             break;
         case 'fortnight':
-            formatString = ''
+        //Moment.js not includes function for fortnight(2 weeks)
+            cur1.add(2, 'week');
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
             break;
         case 'month':
-            formatString = 'MM'
+            formatString = 'MM/Y';
+            additionalFormat = '';
             break;
         case 'year':
-            formatString = 'Y'
+            formatString = 'Y';
             break;
 
         default:
@@ -493,10 +512,24 @@ function getLabels(period, n) {
     }
 
     while (n > 0) {
-        var date = cur.format(formatString);
-        labels.push(date);
-        cur.subtract(1, "d");
-        n--;
+        var date = cur.format(formatString);       
+        if (period == 'hour' || period == 'week') {
+            var additionalDate = cur1.format(additionalFormat); 
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(1, period);  
+        }
+        else if (period == 'fortnight') {
+            var additionalDate = cur1.format(additionalFormat); 
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(2, 'week');  
+            cur.subtract(2, 'week');  
+        }
+        else {
+            labels.push(date);    
+        }
+
+        cur.subtract(1, period);
+        n--;        
     }
     return labels;
 }
@@ -507,4 +540,12 @@ function getSum(array) {
         sum += array[i];
     }
     return sum;
+}
+
+function numberWithCommas(number) {
+    numberStr = number.toString();
+    var pattern = /(-?\d+)(\d{3})/;
+    while (pattern.test(numberStr))
+    	numberStr = numberStr.replace(pattern, "$1,$2");
+    return numberStr;
 }

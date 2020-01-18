@@ -124,7 +124,7 @@ function loadChartData(id) {
     var end = dateToTimestamp($('#view-page #endInput')[0].value) + 86400000 - 1;
     var period = $('#view-page #timePeriodSelect')[0].value;
 
-    let query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
+    var query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
 
     $.when(
         $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
@@ -169,7 +169,6 @@ function loadChartData(id) {
         }
         
         var labels = getLabels(period, n);
-        labels = labels.reverse();
 
         for (var i = 0; i < trafficResult.length; i++) {
             trafficData[i] = trafficResult[i].count;
@@ -531,7 +530,7 @@ function getLabels(period, n) {
         cur.subtract(1, period);
         n--;        
     }
-    return labels;
+    return labels.reverse();
 }
 
 function getSum(array) {

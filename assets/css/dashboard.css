@@ -1143,6 +1143,10 @@ input:checked+.slider:before {
     font-weight: 500;
 }
 
+#analytics-page .chart-area {
+    height: 500px;
+}
+
 .alert-block {
     top: 10px;
     right: 0px;

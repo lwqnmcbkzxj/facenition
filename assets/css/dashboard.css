@@ -1147,6 +1147,78 @@ input:checked+.slider:before {
     height: 500px;
 }
 
+
+.dashboard #analytics-page .card:nth-child(1) {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.dashboard #analytics-page .info {
+    flex: 0 0 75%;
+    max-width: 75%;
+}
+
+.dashboard #analytics-page .chart-selectors {
+    flex: 0 0 25%;
+    max-width: 25%;
+    background: #f5f6fa;
+    padding-left: 30px;
+
+}
+
+.dashboard #analytics-page .chart-selectors .selector {
+    height: 150px;
+    margin-bottom: 20px;
+    transition: .5s;
+    border: 2px solid transparent;
+    box-shadow: rgba(123, 123, 123, 0.05) 0px 1px 15px 0px;
+    border-radius: 3px;
+    padding: 20px;
+    color: #fff;
+}
+
+.dashboard #analytics-page .chart-selectors .selector>div {
+    padding-top: 15px;
+}
+
+.dashboard #analytics-page .chart-selectors .selector.active {
+    box-shadow: rgba(123, 123, 123, 0.7) 0px 1px 15px 0px;    
+    border: 2px solid white;
+}
+
+.dashboard #analytics-page .chart-selectors .selector:hover {
+    border: 2px solid white;
+    box-shadow: rgba(123, 123, 123, 0.7) 0px 1px 15px 0px;
+    cursor: pointer;
+}
+
+.dashboard #analytics-page .chart-selectors .selector:nth-child(1) {
+    background: #208ef1;
+}
+.dashboard #analytics-page .chart-selectors .selector:nth-child(2) {
+    background: #14bda8;
+}.dashboard #analytics-page .chart-selectors .selector:nth-child(3) {
+    background: #ff80b9;
+}
+
+#analytics-page .chart-selectors .selector h3{
+    font-weight: normal;
+}
+
+#analytics-page .chart-selectors .selector div span{
+    text-transform: capitalize;
+}
+
+
+
+
+
+
+
+
+
+
 .alert-block {
     top: 10px;
     right: 0px;

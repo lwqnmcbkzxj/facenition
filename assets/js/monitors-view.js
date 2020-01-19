@@ -189,14 +189,17 @@ function loadChartData(id) {
 
         $('#view-page .chart-selector div').click(function (e) {
             var selectorBlock = $('#view-page .chart-selector');
-            for (selector of selectorBlock[0].children) {
-                if (e.target == selector)
-                    selector.classList.add('active');
-                else
-                    selector.classList.remove('active');
 
+            if (e.target.classList[0] != 'active') {
+                for (selector of selectorBlock[0].children) {
+                    if (e.target == selector)
+                        selector.classList.add('active');
+                    else
+                        selector.classList.remove('active');
+                }
                 dataGend(chartData);
             }
+
         });
     });
 }

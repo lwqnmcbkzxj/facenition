@@ -1144,7 +1144,12 @@ input:checked+.slider:before {
 }
 
 #analytics-page .chart-area {
-    height: 500px;
+    height: 300px;
+}
+
+
+#analytics-page .card:first-child .chart-area {
+    height: 500px!important;
 }
 
 
@@ -1209,8 +1214,6 @@ input:checked+.slider:before {
 #analytics-page .chart-selectors .selector div span{
     text-transform: capitalize;
 }
-
-
 
 
 

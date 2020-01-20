@@ -1,7 +1,6 @@
 function MonitorsViewInit() {
     var body = $("#view-page");
     var infoCard = $("#view-page .main .card:nth-child(1) ");
-    var segmentsTable = $('#view-page #segments-table-content');
     var modal = $("#view-page .modal-dialog");
     var main = $("#view-page .main");
 
@@ -120,8 +119,8 @@ function MonitorsViewInit() {
 
 
 function loadChartData(id) {
-    var start = dateToTimestamp($('#view-page #startInput')[0].value);
-    var end = dateToTimestamp($('#view-page #endInput')[0].value) + 86400000 - 1;
+    var start = dateToTimestamp($('#view-page #startInput')[0].value, 'start');
+    var end = dateToTimestamp($('#view-page #endInput')[0].value, 'end');
     var period = $('#view-page #timePeriodSelect')[0].value;
 
     var query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
@@ -212,7 +211,7 @@ function dataGend(chartData) {
     var maleData = chartData.maleData;
     var femaleData = chartData.femaleData;
 
-    showStats(chartData);
+    showViewPageStats(chartData);
     var chart = null;
     $("#view-page .main .chart-area").show();    
     
@@ -345,8 +344,8 @@ function showModal() {
             $.ajax(request("CREATE_MONITOR_SEGMENT", {
                 params: id,
                 name: segmentName.val(),
-                start: dateToTimestamp(segmentStart.val()),
-                end: dateToTimestamp(segmentEnd.val())
+                start: dateToTimestamp(segmentStart.val(), 'start'),
+                end: dateToTimestamp(segmentEnd.val(), 'end')
             }, function (r1) { }, true))
         ).done(function (r1) {
             if (!r1.success) {
@@ -363,8 +362,7 @@ function showModal() {
     modal.fadeIn();
 }
 
-function showStats(chartData) {
-    
+function showViewPageStats(chartData) {    
     $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = numberWithCommas(getSum(chartData.trafficData));
     $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = numberWithCommas(getSum(chartData.postitveData));
     $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = numberWithCommas(getSum(chartData.maleData)) + "/" + numberWithCommas(getSum(chartData.femaleData));
@@ -460,18 +458,7 @@ function timestampToDate(ts) {
     return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
 }
 
-function dateToTimestamp(date) {
-    var dateInMs = (new Date(date));
-    dateInMs.setHours(0);
-    return dateInMs.getTime();
-}
 
-function dateForInput(date) {
-    var stringDate = date.getFullYear();
-    stringDate += '-' + (('0' + (date.getMonth() + 1)).slice(-2));
-    stringDate += '-' + date.getDate();
-    return stringDate;
-}
 
 function getLabels(period, n) {
     var labels = [];
@@ -534,20 +521,4 @@ function getLabels(period, n) {
         n--;        
     }
     return labels.reverse();
-}
-
-function getSum(array) {
-    var sum = 0;
-    for (var i = 0; i < array.length; i++) {
-        sum += array[i];
-    }
-    return sum;
-}
-
-function numberWithCommas(number) {
-    numberStr = number.toString();
-    var pattern = /(-?\d+)(\d{3})/;
-    while (pattern.test(numberStr))
-    	numberStr = numberStr.replace(pattern, "$1,$2");
-    return numberStr;
 }

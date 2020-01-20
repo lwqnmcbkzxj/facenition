@@ -1143,6 +1143,58 @@ input:checked+.slider:before {
     font-weight: 500;
 }
 
+
+#analytics-page .card:first-child .chart-block {
+    margin: 20px;
+}
+
+#analytics-page .dropdown {
+    color: #9A9A9A;
+    position: relative;
+}
+
+#analytics-page .dropdown .visible-dropdown {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#analytics-page .dropdown .visible-dropdown h6{
+    margin-right: 15px;
+
+}
+#analytics-page .dropdown .dropdown-list {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: .3s;
+    margin-left: -150px;
+    width: auto;
+    height: 200px;
+    overflow: auto;
+    position: absolute;
+}
+#analytics-page .dropdown .dropdown-list h6{
+    padding: 8px 24px;
+    font-size: 11px;
+    margin-top: 5px;
+    color: rgba(182, 182, 182, 0.6);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+#analytics-page .dropdown .dropdown-list div{
+    padding: 10px 24px;
+    font-size: 13px;
+    margin-left: 5px;
+}
+
+#analytics-page .dropdown .dropdown-list.active {
+    opacity: 1;
+    box-shadow: 0px 10px 50px 0px rgba(0, 0, 0, 0.2);
+}
+
+
 #analytics-page .chart-area {
     height: 300px;
 }
@@ -1159,9 +1211,15 @@ input:checked+.slider:before {
 }
 
 
-.dashboard #analytics-page .info {
+.dashboard #analytics-page .chart-block {
     flex: 0 0 75%;
     max-width: 75%;
+}
+
+.dashboard #analytics-page .card:first-child .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .dashboard #analytics-page .chart-selectors {

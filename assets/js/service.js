@@ -895,8 +895,82 @@ function checkFormat(input, type) {
     
         default:
             break;
-    }
-   
-    
+    } 
     return true;
+}
+
+function getSum(array) {
+    var sum = 0;
+    for (var i = 0; i < array.length; i++) {
+        sum += array[i];
+    }
+    return sum;
+}
+
+function getObjectTotalSum(dataObject) {
+    var totalSum = {
+        traffic: 0,
+        impression: 0,
+        male: 0,
+        female: 0,
+    }
+
+    for (elem of dataObject) {
+        totalSum.traffic += getSum(elem.result.trafficData);
+        totalSum.impression += getSum(elem.result.impressionData);
+        totalSum.male += getSum(elem.result.maleData);
+        totalSum.female += getSum(elem.result.femaleData);
+    }
+    return totalSum;
+}
+
+function numberWithCommas(number) {
+    numberStr = number.toString();
+    var pattern = /(-?\d+)(\d{3})/;
+    while (pattern.test(numberStr))
+    	numberStr = numberStr.replace(pattern, "$1,$2");
+    return numberStr;
+}
+
+function ucFirst(str) {
+    if (!str) return str;  
+    return str[0].toUpperCase() + str.slice(1);
+}
+
+
+function getDayStartTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date.getTime();
+}
+
+function getDayEndTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    date.setHours(23);
+    date.setMinutes(59);
+    date.setSeconds(59);
+    date.setMilliseconds(999);
+    return date.getTime();
+}
+
+function dateToTimestamp(date, phase) {
+    var fullDate = (new Date(date));
+    if (phase === 'start') {
+        fullDate = getDayStartTimestamp(fullDate.getTime())
+    }
+    else if (phase === 'end') {
+        fullDate = getDayEndTimestamp(fullDate.getTime())
+    } else
+        return 0;
+    return fullDate;
+}
+
+function dateForInput(date) {
+    var stringDate = date.getFullYear();
+    stringDate += '-' + (('0' + (date.getMonth() + 1)).slice(-2));
+    stringDate += '-' + date.getDate();
+    return stringDate;
 }

@@ -5,24 +5,44 @@ function bindAnalytics() {
 
     main.hide();
     body.append(loader);
+    $.when(getMonitors()).done(function (r) {
+        var monitorsNames = [];
+        monitorsIds = []
+        for (monitor of r.data) {
+            monitorsNames.push(monitor.name);
+            monitorsIds.push(monitor.id);
+        }
+           
+
+        addDropdown($('#analytics-page .card:nth-child(2) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
+        addDropdown($('#analytics-page .card:nth-child(3) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
+        addDropdown($('#analytics-page .card:nth-child(4) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
+        addDropdown($('#analytics-page .card:nth-child(5) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
+
+        var periods = ['Year', 'Month', 'Week', 'Day'];        
+        addDropdown($('#analytics-page .card:first-child .chart-block .info .dropdowns'), 'period', periods);
+        addDropdown($('#analytics-page .card:nth-child(2) .info .dropdowns'), 'period', periods);
+        addDropdown($('#analytics-page .card:nth-child(3) .info .dropdowns'), 'period', periods);
+        addDropdown($('#analytics-page .card:nth-child(4) .info .dropdowns'), 'period', periods);
+        addDropdown($('#analytics-page .card:nth-child(5) .info .dropdowns'), 'period', periods);
 
 
-    renderSummaryBlock('traffic');
-    setTimeout(() => { renderSummaryBlock('impression'); }, 1000)
-    setTimeout(() => { renderSummaryBlock('gender'); }, 2000)
 
-    renderLargeBlock('traffic');
-    renderLargeBlock('impression');
-    renderLargeBlock('gender');
+        
+        renderSummaryBlock('traffic');
+        setTimeout(() => { renderSummaryBlock('impression'); }, 1000)
+        setTimeout(() => { renderSummaryBlock('gender'); }, 2000)
 
-
-
-
-
+        setTimeout(() => {
+            renderLargeBlock('traffic');
+            renderLargeBlock('impression');
+            renderLargeBlock('gender');
+        }, 500)
+        
+    });
 
     main.show();
     $('.loader').remove();
-
 
 
     $('#analytics-page .chart-selectors .selector').click(function (e) {
@@ -30,50 +50,18 @@ function bindAnalytics() {
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
     });
 }
-function AnalyticsInit() {    
-    $('#analytics-page .card:first-child .chart-block .info').append(
-`<div class = 'dropdown period-dropdown'>
-    <div class = "visible-dropdown">
-        <h6>Week</h6>
-        <div class = "toggle-dropdown">
-            <i class="fa fa-clock" aria-hidden="true"></i>
-            <i class="fa fa-caret-down" aria-hidden="true"></i>
-        </div>
-    </div>
-    <div class="dropdown-list">
-        <h6>Select timespan</h6>
-        <div class = "dropdown-element">Year</div>
-        <div class = "dropdown-element">Month</div>
-        <div class = "dropdown-element">Week</div>
-        <div class = "dropdown-element">Day</div>
-    </div>
-</div >`);
-
-    var dropdownBtn = $('#analytics-page .card:first-child .chart-block .dropdown .toggle-dropdown');
-    var dropdownList = $('#analytics-page .card:first-child .chart-block .dropdown .dropdown-list');
-    
-
-    dropdownBtn.click(function () {
-        dropdownList[0].classList.toggle('active');
-    })
-
-    
-    dropdownList.click(function (e) {
-        console.log(e)
-        if (e.target.className == 'dropdown-element') {
-            $('#analytics-page .card:first-child .chart-block .visible-dropdown h6')[0].textContent = e.target.textContent;
-            dropdownList[0].classList.toggle('active');
-        }
-    });
+function AnalyticsInit() {
 }
 
 
-
 function renderSummaryBlock(entriesType) {
+
+
     togglePageSelector(entriesType);
     $.when(getMonitors()).then(function (r1) {
         var monitors = r1.data;
-        var period = 'year';
+        var period = $('#analytics-page .card:first-child .chart-block .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
+
 
         var timestampObject = getAnalyticPagePeriod(period);
         var start = timestampObject.start1;
@@ -237,19 +225,18 @@ function renderSummaryGend(monitors, entriesType) {
 
 
 function renderLargeBlock(entriesType) {
-    var id = "16f4afce-2c95-4e05-b907-5fc386b8d373";
+    var card = $('#analytics-page .large-' + entriesType + '  .info');
+
+    $(card).find('h4').textContent = ucFirst(entriesType) + " Comparison Analytics";
+    $(card).find('h4').textContent = ucFirst(entriesType) + " Comparison Analytics";
+    
+    var period = $('#analytics-page .large-' + entriesType + ' .period-dropdown .visible-dropdown h6')[0].textContent;
+    var id = $('#analytics-page .large-' + entriesType + ' .monitor-dropdown .visible-dropdown h6')[0].dataset.id;
     $.when(getMonitor(id)).then(function (r1) {
         var monitor = r1.data;
-        var period = 'week';
         var maxLength = 0;
-        var chartDataObject = [];
-        var card = $('#analytics-page .large-' + entriesType + '  .info');
-        card.append(
-            "<div class = 'card-body'>" +
-            "<h4>" + ucFirst(entriesType) + " Comparison Analytics</h4> " +
-            "<div>Last " + period + " comparison</div>" +
-            "</div > "
-        );
+        var chartDataObject = [];       
+
 
         var timestampObject = getAnalyticPagePeriod(period);
 
@@ -444,7 +431,6 @@ function getDataOfMonitor(entriesType, query) {
 function showAnalyticsSummaryStats(dataObject, period) {
     $('#analytics-page .card:nth-child(1) h2')[0].textContent = 'Last ' + period + ' summary';
 
-    console.log(dataObject)
     var totalSum = getObjectTotalSum(dataObject);
     if (period == 'day')
         period = 'dai';
@@ -460,7 +446,6 @@ function showAnalyticsSummaryStats(dataObject, period) {
     else if (totalSum.male)
         $('#analytics-page .chart-selectors .gender-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.male) + ' M, ' + numberWithCommas(totalSum.female) + ' F';
 }
-
 
 function togglePageSelector(entriesType) {
     var selectorBlock = $('#analytics-page .chart-selectors');
@@ -496,51 +481,53 @@ function getLargeChartLabels(period, n) {
 
 function getAnalyticPagePeriod(period) {
     var cur = moment();
-
-    switch (period) {
+    switch (period.toLowerCase()) {
         case 'day':
-            end1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
-            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            end1 = dateToTimestamp(cur.format("YYYY-MM-DD HH:mm:ss:MS"));
             cur.subtract(1, period);
+            start1 = dateToTimestamp(cur.format("YYYY-MM-DD HH:mm:ss:MS"));
 
-            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
-            end2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
+            end2 = dateToTimestamp(cur.format("YYYY-MM-DD HH:mm:ss:MS"));
+            cur.subtract(1, period);
+            start2 = dateToTimestamp(cur.format("YYYY-MM-DD HH:mm:ss:MS"));
+
             newPeriod = 'hour';
             break;
         case 'week':
             end1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
 
             end2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             newPeriod = 'day';
             break;
         case 'month':
             end1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
 
             end2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             newPeriod = 'week';
             break;
         case 'year':
             end1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
 
             end2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             cur.subtract(1, period);
-            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
+            start2 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
             newPeriod = 'month';
             break;
         default:
             break;
     }
-    return { end1, start1, start2, end2, newPeriod };
+
+    return { start1, end1, start2, end2, newPeriod };
 }
 
 
@@ -550,4 +537,87 @@ function getRequestsArr(entriesType, queries) {
         requestsArr.push(getDataOfMonitor(entriesType, query))
     }
     return requestsArr;
-}    
+}
+
+
+function addDropdown(location, type, items) {
+    var dropListItems = '';
+    var icon = '';
+    var visibleTag = '';
+    var selectText = '';
+    if (type == 'period') {        
+        items.map(item => {
+            dropListItems += `<div class = "dropdown-element">${item}</div>`;
+        });
+
+        visibleTag = `<h6>${items[2]}</h6>`;
+        icon = '<i class="fa fa-clock" aria-hidden="true"></i>';
+        selectText = 'timespan';
+    }
+    else if (type == 'monitor') {
+        for (var i = 0; i < items.monitorsNames.length; i++){
+            dropListItems += `<div class = "dropdown-element" data-id=${items.monitorsIds[i]}>${items.monitorsNames[i]}</div>`;
+        }
+
+        visibleTag = `<h6 data-id="${items.monitorsIds[0]}">${items.monitorsNames[0]}</h6>`;
+        icon = '<i class="fa fa-desktop" aria-hidden="true"></i>';
+        selectText = 'monitor';
+    }
+
+    var dropdown = `
+    <div class = 'dropdown ${type}-dropdown'>
+        <div class = "visible-dropdown">
+            ${visibleTag}
+            <div class = "toggle-dropdown">
+               ${icon}
+                <i class="fa fa-caret-down" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div class="dropdown-list">
+            <h6>Select ${selectText}</h6>
+            ${dropListItems}
+        </div>
+    </div >`;
+
+
+    location.append(dropdown);
+
+    var dropdownBtn = $(location).find(`.${type}-dropdown .toggle-dropdown`);
+    var dropdownList = $(location).find(`.${type}-dropdown .dropdown-list`);
+
+    dropdownBtn.click(function (e) {
+        dropdownList[0].classList.toggle('active');
+    });
+
+    location.click(function (e) {
+        if (!e.target.closest('.toggle-dropdown'))
+            dropdownList[0].classList.remove('active');
+    });
+   
+
+    dropdownList.click(function (e) {
+        if (e.target.className == 'dropdown-element') {
+            $(location).find(`.${type}-dropdown .visible-dropdown h6`)[0].textContent = e.target.textContent;
+            if (type == 'monitor')
+                $(location).find(`.${type}-dropdown .visible-dropdown h6`)[0].dataset.id = e.target.dataset.id;
+                
+            dropdownList[0].classList.toggle('active');
+            startRenderFunction(e);
+        }
+    });    
+}
+
+function startRenderFunction(e) {
+    var target = e.target.closest('.card');
+
+    if (target == $('#analytics-page .card:nth-child(1)')[0]) {
+        var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0].classList[1].split('-')[0];
+        renderSummaryBlock(activeSelector);
+    } else if (target == $('#analytics-page .card:nth-child(2)')[0]) {
+
+    } else {
+        var closestBlock = e.target.closest('.large-block');
+        var closestBlockClass = closestBlock.classList[1].split('-')[1];
+        renderLargeBlock(closestBlockClass);
+    }
+}

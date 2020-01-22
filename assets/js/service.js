@@ -956,6 +956,7 @@ function getDayEndTimestamp(timestamp) {
     return date.getTime();
 }
 
+
 function dateToTimestamp(date, phase) {
     var fullDate = (new Date(date));
     if (phase === 'start') {
@@ -963,8 +964,10 @@ function dateToTimestamp(date, phase) {
     }
     else if (phase === 'end') {
         fullDate = getDayEndTimestamp(fullDate.getTime())
-    } else
-        return 0;
+    } else {        
+        return fullDate.getTime();
+    }
+
     return fullDate;
 }
 

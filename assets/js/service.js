@@ -977,3 +977,67 @@ function dateForInput(date) {
     stringDate += '-' + date.getDate();
     return stringDate;
 }
+
+
+function getLabels(period, n) {
+    var labels = [];
+
+    var formatString = '';
+    var additionalFormat = '';
+    var cur = moment();
+    var cur1 = moment();
+    cur1.add(1, period);
+
+    switch (period) {
+        case 'hour':
+            formatString = 'ddd h a';
+            additionalFormat = 'h a';
+            break;
+        case 'day':
+            formatString = 'ddd DD/MM';
+            break;
+        case 'week':
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
+            break;
+        case 'fortnight':
+            //Moment.js not includes function for fortnight(2 weeks)
+            cur1.add(2, 'week');
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
+            break;
+        case 'month':
+            formatString = 'MM/Y';
+            additionalFormat = '';
+            break;
+        case 'year':
+            formatString = 'Y';
+            break;
+
+        default:
+            formatString = 'ddd DD/MM';
+            break;
+    }
+
+    while (n > 0) {
+        var date = cur.format(formatString);
+        if (period == 'hour' || period == 'week') {
+            var additionalDate = cur1.format(additionalFormat);
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(1, period);
+        }
+        else if (period == 'fortnight') {
+            var additionalDate = cur1.format(additionalFormat);
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(2, 'week');
+            cur.subtract(2, 'week');
+        }
+        else {
+            labels.push(date);
+        }
+
+        cur.subtract(1, period);
+        n--;
+    }
+    return labels.reverse();
+}

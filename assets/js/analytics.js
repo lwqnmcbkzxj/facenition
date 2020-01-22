@@ -1,7 +1,4 @@
-function bindAnalytics() {
-}
-
-function AnalyticsInit() {   
+function bindAnalytics() {   
     $.when(getMonitors()).done(function (r) {
         var monitorsNames = [];
         monitorsIds = []
@@ -35,6 +32,8 @@ function AnalyticsInit() {
         if (e.target.closest('.selector').classList[2] != 'active')
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
     });
+}
+function AnalyticsInit() {
 }
 
 // BLOCKS RENDER START

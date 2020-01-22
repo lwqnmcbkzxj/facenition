@@ -865,6 +865,9 @@
 .dashboard #view-page .card-body div {
     padding: 0 15px;
 }
+.dashboard #view-page .chart-area {
+    height: 500px;
+}
 
 .dashboard #view-page h1 {
     line-height: 1.05;
@@ -973,10 +976,6 @@ input:checked+.slider:before {
 .chart-block {
     flex: 0 0 66.66667%;
     max-width: 66.66667%;
-}
-
-.chart-block .chart-area {
-    height: 500px;
 }
 
 .options-block .live-button {
@@ -1144,10 +1143,6 @@ input:checked+.slider:before {
 }
 
 
-#analytics-page .card:first-child .chart-block {
-    margin: 20px;
-}
-
 #analytics-page .dropdowns {
     flex: 0 0 33.33334%;
     max-width: 33.33334%;
@@ -1183,15 +1178,30 @@ input:checked+.slider:before {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    height: 25px;
 }
+
 #analytics-page .dropdown .visible-dropdown h6 {
     text-transform: uppercase;
     font-size: 12px;
-}
-#analytics-page .dropdown .visible-dropdown h6{
     margin-right: 15px;
     z-index: 5;
+}
 
+#analytics-page .monitor-dropdown .visible-dropdown h6 {
+    width: 300px;
+    text-align: right;
+}
+
+#analytics-page .dropdown .toggle-dropdown {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#analytics-page .dropdown .toggle-dropdown .fa:nth-child(2){
+    margin-left: 5px;
 }
 
 #analytics-page .period-dropdown .dropdown-list {
@@ -1235,9 +1245,15 @@ input:checked+.slider:before {
     height: 300px;
 }
 
-
+#analytics-page .card:first-child .chart-holder {
+    height: 500px!important;
+    position: relative;
+}
 #analytics-page .card:first-child .chart-area {
     height: 500px!important;
+}
+#analytics-page .large-chart-block {
+    height: 300px;
 }
 
 
@@ -1247,7 +1263,7 @@ input:checked+.slider:before {
 }
 
 
-.dashboard #analytics-page .chart-block {
+.dashboard #analytics-page .card:first-child .card-body{
     flex: 0 0 75%;
     max-width: 75%;
 }
@@ -1263,10 +1279,12 @@ input:checked+.slider:before {
     max-width: 25%;
     background: #f5f6fa;
     padding-left: 30px;
+    box-sizing: border-box;
 
 }
 
 .dashboard #analytics-page .chart-selectors .selector {
+    padding-right: 20px;
     height: 150px;
     margin-bottom: 20px;
     transition: .5s;
@@ -1314,12 +1332,17 @@ input:checked+.slider:before {
     justify-content: space-between;
 }
 
-#analytics-page .info .info-text {
-    flex: 0 0 66.66667%;
-    max-width: 66.66667%;
+#analytics-page .info .info-text h5{
+    color: #9A9A9A;
+    font-size: 12px;
+    text-transform: capitalize;
+    font-weight: normal;
 }
 
-
+#analytics-page .chart-blocks {
+    display: flex;
+    flex-direction: row;
+}
 
 
 .alert-block {
@@ -1371,6 +1394,29 @@ input:checked+.slider:before {
 }
 
 
+@media screen and (max-width: 1024px) {
+    .dashboard #analytics-page .card:nth-child(1) {
+        flex-direction: column;
+    }    
+    .dashboard #analytics-page .card:first-child .card-body{
+        flex: 100%;
+        max-width: 100%;
+    }
+    
+    .dashboard #analytics-page .chart-selectors {
+        flex: 100%;
+        max-width: 100%;       
+        padding-left: 0;
+        padding-top: 20px;
+    }
+}
+
+@media screen and (max-width: 850px) {
+    .dashboard #analytics-page .card .info {
+        flex-direction: column;
+    }    
+    
+}
 
 @media screen and (max-width: 773px) {
 

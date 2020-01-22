@@ -54,11 +54,11 @@ function MonitorsViewInit() {
                 $('#view-page .options-block .live-button')[0].classList.add('active');
             else
                 $('#view-page .options-block .live-button')[0].classList.remove('active');
-            
+
             var toggleMonitorBtn = $('#view-page .switch input');
             toggleMonitorBtn.click(function (e) {
                 monitorToggle(e.target.dataset.id);
-                $('#view-page .options-block .live-button')[0].classList.toggle('active');               
+                $('#view-page .options-block .live-button')[0].classList.toggle('active');
             });
             var addSegmentBtn = $('#view-page .add-segment');
             addSegmentBtn.click(function (e) {
@@ -66,55 +66,82 @@ function MonitorsViewInit() {
                 e.stopPropagation();
                 showModal();
             });
-        });
-
-        var displayOptions = ['Custom', 'By segment'];
-        var displaySelect = '<select name="" id="displayTypeSelect">';
-        for (var i = 0; i < displayOptions.length; i++) {
-            displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
-        }
-        displaySelect += '</select>';
-        var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
-        var periodSelect = '<select name="" id="timePeriodSelect">';
-        for (var i = 0; i < periodOptions.length; i++) {
-            periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
-        }
-        periodSelect += '</select>';
-
-        var stringDate = dateForInput(new Date());
-        var optionsContent = $('#view-page .options-block .options');
-
-        optionsContent.append(
-            '<form class="">' +
-            '<div class= "position-relative form-group">' +
-            '<label  class="">Display type</label>' +
-            displaySelect +
-            '</div> ' +
-            '<div class= "position-relative form-group" >' +
-            '<label class="">Group by time period</label>' +
-            periodSelect +
-            '</div> ' +
-            '<div class= "position-relative form-group" > ' +
-            '<label for="segment_start" class="">Start date</label>' +
-            '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
-            '</div>' +
-            '<div class="position-relative form-group">' +
-            '<label for="segment_end" class="">End date</label>' +
-            '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
-            '</div>' +
-            '</form>'
-        );
-
-        loadChartData(id);
-        $('#view-page .refresh-btn').click(function () {
             loadChartData(id);
         });
-        $('#view-page #startInput').change(function () { loadChartData(id); })
-        $('#view-page #endInput').change(function () { loadChartData(id); })
 
-        $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
-        $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
+        addOptionsBlock(id);
+       
     })();
+}
+
+function bindMonitorsView() {
+    var body = $(document.body);
+    var modal = $("#view-page .modal");
+    var close = $('#view-page .modal-close');
+
+    modal.hide();
+
+    modal.click(function (e) {
+        e.stopPropagation();
+    });
+
+    body.click(function (e) {
+        modal.fadeOut();
+    });
+
+    close.click(function (e) {
+        e.stopPropagation();
+        modal.fadeOut();
+    });
+
+    // Options block
+    var id = getCookie("view_token");
+    // var displayOptions = ['Custom', 'By segment'];
+    // var displaySelect = '<select name="" id="displayTypeSelect">';
+    // for (var i = 0; i < displayOptions.length; i++) {
+    //     displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
+    // }
+    // displaySelect += '</select>';
+    // var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
+    // var periodSelect = '<select name="" id="timePeriodSelect">';
+    // for (var i = 0; i < periodOptions.length; i++) {
+    //     periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
+    // }
+    // periodSelect += '</select>';
+
+    // var stringDate = dateForInput(new Date());
+    // var optionsContent = $('#view-page .options-block .options');
+
+    // optionsContent.append(
+    //     '<form class="">' +
+    //     '<div class= "position-relative form-group">' +
+    //     '<label  class="">Display type</label>' +
+    //     displaySelect +
+    //     '</div> ' +
+    //     '<div class= "position-relative form-group" >' +
+    //     '<label class="">Group by time period</label>' +
+    //     periodSelect +
+    //     '</div> ' +
+    //     '<div class= "position-relative form-group" > ' +
+    //     '<label for="segment_start" class="">Start date</label>' +
+    //     '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
+    //     '</div>' +
+    //     '<div class="position-relative form-group">' +
+    //     '<label for="segment_end" class="">End date</label>' +
+    //     '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
+    //     '</div>' +
+    //     '</form>'
+    // );
+
+    // loadChartData(id);
+    // $('#view-page .refresh-btn').click(function () {
+    //     loadChartData(id);
+    // });
+    // $('#view-page #startInput').change(function () { loadChartData(id); })
+    // $('#view-page #endInput').change(function () { loadChartData(id); })
+
+    // $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
+    // $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
 }
 
 
@@ -166,7 +193,7 @@ function loadChartData(id) {
             maleData.push(0);
             femaleData.push(0);
         }
-        
+
         var labels = getLabels(period, n);
 
         for (var i = 0; i < trafficResult.length; i++) {
@@ -195,7 +222,7 @@ function loadChartData(id) {
                         selector.classList.add('active');
                     else
                         selector.classList.remove('active');
-                }
+                }                
                 dataGend(chartData);
             }
 
@@ -213,9 +240,9 @@ function dataGend(chartData) {
 
     showViewPageStats(chartData);
     var chart = null;
-    $("#view-page .main .chart-area").show();    
-    
-    if ($('#view-page canvas')[0]) {        
+    $("#view-page .main .chart-area").show();
+
+    if ($('#view-page canvas')[0]) {
         $('#view-page canvas')[0].remove();
         $('#view-page .chartjs-size-monitor').remove()
     }
@@ -298,7 +325,7 @@ function dataGend(chartData) {
             }]
         }
     }
-   
+
     chart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -362,33 +389,13 @@ function showModal() {
     modal.fadeIn();
 }
 
-function showViewPageStats(chartData) {    
+function showViewPageStats(chartData) {
     $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = numberWithCommas(getSum(chartData.trafficData));
     $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = numberWithCommas(getSum(chartData.postitveData));
     $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = numberWithCommas(getSum(chartData.maleData)) + "/" + numberWithCommas(getSum(chartData.femaleData));
 }
 
 
-function bindMonitorsView() {
-    var body = $(document.body);
-    var modal = $("#view-page .modal");
-    var close = $('#view-page .modal-close');
-
-    modal.hide();
-
-    modal.click(function (e) {
-        e.stopPropagation();
-    });
-
-    body.click(function (e) {
-        modal.fadeOut();
-    });
-
-    close.click(function (e) {
-        e.stopPropagation();
-        modal.fadeOut();
-    });
-}
 
 function monitorToggle(id) {
     $.when(
@@ -452,73 +459,59 @@ function deleteSegment(segment_id) {
     }, true));
 }
 
+function addOptionsBlock(id) {
+    var displayOptions = ['Custom', 'By segment'];
+    var displaySelect = '<select name="" id="displayTypeSelect">';
+    for (var i = 0; i < displayOptions.length; i++) {
+        displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
+    }
+    displaySelect += '</select>';
+    var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
+    var periodSelect = '<select name="" id="timePeriodSelect">';
+    for (var i = 0; i < periodOptions.length; i++) {
+        periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
+    }
+    periodSelect += '</select>';
+
+    var stringDate = dateForInput(new Date());
+    var optionsContent = $('#view-page .options-block .options');
+
+    if ($('#view-page .options-block .options form')[0])
+        $('#view-page .options-block .options form')[0].remove();
+
+    optionsContent.append(
+        '<form class="">' +
+        '<div class= "position-relative form-group">' +
+        '<label  class="">Display type</label>' +
+        displaySelect +
+        '</div> ' +
+        '<div class= "position-relative form-group" >' +
+        '<label class="">Group by time period</label>' +
+        periodSelect +
+        '</div> ' +
+        '<div class= "position-relative form-group" > ' +
+        '<label for="segment_start" class="">Start date</label>' +
+        '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
+        '</div>' +
+        '<div class="position-relative form-group">' +
+        '<label for="segment_end" class="">End date</label>' +
+        '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
+        '</div>' +
+        '</form>'
+    );
+
+    $('#view-page .refresh-btn').click(function () {
+        loadChartData(id);
+    });
+    $('#view-page #startInput').change(function () { loadChartData(id); })
+    $('#view-page #endInput').change(function () { loadChartData(id); })
+
+    $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
+    $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
+}
+
 function timestampToDate(ts) {
     var d = new Date();
     d.setTime(ts);
     return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
-}
-
-
-
-function getLabels(period, n) {
-    var labels = [];
-
-    var formatString = '';
-    var additionalFormat = '';
-    var cur = moment();
-    var cur1 = moment();
-    cur1.add(1, period);
-
-    switch (period) {
-        case 'hour':
-            formatString = 'ddd h a';
-            additionalFormat = 'h a';
-            break;
-        case 'day':
-            formatString = 'ddd DD/MM';            
-            break;
-        case 'week':
-            formatString = 'DD/MM';
-            additionalFormat = 'DD/MM';
-            break;
-        case 'fortnight':
-        //Moment.js not includes function for fortnight(2 weeks)
-            cur1.add(2, 'week');
-            formatString = 'DD/MM';
-            additionalFormat = 'DD/MM';
-            break;
-        case 'month':
-            formatString = 'MM/Y';
-            additionalFormat = '';
-            break;
-        case 'year':
-            formatString = 'Y';
-            break;
-
-        default:
-            formatString = 'ddd DD/MM';
-            break;
-    }
-
-    while (n > 0) {
-        var date = cur.format(formatString);       
-        if (period == 'hour' || period == 'week') {
-            var additionalDate = cur1.format(additionalFormat); 
-            labels.push(date + ' - ' + additionalDate);
-            cur1.subtract(1, period);  
-        }
-        else if (period == 'fortnight') {
-            var additionalDate = cur1.format(additionalFormat); 
-            labels.push(date + ' - ' + additionalDate);
-            cur1.subtract(2, 'week');  
-            cur.subtract(2, 'week');  
-        }
-        else {
-            labels.push(date);    
-        }
-
-        cur.subtract(1, period);
-        n--;        
-    }
-    return labels.reverse();
 }

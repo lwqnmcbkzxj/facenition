@@ -1,37 +1,26 @@
 function bindAnalytics() {
-    var body = $("#analytics-page");
-    var main = $("#analytics-page .main");
-    var loader = "<div class='loader'></div>";
+}
 
-    main.hide();
-    body.append(loader);
+function AnalyticsInit() {   
     $.when(getMonitors()).done(function (r) {
         var monitorsNames = [];
         monitorsIds = []
         for (monitor of r.data) {
             monitorsNames.push(monitor.name);
             monitorsIds.push(monitor.id);
-        }
-           
-
-        addDropdown($('#analytics-page .card:nth-child(2) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
-        addDropdown($('#analytics-page .card:nth-child(3) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
-        addDropdown($('#analytics-page .card:nth-child(4) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
-        addDropdown($('#analytics-page .card:nth-child(5) .info .dropdowns'), 'monitor', {monitorsNames, monitorsIds});
-
-        var periods = ['Year', 'Month', 'Week', 'Day'];        
-        addDropdown($('#analytics-page .card:first-child .chart-block .info .dropdowns'), 'period', periods);
-        addDropdown($('#analytics-page .card:nth-child(2) .info .dropdowns'), 'period', periods);
-        addDropdown($('#analytics-page .card:nth-child(3) .info .dropdowns'), 'period', periods);
-        addDropdown($('#analytics-page .card:nth-child(4) .info .dropdowns'), 'period', periods);
-        addDropdown($('#analytics-page .card:nth-child(5) .info .dropdowns'), 'period', periods);
-
-
-
+        } 
+        var periods = ['Year', 'Month', 'Week', 'Day']; 
         
-        renderSummaryBlock('traffic');
-        setTimeout(() => { renderSummaryBlock('impression'); }, 1000)
-        setTimeout(() => { renderSummaryBlock('gender'); }, 2000)
+        addDropdown($('#analytics-page .card:first-child .info .dropdowns'), 'period', periods);
+        addDropdowns($('#analytics-page .card:nth-child(2) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
+        addDropdowns($('#analytics-page .card:nth-child(3) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
+        addDropdowns($('#analytics-page .card:nth-child(4) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
+        addDropdowns($('#analytics-page .card:nth-child(5) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
+        
+        
+        renderSummaryBlock('gender');
+        setTimeout(() => { renderSummaryBlock('impression'); }, 500)
+        setTimeout(() => { renderSummaryBlock('traffic'); }, 1000)
 
         setTimeout(() => {
             renderLargeBlock('traffic');
@@ -41,26 +30,27 @@ function bindAnalytics() {
         
     });
 
-    main.show();
-    $('.loader').remove();
-
 
     $('#analytics-page .chart-selectors .selector').click(function (e) {
         if (e.target.closest('.selector').classList[2] != 'active')
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
     });
 }
-function AnalyticsInit() {
-}
 
-
+// BLOCKS RENDER START
 function renderSummaryBlock(entriesType) {
+    var body = $("#analytics-page .main .card:first-child() .chart-holder");
+    var main = $("#analytics-page .main .card:first-child() .chart-area");
+    var loader = "<div class='loader'></div>";
+
+    main.hide();
+    body.append(loader);
 
 
     togglePageSelector(entriesType);
     $.when(getMonitors()).then(function (r1) {
         var monitors = r1.data;
-        var period = $('#analytics-page .card:first-child .chart-block .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
+        var period = $('#analytics-page .card:first-child .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
 
 
         var timestampObject = getAnalyticPagePeriod(period);
@@ -75,17 +65,23 @@ function renderSummaryBlock(entriesType) {
 
         var queries = [];
         for (monitor of monitors) {
-            queries.push(`monitor_id=${monitor.id}&start=${start}&end=${end}&period=${newPeriod}`)
+            queries.push(`monitor_id=${monitor.id}&start=${start}&end=${end}&period=${newPeriod}`);
         }
 
         $.when(
             ...getRequestsArr(entriesType, queries)
         ).done(function (...results) {
+            main.show();
+            $('.loader').remove();
+
             for (r of results) {
                 var result = r[0].data;
                 if (result.length > maxLength)
                     maxLength = result.length;
-
+            }
+            for (r of results) {
+                var result = r[0].data;
+              
                 var trafficData = [];
                 var impressionData = [];
                 var maleData = [];
@@ -118,9 +114,13 @@ function renderSummaryBlock(entriesType) {
                     result: { trafficData, impressionData, maleData, femaleData }
                 });
 
+                
                 if (monitors[counter].id == monitors[monitors.length - 1].id) {
-                    chartDataObject['labels'] = getLabels(newPeriod, maxLength);
-                    renderSummaryGend(chartDataObject, entriesType);
+                    if (newPeriod == 'hour') 
+                        chartDataObject['labels'] = getLargeChartLabels(newPeriod);
+                    else
+                        chartDataObject['labels'] = getLabels(newPeriod, maxLength);
+                    renderSummaryChart(chartDataObject, entriesType);
                     showAnalyticsSummaryStats(chartDataObject, oldPeriod);
                 }
                 counter++;
@@ -129,8 +129,91 @@ function renderSummaryBlock(entriesType) {
     });
 }
 
+function renderLargeBlock(entriesType) {
+   
+    var card = $('#analytics-page .large-' + entriesType + '  .card-body .large-chart-block');
+    var main = $('#analytics-page .large-' + entriesType + ' .chart-area');
+    var loader = "<div class='loader'></div>";
+    main.hide();
+    card.append(loader);
 
-function renderSummaryGend(monitors, entriesType) {
+    $(card).find('.info h2').textContent = ucFirst(entriesType) + " Comparison Analytics";
+    $(card).find('.info h2').textContent = ucFirst(entriesType) + " Comparison Analytics";
+    
+    var period = $('#analytics-page .large-' + entriesType + ' .period-dropdown .visible-dropdown h6')[0].textContent;
+    var id = $('#analytics-page .large-' + entriesType + ' .monitor-dropdown .visible-dropdown h6')[0].dataset.id;
+    $.when(getMonitor(id)).then(function (r1) {
+        var monitor = r1.data;
+        var maxLength = 0;
+        var chartDataObject = [];       
+
+
+        var timestampObject = getAnalyticPagePeriod(period);
+
+        var start1 = timestampObject.start1;
+        var end1 = timestampObject.end1;
+        var start2 = timestampObject.start2;
+        var end2 = timestampObject.end2;
+        var newPeriod = timestampObject.newPeriod;
+        var oldPeriod = period;
+
+        var queries = [
+            `monitor_id=${monitor.id}&start=${start1}&end=${end1}&period=${newPeriod}`,
+            `monitor_id=${monitor.id}&start=${start2}&end=${end2}&period=${newPeriod}`,
+        ];
+
+        $.when(...getRequestsArr(entriesType, queries)).done(function (...results) {
+            main.show();
+            $('.loader').remove();
+            
+            for (r of results) {
+                //Getting max length
+                var result = r[0].data;
+                if (result.length > maxLength)
+                    maxLength = result.length;
+            }
+
+            for (r of results) {
+                var result = r[0].data;
+                var countData = [];
+                var maleData = [];
+                var femaleData = [];
+
+                for (var i = 0; i < maxLength; i++) {
+                    countData.push(0);
+                    maleData.push(0);
+                    femaleData.push(0);
+                }
+
+                if (entriesType == 'gender') {
+                    for (var i = 0; i < result.length; i++) {
+                        maleData[i] = result[i].males;
+                        femaleData[i] = result[i].females;
+                    }
+                } else {
+                    for (var i = 0; i < result.length; i++) {
+                        countData[i] = result[i].count;
+                    }
+                }
+
+                chartDataObject.push({
+                    id: monitor.id,
+                    name: monitor.name,
+                    result: { countData, maleData, femaleData }
+                });
+
+                chartDataObject['labels'] = getLargeChartLabels(newPeriod);
+                chartDataObject['period'] = oldPeriod;
+                renderLargeBlockChart(chartDataObject, entriesType);
+            }
+
+        });
+    });
+}
+// BLOCKS RENDER END
+
+// CHARTS START
+function renderSummaryChart(monitors, entriesType) {
     $("#analytics-page .main .card:nth-child(1) .chart-area").show();
 
     if ($('#analytics-page .card:nth-child(1) canvas')[0]) {
@@ -182,13 +265,11 @@ function renderSummaryGend(monitors, entriesType) {
                     borderColor: colors[i],
                     borderWidth: 1,
                     stack: i,
-                    barThickness: 60,
                     data: monitor.result.maleData
                 }, {
                     label: monitor.name + ' Female',
                     backgroundColor: colors[i + 1],
                     borderColor: colors[i + 1],
-                    barThickness: 60,
                     borderWidth: 1,
                     stack: i,
                     data: monitor.result.femaleData
@@ -221,80 +302,6 @@ function renderSummaryGend(monitors, entriesType) {
         options: options
     });
 }
-
-
-
-function renderLargeBlock(entriesType) {
-    var card = $('#analytics-page .large-' + entriesType + '  .info');
-
-    $(card).find('h4').textContent = ucFirst(entriesType) + " Comparison Analytics";
-    $(card).find('h4').textContent = ucFirst(entriesType) + " Comparison Analytics";
-    
-    var period = $('#analytics-page .large-' + entriesType + ' .period-dropdown .visible-dropdown h6')[0].textContent;
-    var id = $('#analytics-page .large-' + entriesType + ' .monitor-dropdown .visible-dropdown h6')[0].dataset.id;
-    $.when(getMonitor(id)).then(function (r1) {
-        var monitor = r1.data;
-        var maxLength = 0;
-        var chartDataObject = [];       
-
-
-        var timestampObject = getAnalyticPagePeriod(period);
-
-        var start1 = timestampObject.start1;
-        var end1 = timestampObject.end1;
-        var start2 = timestampObject.start2;
-        var end2 = timestampObject.end2;
-        var newPeriod = timestampObject.newPeriod;
-        var oldPeriod = period;
-
-        var queries = [
-            `monitor_id=${monitor.id}&start=${start1}&end=${end1}&period=${newPeriod}`,
-            `monitor_id=${monitor.id}&start=${start2}&end=${end2}&period=${newPeriod}`,
-        ];
-
-        $.when(...getRequestsArr(entriesType, queries)).done(function (...results) {
-            for (r of results) {
-                var result = r[0].data;
-
-                if (result.length > maxLength)
-                    maxLength = result.length;
-
-                var countData = [];
-                var maleData = [];
-                var femaleData = [];
-
-                for (var i = 0; i < maxLength; i++) {
-                    countData.push(0);
-                    maleData.push(0);
-                    femaleData.push(0);
-                }
-
-                if (entriesType == 'gender') {
-                    for (var i = 0; i < result.length; i++) {
-                        maleData[i] = result[i].males;
-                        femaleData[i] = result[i].females;
-                    }
-                } else {
-                    for (var i = 0; i < result.length; i++) {
-                        countData[i] = result[i].count;
-                    }
-                }
-
-                chartDataObject.push({
-                    id: monitor.id,
-                    name: monitor.name,
-                    result: { countData, maleData, femaleData }
-                });
-
-                chartDataObject['labels'] = getLargeChartLabels(newPeriod, maxLength);
-                chartDataObject['period'] = oldPeriod;
-                renderLargeBlockChart(chartDataObject, entriesType);
-            }
-
-        });
-    });
-}
-
 
 function renderLargeBlockChart(monitorsObject, entriesType) {
     $("#analytics-page .large-" + entriesType + " .chart-area").show();
@@ -347,22 +354,13 @@ function renderLargeBlockChart(monitorsObject, entriesType) {
                     backgroundColor: barBgColors[i],
                     borderWidth: 2,
                     stack: i,
-                    categoryPercentage: 1.0,
-                    barPercentage: 1.0,
-                    barThickness: 50,
-                    maxBarThickness: 70,
-                    data: monitor.result.maleData
+                    data: monitor.result.maleData,                    
                 }, {
                     label: 'Female' + chartLabels[j],
-                    categoryPercentage: 1.0,
-                    barPercentage: 1.0,
                     borderColor: colors[i + 2 + 1],
-                    backgroundColor: barBgColors[i + 1],
-                    barThickness: 70,
-                    barThickness: 50,
-                    maxBarThickness: 70,
+                    backgroundColor: barBgColors[i + 1],                  
                     borderWidth: 2,
-                    stack: i,
+                    stack: i,                    
                     data: monitor.result.femaleData
                 });
                 i++;
@@ -380,10 +378,11 @@ function renderLargeBlockChart(monitorsObject, entriesType) {
                 ticks: {
                     beginAtZero: true,
                     min: 0
-                }
-            }],
-        }
+                },
+            }],           
+        },         
     }
+
 
     chart = new Chart(ctx, {
         type: type,
@@ -392,11 +391,13 @@ function renderLargeBlockChart(monitorsObject, entriesType) {
             datasets: datasets,
         },
 
-        options: options
+        options: options,       
     });
 }
+// CHARTS END
 
 
+// REQUESTS START
 function getMonitor(id) {
     return $.ajax(request("GET_MONITOR", { params: id }, function (r) {
         if (!r.success) {
@@ -405,7 +406,6 @@ function getMonitor(id) {
         }
     }, true));
 }
-
 
 function getMonitors() {
     return $.ajax(request("GET_MONITORS", {}, function (r) {
@@ -426,7 +426,7 @@ function getDataOfMonitor(entriesType, query) {
         }
     });
 }
-
+// REQUESTS END
 
 function showAnalyticsSummaryStats(dataObject, period) {
     $('#analytics-page .card:nth-child(1) h2')[0].textContent = 'Last ' + period + ' summary';
@@ -458,12 +458,24 @@ function togglePageSelector(entriesType) {
     }
 }
 
-function getLargeChartLabels(period, n) {
+function getLargeChartLabels(period) {
     var labels = [];
 
     if (period == 'hour') {
-        for (var i = 0; i < 24; i++)
-            labels.push(i + ' - ' + (i + 1))
+        var n = 24;
+        var formatString = 'h a';       
+        var cur = moment().subtract(1, period);;
+        var cur1 = moment();
+
+        while (n > 0) {
+            var date = cur.format(formatString) + ' - ' + cur1.format(formatString);  
+            labels.push(date);
+
+            cur1.subtract(1, period);
+            cur.subtract(1, period);
+            n--;        
+        }
+        labels.reverse();
     } else if (period == 'day') {
         for (var i = 0; i < 7; i++)
             labels.push('Day ' + (i + 1))
@@ -539,6 +551,12 @@ function getRequestsArr(entriesType, queries) {
     return requestsArr;
 }
 
+function addDropdowns(location, items) {
+    var monitorsNames = items.monitorsNames;
+    var monitorsIds = items.monitorsIds;
+    addDropdown(location, 'monitor', {monitorsNames, monitorsIds});
+    addDropdown(location, 'period', items.periods);
+}
 
 function addDropdown(location, type, items) {
     var dropListItems = '';
@@ -611,8 +629,14 @@ function startRenderFunction(e) {
     var target = e.target.closest('.card');
 
     if (target == $('#analytics-page .card:nth-child(1)')[0]) {
-        var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0].classList[1].split('-')[0];
+        var selectors = $('#analytics-page .chart-selectors')[0];
+        var activeSelector = $(selectors).find('.selector.active')[0].classList[1].split('-')[0];
+        for (var i = 0; i < selectors.length; i++) {
+            if (selectors[i] != activeSelector)
+                renderSummaryBlock(selector);
+        }
         renderSummaryBlock(activeSelector);
+        
     } else if (target == $('#analytics-page .card:nth-child(2)')[0]) {
 
     } else {

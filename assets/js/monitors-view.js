@@ -70,7 +70,7 @@ function MonitorsViewInit() {
         });
 
         addOptionsBlock(id);
-       
+
     })();
 }
 
@@ -93,55 +93,6 @@ function bindMonitorsView() {
         e.stopPropagation();
         modal.fadeOut();
     });
-
-    // Options block
-    var id = getCookie("view_token");
-    // var displayOptions = ['Custom', 'By segment'];
-    // var displaySelect = '<select name="" id="displayTypeSelect">';
-    // for (var i = 0; i < displayOptions.length; i++) {
-    //     displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
-    // }
-    // displaySelect += '</select>';
-    // var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
-    // var periodSelect = '<select name="" id="timePeriodSelect">';
-    // for (var i = 0; i < periodOptions.length; i++) {
-    //     periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
-    // }
-    // periodSelect += '</select>';
-
-    // var stringDate = dateForInput(new Date());
-    // var optionsContent = $('#view-page .options-block .options');
-
-    // optionsContent.append(
-    //     '<form class="">' +
-    //     '<div class= "position-relative form-group">' +
-    //     '<label  class="">Display type</label>' +
-    //     displaySelect +
-    //     '</div> ' +
-    //     '<div class= "position-relative form-group" >' +
-    //     '<label class="">Group by time period</label>' +
-    //     periodSelect +
-    //     '</div> ' +
-    //     '<div class= "position-relative form-group" > ' +
-    //     '<label for="segment_start" class="">Start date</label>' +
-    //     '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
-    //     '</div>' +
-    //     '<div class="position-relative form-group">' +
-    //     '<label for="segment_end" class="">End date</label>' +
-    //     '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
-    //     '</div>' +
-    //     '</form>'
-    // );
-
-    // loadChartData(id);
-    // $('#view-page .refresh-btn').click(function () {
-    //     loadChartData(id);
-    // });
-    // $('#view-page #startInput').change(function () { loadChartData(id); })
-    // $('#view-page #endInput').change(function () { loadChartData(id); })
-
-    // $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
-    // $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
 }
 
 
@@ -211,22 +162,18 @@ function loadChartData(id) {
         }
 
         var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
-        dataGend(chartData);
-
-        $('#view-page .chart-selector div').click(function (e) {
-            var selectorBlock = $('#view-page .chart-selector');
-
-            if (e.target.classList[0] != 'active') {
-                for (selector of selectorBlock[0].children) {
-                    if (e.target == selector)
-                        selector.classList.add('active');
-                    else
-                        selector.classList.remove('active');
-                }                
-                dataGend(chartData);
-            }
-
-        });
+        dataGend(chartData);        
+    });
+    $('#view-page .chart-selector div').click(function (e) {
+        var selectorBlock = $('#view-page .chart-selector');
+        var chartObj = chartData;
+        for (selector of selectorBlock[0].children) {
+            if (e.target == selector)
+                selector.classList.add('active');
+            else
+                selector.classList.remove('active');
+        }
+        dataGend(chartObj);
     });
 }
 

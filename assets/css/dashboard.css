@@ -1412,10 +1412,24 @@ input:checked+.slider:before {
 }
 
 @media screen and (max-width: 850px) {
+    .dashboard #view-page .card:first-child .card-body {
+        flex-direction: column;
+    } 
+    .dashboard #view-page .card:first-child div{
+        flex: 100%;
+        max-width: 100%;
+    } 
+    .dashboard #view-page .card:nth-child(2) {
+        flex-direction: column;       
+    } 
+    .dashboard #view-page .chart-block,  #view-page .options-block {
+        flex: 100%;
+        max-width: 100%;
+    }
+
     .dashboard #analytics-page .card .info {
         flex-direction: column;
-    }    
-    
+    }
 }
 
 @media screen and (max-width: 773px) {

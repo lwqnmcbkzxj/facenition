@@ -395,8 +395,8 @@
                 <div class="card">
                     <div class="chart-block">
                         <div class="chart-selector">
-                            <div>Pedestrians</div>
-                            <div class='active'>Views</div>
+                            <div class='active'>Pedestrians</div>
+                            <div>Views</div>
                             <div>Gender</div>
                         </div>
                         <div class="chart-area"></div>
@@ -419,7 +419,9 @@
                             </div>
                         </div>
                         <div class="options"> </div>
-                        <button class="btn-secondary refresh-btn" id="refresh-pwd"> Refresh </button>
+                        <div class="button-holder">
+                            <button class="btn-secondary refresh-btn" id="refresh-pwd"> Refresh </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card">
@@ -471,7 +473,7 @@
                         </div>
                     </div>
                     <div class="chart-selectors">
-                        <div class='selector traffic-selector'>
+                        <div class='selector traffic-selector active'>
                             <h3>Traffic</h3>
                             <div><span>Yearly</span> total</div>
                             <div>0 people</div>
@@ -500,19 +502,32 @@
                             <div class="dropdowns"></div>
                         </div>                            
                         
-                        <div class="chart-blocks">
-                            <div class="traffic-chart-block">
-                                <div class="stats"></div>
-                                <div class="small-chart-area"></div>
+                        <div class="card-content">
+                            <div class="chart-blocks">
+                                <div class="chart-block traffic-chart-block">
+                                    <div class="stats">
+                                        <i class="fa fa-male" aria-hidden="true"></i> 
+                                        <span>0</span>
+                                    </div>
+                                    <div class="small-chart-area"></div>
+                                </div>
+                                <div class="chart-block impression-chart-block">
+                                    <div class="stats">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> 
+                                        <span>0</span>                                    
+                                    </div>
+                                    <div class="small-chart-area"></div>
+                                </div>
+                                <div class="chart-block gender-chart-block">
+                                    <div class="stats">
+                                        <i class="fa fa-user" aria-hidden="true"></i>
+                                        <span>0</span>
+                                        <i class="fa fa-user" id = "red-fa" aria-hidden="true"></i>
+                                        <span>0</span>
+                                    </div>
+                                    <div class="small-chart-area"></div>
+                                </div>                            
                             </div>
-                            <div class="impression-chart-block">
-                                <div class="stats"></div>
-                                <div class="small-chart-area"></div>
-                            </div>
-                            <div class="gender-chart-block">
-                                <div class="stats"></div>
-                                <div class="small-chart-area"></div>
-                            </div>                            
                         </div>
                     </div>
                 </div>

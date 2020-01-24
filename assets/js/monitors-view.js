@@ -70,7 +70,7 @@ function MonitorsViewInit() {
         });
 
         addOptionsBlock(id);
-
+        setInterval(() => { loadChartData(id); }, 15000);
     })();
 }
 
@@ -103,6 +103,13 @@ function loadChartData(id) {
 
     var query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
 
+    var btnBody = $('#view-page .options-block .button-holder');
+    var btnMain = $('#view-page .options-block .refresh-btn');
+    var loader = "<div class='loader'></div>";
+
+    btnMain.hide();
+    btnBody.append(loader);
+   
     $.when(
         $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
         $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
@@ -121,7 +128,8 @@ function loadChartData(id) {
             showAlert('Failed to load info', 'error');
             return;
         }
-
+        btnMain.show();
+        $('.loader').remove();
         trafficResult = r1[0].data;
         impressionResult = r2[0].data;
         genderResult = r3[0].data;
@@ -162,19 +170,20 @@ function loadChartData(id) {
         }
 
         var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
-        dataGend(chartData);        
+        dataGend(chartData);   
+        
+        $('#view-page .chart-selector div').click(function (e) {
+            var selectorBlock = $('#view-page .chart-selector');
+            for (selector of selectorBlock[0].children) {    
+                if (e.target == selector)
+                    selector.classList.add('active');
+                else
+                    selector.classList.remove('active'); 
+            }
+            dataGend(chartData);
+        });        
     });
-    $('#view-page .chart-selector div').click(function (e) {
-        var selectorBlock = $('#view-page .chart-selector');
-        var chartObj = chartData;
-        for (selector of selectorBlock[0].children) {
-            if (e.target == selector)
-                selector.classList.add('active');
-            else
-                selector.classList.remove('active');
-        }
-        dataGend(chartObj);
-    });
+   
 }
 
 function dataGend(chartData) {
@@ -446,7 +455,7 @@ function addOptionsBlock(id) {
         '</div>' +
         '</form>'
     );
-
+    
     $('#view-page .refresh-btn').click(function () {
         loadChartData(id);
     });

@@ -984,9 +984,10 @@ function getLabels(period, n) {
 
     var formatString = '';
     var additionalFormat = '';
-    var cur = moment();
-    var cur1 = moment();
-    cur1.add(1, period);
+   
+    var cur = moment().startOf(period);
+    var cur1 = moment().startOf(period);  
+    
 
     switch (period) {
         case 'hour':
@@ -997,11 +998,19 @@ function getLabels(period, n) {
             formatString = 'ddd DD/MM';
             break;
         case 'week':
+            cur = moment().startOf('isoWeek');
+            cur1 = moment().startOf('isoWeek');
+            // cur.add(1, 'day');
+            // cur1.add(1, 'day');
+
             formatString = 'DD/MM';
             additionalFormat = 'DD/MM';
             break;
         case 'fortnight':
             //Moment.js not includes function for fortnight(2 weeks)
+            cur = moment().startOf('isoWeek');
+            cur1 = moment().startOf('isoWeek');
+
             cur1.add(2, 'week');
             formatString = 'DD/MM';
             additionalFormat = 'DD/MM';
@@ -1018,7 +1027,7 @@ function getLabels(period, n) {
             formatString = 'ddd DD/MM';
             break;
     }
-
+    cur1.add(1, period);
     while (n > 0) {
         var date = cur.format(formatString);
         if (period == 'hour' || period == 'week') {

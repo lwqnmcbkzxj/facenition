@@ -16,8 +16,9 @@ function MonitorsViewInit() {
         $.when(
             $.ajax(request("GET_MONITOR", { params: id }, function (r) { }, true)),
             $.ajax(request("GET_MONITOR_THUMBNAIL", { params: id }, function (r) { }, true)),
+            $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) { }, true)),
 
-        ).done(function (r1, r2) {
+        ).done(function (r1, r2, r3) {
             if (!r1[0].success) {
                 showAlert('Failed to load monitor', 'error');
                 return;
@@ -66,11 +67,14 @@ function MonitorsViewInit() {
                 e.stopPropagation();
                 showModal();
             });
-            loadChartData(id);
+            addOptionsBlock(r3[0].data);
+
+
+            getChartData(id);
+
         });
 
-        addOptionsBlock(id);
-        setInterval(() => { loadChartData(id); }, 15000);
+        // setInterval(() => { getChartData(id); }, 15000);
     })();
 }
 
@@ -93,13 +97,22 @@ function bindMonitorsView() {
         e.stopPropagation();
         modal.fadeOut();
     });
+    // addOptionsBlock();
 }
 
 
-function loadChartData(id) {
+function getChartData(id) {
+    var displayType = $('#view-page .display-dropdown input')[0].value.toLowerCase();
+    if (displayType == 'custom')
+        getCustomChartData(id);
+    else
+        getSegmentsChartData(id);
+}
+
+function getCustomChartData(id) {
+    var period = $('#view-page .period-dropdown .dropdown-input')[0].value.toLowerCase();
     var start = dateToTimestamp($('#view-page #startInput')[0].value, 'start');
     var end = dateToTimestamp($('#view-page #endInput')[0].value, 'end');
-    var period = $('#view-page #timePeriodSelect')[0].value;
 
     var query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
 
@@ -109,7 +122,7 @@ function loadChartData(id) {
 
     btnMain.hide();
     btnBody.append(loader);
-   
+
     $.when(
         $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
         $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
@@ -170,23 +183,81 @@ function loadChartData(id) {
         }
 
         var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
-        dataGend(chartData);   
-        
+        renderChart(chartData);
+
         $('#view-page .chart-selector div').click(function (e) {
             var selectorBlock = $('#view-page .chart-selector');
-            for (selector of selectorBlock[0].children) {    
+            for (selector of selectorBlock[0].children) {
                 if (e.target == selector)
                     selector.classList.add('active');
                 else
-                    selector.classList.remove('active'); 
+                    selector.classList.remove('active');
             }
-            dataGend(chartData);
-        });        
+            renderChart(chartData);
+        });
     });
-   
 }
 
-function dataGend(chartData) {
+function getSegmentsChartData(id) {
+    var period = $('#view-page .period-dropdown .dropdown-input')[0].value.toLowerCase();
+    var sChildren = $('#view-page .segment-dropdown .dropdown-visible .variants')[0].children;
+
+    var segments = [];
+    for (var i = 0; i < sChildren.length - 1; i++) {
+        segments.push({ start: sChildren[i].dataset.start, end: sChildren[i].dataset.end, name: sChildren[i].textContent });
+    }
+    // console.log(segments)
+
+    var queries = [];
+    for (segment of segments) {
+        queries.push(`monitor_id=${id}&start=${segment.start}&end=${segment.end}&period=${period}`);
+    }
+
+    console.log(queries)
+    var trafficArr = [];
+    var impressionArr = [];
+    var genderArr = [];
+    $.when(
+        ...getRequestsArr('traffic', queries),
+        ...getRequestsArr('traffic', queries),
+        ...getRequestsArr('traffic', queries)).done(function (...result) {
+            console.log(result)
+            debugger
+            for (var i = 1; i <= segments.length; i++) {
+                for (var j = 1; j <= 3; j++){
+                    if (j == 1)
+                        trafficArr.push(result[(i * j) - j])
+                    else if (j== 2)
+                        impressionArr.push(result[(i * j) - j])
+                    else if (j == 3)
+                        genderArr.push(result[(i * j) - j]);
+                } 
+            }
+            console.log(trafficArr);
+            console.log(impressionArr);
+            console.log(genderArr);
+            
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+function renderChart(chartData) {
     var labels = chartData.labels;
     var trafficData = chartData.trafficData;
     var postitveData = chartData.postitveData;
@@ -415,59 +486,205 @@ function deleteSegment(segment_id) {
     }, true));
 }
 
-function addOptionsBlock(id) {
-    var displayOptions = ['Custom', 'By segment'];
-    var displaySelect = '<select name="" id="displayTypeSelect">';
-    for (var i = 0; i < displayOptions.length; i++) {
-        displaySelect += '<option value = ' + displayOptions[i].toLowerCase() + '> ' + displayOptions[i] + '</option>'
+function addOptionsBlock(segments) {
+    var id = getCookie("view_token");
+    var displayTypes = ['Custom', 'By segment'];
+    var displayVariants = `<div class="dropdown-list-variant active" data-id="${0}">${displayTypes[0]}</div>`;
+    for (var i = 1; i < displayTypes.length; i++) {
+        displayVariants += `<div class="dropdown-list-variant" data-id="${i}">${displayTypes[i]}</div>`
     }
-    displaySelect += '</select>';
-    var periodOptions = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
-    var periodSelect = '<select name="" id="timePeriodSelect">';
-    for (var i = 0; i < periodOptions.length; i++) {
-        periodSelect += '<option value = ' + periodOptions[i].toLowerCase() + '> ' + periodOptions[i] + '</option>'
+
+    var periods = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
+    var periodVariants = `<div class="dropdown-list-variant active" data-id="${0}">${periods[0]}</div>`;
+    for (var i = 1; i < periods.length; i++) {
+        periodVariants += `<div class="dropdown-list-variant" data-id="${i}">${periods[i]}</div>`
     }
-    periodSelect += '</select>';
+
+    var segmentsVariants = '';
+    for (var i = 0; i < segments.length; i++) {
+        segmentsVariants += `<div class="dropdown-list-variant" data-id="${i}" data-start="${segments[i].start}" data-end="${segments[i].end}">${segments[i].name}</div>`
+    }
 
     var stringDate = dateForInput(new Date());
-    var optionsContent = $('#view-page .options-block .options');
 
+    var optionsContent = $('#view-page .options-block .options');
     if ($('#view-page .options-block .options form')[0])
         $('#view-page .options-block .options form')[0].remove();
 
     optionsContent.append(
-        '<form class="">' +
-        '<div class= "position-relative form-group">' +
+        '<form class ="">' +
+        '<div class= "position-relative form-group active" >' +
         '<label  class="">Display type</label>' +
-        displaySelect +
+        '<div class="dropdown display-dropdown"> ' +
+        '<div class="dropdown-visible">' +
+        '<div class = "variants">' +
+        `<input class="dropdown-input" value="${displayTypes[0]}"></input>` +
+        '</div > ' +
+        '<div class = "selectors">' +
+        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '</div > ' +
+        '</div>' +
+        '<div class="dropdown-list">	' +
+        displayVariants +
+        '<div class="no-options active">No options</div >' +
+        '</div>' +
         '</div> ' +
-        '<div class= "position-relative form-group" >' +
+        '</div > ' +
+
+        '<div class= "position-relative form-group active" >' +
         '<label class="">Group by time period</label>' +
-        periodSelect +
+        '<div class="dropdown period-dropdown"> ' +
+        '<div class="dropdown-visible">' +
+        '<div class = "variants">' +
+        `<input class="dropdown-input" value="${periods[0]}"></input>` +
+        '</div > ' +
+        '<div class = "selectors">' +
+        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '</div > ' +
+        '</div>' +
+        '<div class="dropdown-list">	' +
+        periodVariants +
+        '<div class="no-options active">No options</div >' +
+        '</div>' +
         '</div> ' +
-        '<div class= "position-relative form-group" > ' +
+        '</div > ' +
+        // Date inputs
+        '<div class= "position-relative form-group active" > ' +
         '<label for="segment_start" class="">Start date</label>' +
         '<input id="startInput" name="start" max="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '"> ' +
         '</div>' +
-        '<div class="position-relative form-group">' +
+
+        '<div class="position-relative form-group active">' +
         '<label for="segment_end" class="">End date</label>' +
         '<input id="endInput" name="end" min="' + stringDate + '" type="date" class="form-control" value="' + stringDate + '">' +
         '</div>' +
+
+        // Segments input
+        '<div class= "position-relative form-group " >' +
+        '<label class="">Select segments to compare</label>' +
+        '<div class="dropdown segment-dropdown"> ' +
+        '<div class="dropdown-visible">' +
+        '<div class = "variants">' +
+        '<input class="dropdown-input" placeholder="Select..."></input>' +
+        '</div > ' +
+        '<div class = "selectors">' +
+        '<i class="fa fa-times selector" aria-hidden="true"></i>	' +
+        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '</div > ' +
+        '</div>' +
+        '<div class="dropdown-list">	' +
+        segmentsVariants +
+        '<div class="no-options active">No options</div >' +
+        '</div>' +
+        '</div> ' +
+        '</div > ' +
         '</form>'
     );
-    
-    $('#view-page .refresh-btn').click(function () {
-        loadChartData(id);
-    });
-    $('#view-page #startInput').change(function () { loadChartData(id); })
-    $('#view-page #endInput').change(function () { loadChartData(id); })
 
-    $('#view-page #displayTypeSelect').change(function () { loadChartData(id); })
-    $('#view-page #timePeriodSelect').change(function () { loadChartData(id); })
+    addInputDropdown($('#view-page .options-block .options .display-dropdown')[0]);
+    addInputDropdown($('#view-page .options-block .options .period-dropdown')[0]);
+    addSegmentDropdown($('#view-page .options-block .options .segment-dropdown')[0]);
+
+
+    $('#view-page .refresh-btn').click(function () {
+        getChartData(id);
+    });
+
+    $('#view-page #startInput').change(function () { getChartData(id); })
+    $('#view-page #endInput').change(function () { getChartData(id); })
 }
 
 function timestampToDate(ts) {
     var d = new Date();
     d.setTime(ts);
     return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+}
+
+
+function addInputDropdown(location) {
+    $(location).find('.dropdown-visible').click(function (e) {
+        $(location).find('.dropdown-list')[0].classList.toggle('active');
+        $(location).find('.dropdown-visible')[0].classList.toggle('active');
+
+        if ($(location).find('.dropdown-list')[0].children.length == 1)
+            $(location).find('.no-options')[0].classList.add('active');
+        else
+            $(location).find('.no-options')[0].classList.remove('active');
+
+    });
+
+    $(location).find('.dropdown-list-variant').click(function (e) {
+        if (e.target.classList[1] !== 'no-options') {
+            var dropdownList = $(location).find('.dropdown-list')[0];
+
+            for (elem of dropdownList.children) {
+                elem.classList.remove('active');
+            }
+
+            $(this)[0].classList.add('active');
+            $(location).find('input')[0].value = $(this)[0].textContent;
+            dropdownList.classList.toggle('active');
+
+            if (location.className.includes('display')) {
+                $('#view-page .options .form-group:nth-child(5)')[0].classList.toggle('active');
+                $('#view-page .options .form-group:nth-child(3)')[0].classList.toggle('active');
+                $('#view-page .options .form-group:nth-child(4)')[0].classList.toggle('active');
+            }
+
+        }
+    });
+}
+
+
+function addSegmentDropdown(location) {
+    $(location).find('.dropdown-list')
+    $(location).find('.dropdown-visible').click(function (e) {
+        if (e.target !== $('.selectedVariant .fa')[0]) {
+            $(location).find('.dropdown-list')[0].classList.toggle('active');
+            $(location).find('.dropdown-visible')[0].classList.toggle('active');
+
+            var dropdownList = $(location).find('.dropdown-list')[0];
+            for (var i = 0; i < dropdownList.children.length - 1; i++) {
+                if (dropdownList.children[i].classList[1] != "active") {
+                    $(location).find('.no-options')[0].classList.remove('active');
+                    break;
+                }
+                else
+                    $(location).find('.no-options')[0].classList.add('active');
+            }
+        }
+    });
+
+    $(location).find('.dropdown-list-variant').click(function (e) {
+        var dropdownList = $(location).find('.dropdown-list')[0];
+        dropdownList.classList.toggle('active');
+        $(this)[0].classList.add('active');
+
+        var variant = $(this)[0];
+        var input = $(location).find(' .variants input');
+        var value = $(variant)[0].textContent;
+        input.before(`<div class = "selectedVariant" data-start=${variant.dataset.start} data-end=${variant.dataset.end} data-id=${variant.dataset.id}><div class = "text">${value}</div><i class="fa fa-times" aria-hidden="true"></i></div>`);
+
+        $(location).find(' .selectedVariant .fa-times').click(function () {
+            $(location).find(` .dropdown-list-variant[data-id="${this.parentNode.dataset.id}"]`)[0].classList.remove('active');
+            this.parentNode.remove()
+        });
+
+        $('#view-page .selectors .fa-times').click(function (e) {
+            e.stopPropagation();
+            var variants = $(location).find('.variants')[0].children;
+            for (var i = 0; i < variants.length - 1; i++) {
+                $(variants[i]).find('.fa').click();
+            }
+        });
+    });
+}
+
+function getSegments(id) {
+    return $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) {
+        if (!r.success) {
+            showAlert('Failed to load segments', 'error');
+            return;
+        }
+    }, true));
 }

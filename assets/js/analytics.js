@@ -19,15 +19,15 @@ function bindAnalytics() {
         var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
         var selectors = $('#analytics-page .chart-selectors')[0].children;     
 
-        for (var i = 0; i < selectors.length; i++) {
-            if (selectors[i] != activeSelector) {                           
-                renderSummaryBlock(selectors[i].classList[1].split('-')[0]);               
-            }           
-        }
-        setTimeout(() => {
-            renderSummaryBlock(activeSelector.classList[1].split('-')[0]);            
-        }, 1000);     
-        
+        // for (var i = 0; i < selectors.length; i++) {
+        //     if (selectors[i] != activeSelector) {                           
+        //         renderSummaryBlock(selectors[i].classList[1].split('-')[0]);               
+        //     }           
+        // }
+        // setTimeout(() => {
+        //     renderSummaryBlock(activeSelector.classList[1].split('-')[0]);            
+        // }, 1000);     
+        renderSummaryBlock('impression')
 
 
         renderSmallBlocks();
@@ -99,20 +99,29 @@ function renderSummaryBlock(entriesType) {
                     femaleData.push(0);
                 }
                 if (entriesType == 'traffic') {
-                    for (var i = 0; i < result.length; i++) {
-                        if (period == 'year')
-                            trafficData[maxLength - result.length + i] = result[i].count;                            
-                        else
-                            trafficData[i] = result[i].count;                            
+                    for (var i = 0; i < result.length; i++) { 
+                        if (result[i].period - result[i - 1].period >= getPeriodTime(oldPeriod))
+                            trafficData[maxLength - result.length + i] = result[i].count;
                     }
                    
                 } else if (entriesType == 'impression') {
+                    // var periodTime = getPeriodTime(newPeriod);
+                    // impressionData[0] = result[0].count;
+                    // for (var i = 1, j = 1; i < result.length, j  < maxLength; j++) {
                     for (var i = 0; i < result.length; i++) {
                         if (period == 'year')
                             impressionData[maxLength - result.length + i] = result[i].count;
                         else 
                             impressionData[i] = result[i].count;
-                    }                    
+                          
+                        // console.log(result[i].period - result[i- 1].period)
+                        // console.log(i)
+                        // if (result[i].period - result[i - 1].period <= periodTime) {                            
+                        //     impressionData[j] = result[i].count;
+                        // }
+                        // i++
+                        
+                    }     
                 } else if (entriesType == 'gender') {                    
                     for (var i = 0; i < result.length; i++) {
                         if (period == 'year') {
@@ -137,7 +146,7 @@ function renderSummaryBlock(entriesType) {
                         chartDataObject['labels'] = getLargeChartLabels(newPeriod); 
                     }
                     else
-                    chartDataObject['labels'] = getLabels(newPeriod, maxLength);
+                        chartDataObject['labels'] = getLabels(newPeriod, maxLength);
                 
                     renderSummaryChart(chartDataObject, entriesType);
                     showSummaryBlockStats(chartDataObject, oldPeriod);
@@ -209,11 +218,11 @@ function renderSmallBlocks() {
             trafficData[maxLength - trafficResult.length + i] = trafficResult[i].count;
         }
         for (var i = 0; i < impressionResult.length; i++) {
-            impressionData[maxLength - impressionResult.length + i - 1] = impressionResult[i].count;
+            impressionData[maxLength - impressionResult.length + i] = impressionResult[i].count;
         }        
         for (var i = 0; i < genderResult.length; i++) {
-            maleData[maxLength - genderResult.length + i - 1] = genderResult[i].males;
-            femaleData[maxLength - genderResult.length + i - 1] = genderResult[i].females;
+            maleData[maxLength - genderResult.length + i] = genderResult[i].males;
+            femaleData[maxLength - genderResult.length + i] = genderResult[i].females;
         }       
 
         var labels = getLabels(newPeriod, maxLength);
@@ -731,7 +740,7 @@ function getAnalyticPagePeriod(period) {
             newPeriod = 'week';
             break;
         case 'year':
-            end1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'end');
+            end1 = dateToTimestamp(cur.endOf('month').format("YYYY-MM-DD"), 'end') + 1;
             cur.subtract(1, period);
             start1 = dateToTimestamp(cur.format("YYYY-MM-DD"), 'start');
 
@@ -743,7 +752,6 @@ function getAnalyticPagePeriod(period) {
         default:
             break;
     }
-
     return { start1, end1, start2, end2, newPeriod };
 }
 
@@ -877,4 +885,29 @@ function getMaxLength(period) {
             break;
     }
     return length;
+}
+
+function getPeriodTime(period) {
+    var daySeconds = 86400;
+    var periodMS = 0;
+    switch (period.toLowerCase()) {
+        case 'hour':
+            periodMS = daySeconds / 24;
+            break;
+        case 'day':
+            periodMS = daySeconds;
+            break;
+        case 'week':
+            periodMS = daySeconds * 7;           
+            break;
+        case 'month':
+            periodMS = daySeconds * 28;   
+            break;
+        case 'year':
+            periodMS = daySeconds * 365;
+            break;
+        default:
+            break;
+    }
+    return periodMS * 1000;
 }

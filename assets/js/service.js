@@ -979,7 +979,7 @@ function dateForInput(date) {
 }
 
 
-function getLabels(period, n) {
+function getExactPeriodLabels(period, n) {
     var labels = [];
 
     var formatString = '';
@@ -1000,9 +1000,6 @@ function getLabels(period, n) {
         case 'week':
             cur = moment().startOf('isoWeek');
             cur1 = moment().startOf('isoWeek');
-            // cur.add(1, 'day');
-            // cur1.add(1, 'day');
-
             formatString = 'DD/MM';
             additionalFormat = 'DD/MM';
             break;
@@ -1049,4 +1046,50 @@ function getLabels(period, n) {
         n--;
     }
     return labels.reverse();
+}
+
+function timestampToDate(ts) {
+    var d = new Date();
+    d.setTime(ts);
+    return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+}
+
+
+function getMonitor(id) {
+    return $.ajax(request("GET_MONITOR", { params: id }, function (r) {
+        if (!r.success) {
+            showAlert('Failed to load monitors', 'error');
+            return;
+        }
+    }, true));
+}
+
+function getMonitors() {
+    return $.ajax(request("GET_MONITORS", {}, function (r) {
+        if (!r.success) {
+            showAlert('Failed to load monitors', 'error');
+            return;
+        }
+    }, true));
+}
+
+function getDataOfMonitor(entriesType, query) {
+    return $.when(
+        $.ajax(request("GET_" + entriesType.toUpperCase() + "_ENTRIES_V2", { query }, function (r) { }, true)),
+    ).done(function (r) {
+        if (!r.success) {
+            showAlert('Failed to load info', 'error');
+            return;
+        }
+    });
+}
+
+
+function getSegments(id) {
+    return $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) {
+        if (!r.success) {
+            showAlert('Failed to load segments', 'error');
+            return;
+        }
+    }, true));
 }

@@ -19,7 +19,6 @@ function PasswordResetInit() {
                         password: pass.val()
                     },
                     function (r) {
-                        console.log(r)
                         if (!r.success) {
                             showAlert(r, 'error');                            
                             return;

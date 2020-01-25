@@ -882,6 +882,7 @@
 .dashboard #view-page .card-body div:nth-child(2) {
     flex: 0 0 66.66667%;
     max-width: 66.66667%;
+    margin-left: 40px;
 }
 
 .dashboard #view-page .card-body div:nth-child(3) {
@@ -912,6 +913,7 @@
 #view-page .slider-container {
     display: flex;
     flex-direction: row;
+    padding: 0!important;
 }
 
 #view-page .slider-label {
@@ -978,17 +980,14 @@
     max-width: 66.66667%;
 }
 
+a:active, a:focus { outline: none; }
 
-
-
-
-
-
-
-
-
-
-
+input, textarea {outline:none;}
+input:active, textarea:active {outline:none;}
+:focus {outline:none;}
+textarea {resize:none;}
+textarea {resize:vertical;}
+textarea {resize:horizontal;}
 
 
 #view-page .options-block .form-group {
@@ -1126,60 +1125,6 @@
 #view-page .dropdown .selectedVariant .fa:hover{
 	background: #ffbdad;
 }
-
-
-
-
-
-
-
-
-
-
-
-a:active, a:focus { outline: none; }
-
-input, textarea {outline:none;}
-input:active, textarea:active {outline:none;}
-:focus {outline:none;}
-textarea {resize:none;}
-textarea {resize:vertical;}
-textarea {resize:horizontal;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #view-page .options-block .live-button {
@@ -1656,9 +1601,10 @@ textarea {resize:horizontal;}
     .dashboard #view-page .card:first-child div{
         flex: 100%;
         max-width: 100%;
+        margin: 0px;       
     } 
     .dashboard #view-page .card:nth-child(2) {
-        flex-direction: column;       
+        flex-direction: column;        
     } 
     .dashboard #view-page .chart-block,  #view-page .options-block {
         flex: 100%;

@@ -34,6 +34,16 @@ function bindSettings() {
 
         reset.click(function (e) {
             e.stopPropagation();
+            var email = $("#settings-page #email");
+            $.when(               
+                $.ajax(request('PASSWORD_RESET', { email: email.val() }, function (r1) { }, true)),
+            ).done(function (r1) {               
+                if (!r1.success) {
+                    showAlert("Can't reset password", 'error');
+                    return;
+                }
+            });          
+
         });
         modal.fadeIn();
     });
@@ -50,6 +60,8 @@ function bindSettings() {
             '<button class="btn-primary btn-sumbit" id="update-card">Update</button>'
         );
 
+        var firstName = $("#settings-page #f-name");
+        var lastName = $("#settings-page #l-name");
         var cnum = $("#settings-page #c-number");
         var cvc = $("#settings-page #cvc");
         var cexp = $("#settings-page #c-exp");
@@ -78,20 +90,26 @@ function bindSettings() {
 
         var submitUpdate = $("#settings-page .modal .btn-sumbit");
         submitUpdate.click(function (e) {
-            var id = null;
-            e.stopPropagation();
-            // id = ??????
+            e.stopPropagation();            
+            if (firstName.val() == '' || lastName.val() == '' || cnum.val() == '' || cvc.val() == '' || cexp.val() == '') {
+                showAlert('Empty fields', 'error');
+                return 0;
+            }
+            var id = '???';
             
-            $.when(               
-                $.ajax(request("UPDATE_CARD", { tokenId: id, }, function (r1) { }, true)),
-            ).done(function (r1) {               
-                if (!r1.success) {
-                    showAlert('Failed to update card', 'error');
-                    return;
-                } else {
-                    showAlert('Card updated', 'success');
-                }
-            });
+               
+               $.when(               
+                    $.ajax(request("UPDATE_CARD", { tokenId: id, }, function (r1) { }, true)),
+                ).done(function (r1) {               
+                    if (!r1.success) {
+                        showAlert('Failed to update card', 'error');
+                        return;
+                    } else {
+                        showAlert('Card updated', 'success');
+                    }
+                });           
+           
+           
 
             modal.fadeOut();
         });
@@ -128,7 +146,6 @@ function SettingsInit() {
             showAlert(r.msg, 'error');            
             return;
         }       
-        
         var card = r.data;
         cardInput.val(
             card.brand +

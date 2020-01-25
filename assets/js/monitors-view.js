@@ -34,7 +34,7 @@ function MonitorsViewInit() {
             infoCard.empty();
             infoCard.append(
                 "<div class = 'card-body'>" +
-                "<div><img src='data:image/jpg;base64," + img + "' alt = /></div>" +
+                "<div><img src='data:image/jpg;base64," + img + "' alt = 'Preview'/></div>" +
                 "<div>" +
                 "<h1>" + monitor.name + "</h1>" +
                 "<div class = 'slider-container'>" +
@@ -68,13 +68,10 @@ function MonitorsViewInit() {
                 showModal();
             });
             addOptionsBlock(r3[0].data);
-
-
             getChartData(id);
-
         });
 
-        // setInterval(() => { getChartData(id); }, 15000);
+        setInterval(() => { getChartData(id); }, 15000);
     })();
 }
 
@@ -97,19 +94,19 @@ function bindMonitorsView() {
         e.stopPropagation();
         modal.fadeOut();
     });
-    // addOptionsBlock();
 }
 
-
+// Get data start
+// Getting data from server and making objects for chats
 function getChartData(id) {
     var displayType = $('#view-page .display-dropdown input')[0].value.toLowerCase();
     if (displayType == 'custom')
-        getCustomChartData(id);
+        getCustomData(id);
     else
-        getSegmentsChartData(id);
+        getSegmentsData(id);
 }
 
-function getCustomChartData(id) {
+function getCustomData(id) {
     var period = $('#view-page .period-dropdown .dropdown-input')[0].value.toLowerCase();
     var start = dateToTimestamp($('#view-page #startInput')[0].value, 'start');
     var end = dateToTimestamp($('#view-page #endInput')[0].value, 'end');
@@ -166,7 +163,7 @@ function getCustomChartData(id) {
             femaleData.push(0);
         }
 
-        var labels = getLabels(period, n);
+        var labels = getExactPeriodLabels(period, n);
 
         for (var i = 0; i < trafficResult.length; i++) {
             trafficData[i] = trafficResult[i].count;
@@ -183,8 +180,8 @@ function getCustomChartData(id) {
         }
 
         var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
-        renderChart(chartData);
-
+        renderCustomChart(chartData);
+        $('#view-page .chart-selector div').unbind('click');
         $('#view-page .chart-selector div').click(function (e) {
             var selectorBlock = $('#view-page .chart-selector');
             for (selector of selectorBlock[0].children) {
@@ -193,12 +190,18 @@ function getCustomChartData(id) {
                 else
                     selector.classList.remove('active');
             }
-            renderChart(chartData);
+            renderCustomChart(chartData);
         });
     });
 }
 
-function getSegmentsChartData(id) {
+function getSegmentsData(id) {
+    var btnBody = $('#view-page .options-block .button-holder');
+    var btnMain = $('#view-page .options-block .refresh-btn');
+    var loader = "<div class='loader'></div>";
+    btnMain.hide();
+    btnBody.append(loader);
+
     var period = $('#view-page .period-dropdown .dropdown-input')[0].value.toLowerCase();
     var sChildren = $('#view-page .segment-dropdown .dropdown-visible .variants')[0].children;
 
@@ -206,58 +209,93 @@ function getSegmentsChartData(id) {
     for (var i = 0; i < sChildren.length - 1; i++) {
         segments.push({ start: sChildren[i].dataset.start, end: sChildren[i].dataset.end, name: sChildren[i].textContent });
     }
-    // console.log(segments)
-
+    segments.reverse();
     var queries = [];
     for (segment of segments) {
         queries.push(`monitor_id=${id}&start=${segment.start}&end=${segment.end}&period=${period}`);
     }
 
-    console.log(queries)
-    var trafficArr = [];
-    var impressionArr = [];
-    var genderArr = [];
+    var chartDataObject = [];
+    var maxLength = 0;
     $.when(
         ...getRequestsArr('traffic', queries),
-        ...getRequestsArr('traffic', queries),
-        ...getRequestsArr('traffic', queries)).done(function (...result) {
-            console.log(result)
-            debugger
-            for (var i = 1; i <= segments.length; i++) {
-                for (var j = 1; j <= 3; j++){
-                    if (j == 1)
-                        trafficArr.push(result[(i * j) - j])
-                    else if (j== 2)
-                        impressionArr.push(result[(i * j) - j])
-                    else if (j == 3)
-                        genderArr.push(result[(i * j) - j]);
-                } 
+        ...getRequestsArr('impression', queries),
+        ...getRequestsArr('gender', queries)).done(function (...result) {
+            btnMain.show();
+            $('.loader').remove();
+            for (var i = segments.length - 1; i >= 0; i--) {
+                var trafficResult = [];
+                var impressionResult = [];
+                var genderResult = [];
+
+                var trafficData = [];
+                var postitveData = [];
+                var negativeData = [];
+                var maleData = [];
+                var femaleData = [];
+
+                for (var j = 1; j <= 3; j++) {
+                    var position = (j * segments.length) - (segments.length - i);
+                    if (j === 1)
+                        trafficResult.push(result[position][0].data);
+                    else if (j === 2)
+                        impressionResult.push(result[position][0].data);
+                    else if (j === 3)
+                        genderResult.push(result[position][0].data);
+                }
+
+                trafficResult = trafficResult[0];
+                impressionResult = impressionResult[0];
+                genderResult = genderResult[0];
+
+                var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
+                for (var j = 0; j < n; j++) {
+                    trafficData.push(0);
+                    postitveData.push(0);
+                    negativeData.push(0);
+                    maleData.push(0);
+                    femaleData.push(0);
+                }
+
+                for (var j = 0; j < trafficResult.length; j++) {
+                    trafficData[j] = trafficResult[j].count;
+                }
+
+                for (var j = 0; j < impressionResult.length; j++) {
+                    postitveData[j] = impressionResult[j].positive;
+                    negativeData[j] = impressionResult[j].negative;
+                }
+                for (var j = 0; j < genderResult.length; j++) {
+                    maleData[j] = genderResult[j].males;
+                    femaleData[j] = genderResult[j].females;
+                }
+                chartDataObject.push({
+                    name: segments[i].name,
+                    result: { trafficData, postitveData, negativeData, maleData, femaleData },
+                });
+                maxLength = Math.max(n, maxLength);
             }
-            console.log(trafficArr);
-            console.log(impressionArr);
-            console.log(genderArr);
-            
 
+            chartDataObject['labels'] = getExactPeriodLabels(period, maxLength);
+            renderSegmentsChart(chartDataObject);
 
-
-    });
-
-
-
-
-
-
-
-
-
-
-
+            $('#view-page .chart-selector div').unbind('click');
+            $('#view-page .chart-selector div').click(function (e) {
+                var selectorBlock = $('#view-page .chart-selector');
+                for (selector of selectorBlock[0].children) {
+                    if (e.target == selector)
+                        selector.classList.add('active');
+                    else
+                        selector.classList.remove('active');
+                }
+                renderSegmentsChart(chartDataObject);
+            });
+        });
 }
+// Get data end
 
-
-
-
-function renderChart(chartData) {
+// Render charts start
+function renderCustomChart(chartData) {
     var labels = chartData.labels;
     var trafficData = chartData.trafficData;
     var postitveData = chartData.postitveData;
@@ -362,6 +400,113 @@ function renderChart(chartData) {
         options: options
     });
 }
+function renderSegmentsChart(chartData) {
+    $("#view-page .main .chart-area").show();
+    showViewPageStats(chartData);
+
+    if ($('#view-page canvas')[0]) {
+        $('#view-page canvas')[0].remove();
+        $('#view-page .chartjs-size-monitor').remove()
+    }
+    var body = $('#view-page .card:nth-child(2) .chart-area');
+    body.append(
+        '<canvas class="chartjs-render-monitor monitor-graphic-1"></canvas>'
+    );
+    var canvas = $("#view-page canvas")[0];
+    var ctx = canvas.getContext("2d");
+
+    var activePage = $('#view-page .chart-block .chart-selector .active').text();
+
+
+    var chart = null;
+    var datasets = [];
+    var colors = [
+        'rgb(57,64,73)', 'rgb(57,64,73, .7)',
+        'rgb(44,109,187)', 'rgb(44,109,187, .7)',
+        'rgb(100,94,203)', 'rgb(100,94,203, .7)',
+        'rgb(143,76,197)', 'rgb(143,76,197, 0.7)',
+        'rgb(185,39,178)', 'rgb(185,39,178, .7)',
+        'rgb(191,55,116)', 'rgb(191,55,116, .7)',
+        'rgb(191,64,57)', 'rgb(191,64,57, .7)'];
+    var i = 0;
+    var stack = 0;
+    for (segment of chartData) {
+        switch (activePage) {
+            case 'Pedestrians':
+                datasets.push({
+                    label: segment.name,
+                    backgroundColor: colors[i],
+                    borderColor: colors[i],
+                    borderWidth: 1,
+                    stack: stack,
+
+                    data: segment.result.trafficData
+                })
+                break;
+            case 'Views':
+                datasets.push({
+                    label: segment.name + ' - Positive',
+                    backgroundColor: colors[i],
+                    borderColor: colors[i],
+                    borderWidth: 1,
+                    stack: stack,
+                    data: segment.result.postitveData
+                },
+                    {
+                        label: segment.name + ' - Negative',
+                        backgroundColor: colors[i + 1],
+                        borderColor: colors[i + 1],
+                        borderWidth: 1,
+                        stack: stack,
+                        data: segment.result.negativeData
+                    });
+                break;
+            case 'Gender':
+                datasets.push({
+                    label: segment.name + ' - Male',
+                    backgroundColor: colors[i],
+                    borderColor: colors[i],
+                    borderWidth: 1,
+                    stack: stack,
+                    data: segment.result.maleData
+                }, {
+                    label: segment.name + ' - Female',
+                    backgroundColor: colors[i + 1],
+                    borderColor: colors[i + 1],
+                    borderWidth: 1,
+                    stack: stack,
+                    data: segment.result.femaleData
+                });
+            default:
+                break;
+        }
+        i += 2;
+        stack++;
+    }
+
+    var options = {
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    min: 0
+                }
+            }]
+        }
+    }
+
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: datasets,
+        },
+        options: options
+    });
+
+}
+// Render charts end
 
 function showModal() {
     var modal = $("#view-page .modal");
@@ -391,25 +536,10 @@ function showModal() {
         e.stopPropagation();
         modal.fadeOut();
     });
-    var createSegment = $("#view-page .modal .btn-sumbit");
-    createSegment.click(function (e) {
+    var createSegmentBtn = $("#view-page .modal .btn-sumbit");
+    createSegmentBtn.click(function (e) {
         e.stopPropagation();
-        $.when(
-            $.ajax(request("CREATE_MONITOR_SEGMENT", {
-                params: id,
-                name: segmentName.val(),
-                start: dateToTimestamp(segmentStart.val(), 'start'),
-                end: dateToTimestamp(segmentEnd.val(), 'end')
-            }, function (r1) { }, true))
-        ).done(function (r1) {
-            if (!r1.success) {
-                showAlert('Failed to create segment', 'error');
-                return;
-            } else {
-                showAlert('Segment created', 'success');
-                showSegments(id);
-            }
-        });
+        createSegment(id, segmentName, segmentStart, segmentEnd);
         modal.fadeOut();
     });
 
@@ -417,13 +547,38 @@ function showModal() {
 }
 
 function showViewPageStats(chartData) {
-    $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = numberWithCommas(getSum(chartData.trafficData));
-    $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = numberWithCommas(getSum(chartData.postitveData));
-    $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = numberWithCommas(getSum(chartData.maleData)) + "/" + numberWithCommas(getSum(chartData.femaleData));
+    var displayType = $('#view-page .display-dropdown input')[0].value.toLowerCase();
+
+    var trafficSum = 0;
+    var positiveSum = 0;
+    var negativeSum = 0;
+    var maleSum = 0;
+    var femaleSum = 0;
+
+    if (displayType == 'custom') {
+        trafficSum = getSum(chartData.trafficData);
+        positiveSum = getSum(chartData.postitveData);
+        negativeSum = getSum(chartData.negativeData);
+        maleSum = getSum(chartData.maleData);
+        femaleSum = getSum(chartData.femaleData);
+    }
+    else {
+        for (var i = 0; i < chartData.length; i++) {
+            trafficSum += getSum(chartData[i].result.trafficData);
+            positiveSum += getSum(chartData[i].result.postitveData);
+            negativeSum += getSum(chartData[i].result.negativeData);
+            maleSum += getSum(chartData[i].result.maleData);
+            femaleSum += getSum(chartData[i].result.femaleData);
+        }
+    }
+
+    $('#view-page .options-block .stats div:nth-child(1) span')[0].textContent = numberWithCommas(trafficSum);
+    $('#view-page .options-block .stats div:nth-child(2) span')[0].textContent = numberWithCommas(positiveSum + negativeSum);
+    $('#view-page .options-block .stats div:nth-child(3) span')[0].textContent = numberWithCommas(maleSum) + "/" + numberWithCommas(femaleSum);
 }
 
 
-
+// Requests start
 function monitorToggle(id) {
     $.when(
         $.ajax(request("MONITOR_TOGGLE", { params: id }, function (r) { }, true))
@@ -436,7 +591,6 @@ function monitorToggle(id) {
         }
     });
 }
-
 
 function showSegments(id) {
     var main = $("#view-page .main");
@@ -471,6 +625,26 @@ function showSegments(id) {
                 );
             })
         }
+        addOptionsBlock(monitorSerments);
+    });
+}
+
+function createSegment(id, segmentName, segmentStart, segmentEnd) {
+    $.when(
+        $.ajax(request("CREATE_MONITOR_SEGMENT", {
+            params: id,
+            name: segmentName.val(),
+            start: dateToTimestamp(segmentStart.val(), 'start'),
+            end: dateToTimestamp(segmentEnd.val(), 'end')
+        }, function (r1) { }, true))
+    ).done(function (r1) {
+        if (!r1.success) {
+            showAlert('Failed to create segment', 'error');
+            return;
+        } else {
+            showAlert('Segment created', 'success');
+            showSegments(id);
+        }
     });
 }
 
@@ -485,7 +659,9 @@ function deleteSegment(segment_id) {
         }
     }, true));
 }
+// Requests end
 
+// Dropdown start
 function addOptionsBlock(segments) {
     var id = getCookie("view_token");
     var displayTypes = ['Custom', 'By segment'];
@@ -585,21 +761,17 @@ function addOptionsBlock(segments) {
     addInputDropdown($('#view-page .options-block .options .period-dropdown')[0]);
     addSegmentDropdown($('#view-page .options-block .options .segment-dropdown')[0]);
 
-
+    $('#view-page .refresh-btn').unbind('click');
     $('#view-page .refresh-btn').click(function () {
         getChartData(id);
     });
 
+    $('#view-page #startInput').unbind('change');
+    $('#view-page #endInput').unbind('change');
+
     $('#view-page #startInput').change(function () { getChartData(id); })
     $('#view-page #endInput').change(function () { getChartData(id); })
 }
-
-function timestampToDate(ts) {
-    var d = new Date();
-    d.setTime(ts);
-    return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
-}
-
 
 function addInputDropdown(location) {
     $(location).find('.dropdown-visible').click(function (e) {
@@ -614,27 +786,35 @@ function addInputDropdown(location) {
     });
 
     $(location).find('.dropdown-list-variant').click(function (e) {
-        if (e.target.classList[1] !== 'no-options') {
-            var dropdownList = $(location).find('.dropdown-list')[0];
+        var dropdownList = $(location).find('.dropdown-list')[0];
 
-            for (elem of dropdownList.children) {
-                elem.classList.remove('active');
+        for (elem of dropdownList.children) {
+            elem.classList.remove('active');
+        }
+        $(location).find('.dropdown-visible')[0].classList.toggle('active');
+
+        $(this)[0].classList.add('active');
+        $(location).find('input')[0].value = $(this)[0].textContent;
+        dropdownList.classList.toggle('active');
+
+
+        if (location.className.includes('display')) {
+            if (e.target.textContent == 'By segment') {
+                $('#view-page .options .form-group:nth-child(5)')[0].classList.add('active');
+                $('#view-page .options .form-group:nth-child(3)')[0].classList.remove('active');
+                $('#view-page .options .form-group:nth-child(4)')[0].classList.remove('active');
             }
-
-            $(this)[0].classList.add('active');
-            $(location).find('input')[0].value = $(this)[0].textContent;
-            dropdownList.classList.toggle('active');
-
-            if (location.className.includes('display')) {
-                $('#view-page .options .form-group:nth-child(5)')[0].classList.toggle('active');
-                $('#view-page .options .form-group:nth-child(3)')[0].classList.toggle('active');
-                $('#view-page .options .form-group:nth-child(4)')[0].classList.toggle('active');
+            else {
+                $('#view-page .options .form-group:nth-child(5)')[0].classList.remove('active');
+                $('#view-page .options .form-group:nth-child(3)')[0].classList.add('active');
+                $('#view-page .options .form-group:nth-child(4)')[0].classList.add('active');
             }
-
+        } else if (location.className.includes('period')) {
+            var id = getCookie("view_token");
+            getChartData(id);
         }
     });
 }
-
 
 function addSegmentDropdown(location) {
     $(location).find('.dropdown-list')
@@ -676,15 +856,8 @@ function addSegmentDropdown(location) {
             for (var i = 0; i < variants.length - 1; i++) {
                 $(variants[i]).find('.fa').click();
             }
+            input[0].value = '';
         });
     });
 }
-
-function getSegments(id) {
-    return $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) {
-        if (!r.success) {
-            showAlert('Failed to load segments', 'error');
-            return;
-        }
-    }, true));
-}
+// Dropdown end

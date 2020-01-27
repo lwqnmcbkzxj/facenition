@@ -720,7 +720,7 @@ function addDropdown(location, type, items) {
         });
 
         visibleTag = `<h6>${items[2]}</h6>`;
-        icon = '<i class="fa fa-clock" aria-hidden="true"></i>';
+        icon = '<i class = "icon icon-clock"></i>'
         selectText = 'timespan';
     }
     else if (type == 'monitor') {
@@ -729,9 +729,10 @@ function addDropdown(location, type, items) {
         }
 
         visibleTag = `<h6 data-id="${items.monitorsIds[0]}">${items.monitorsNames[0]}</h6>`;
-        icon = '<i class="fa fa-desktop" aria-hidden="true"></i>';
+        icon = '<i class = "icon icon-desktop"></i>';
         selectText = 'monitor';
     }
+
 
     var dropdown = `
     <div class = 'dropdown ${type}-dropdown'>
@@ -739,7 +740,7 @@ function addDropdown(location, type, items) {
             ${visibleTag}
             <div class = "toggle-dropdown">
                ${icon}
-                <i class="fa fa-caret-down" aria-hidden="true"></i>
+               <i class = "icon icon-arrow-down"></i>                            
             </div>
         </div>
         <div class="dropdown-list">

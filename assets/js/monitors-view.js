@@ -699,7 +699,7 @@ function addOptionsBlock(segments) {
         `<input class="dropdown-input" value="${displayTypes[0]}"></input>` +
         '</div > ' +
         '<div class = "selectors">' +
-        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '<i class = "icon icon-chevron-down selector"></i>' +
         '</div > ' +
         '</div>' +
         '<div class="dropdown-list">	' +
@@ -717,7 +717,7 @@ function addOptionsBlock(segments) {
         `<input class="dropdown-input" value="${periods[0]}"></input>` +
         '</div > ' +
         '<div class = "selectors">' +
-        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '<i class = "icon icon-chevron-down selector"></i>' +
         '</div > ' +
         '</div>' +
         '<div class="dropdown-list">	' +
@@ -745,9 +745,9 @@ function addOptionsBlock(segments) {
         '<div class = "variants">' +
         '<input class="dropdown-input" placeholder="Select..."></input>' +
         '</div > ' +
-        '<div class = "selectors">' +
-        '<i class="fa fa-times selector" aria-hidden="true"></i>	' +
-        '<i class="fa fa-chevron-down selector" aria-hidden="true"></i>	' +
+        '<div class = "selectors">' +        
+        '<i class = "icon icon-close selector"></i>' +
+        '<i class = "icon icon-chevron-down selector"></i>' +
         '</div > ' +
         '</div>' +
         '<div class="dropdown-list">	' +
@@ -821,7 +821,7 @@ function addInputDropdown(location) {
 function addSegmentDropdown(location) {
     $(location).find('.dropdown-list')
     $(location).find('.dropdown-visible').click(function (e) {
-        if (e.target !== $('.selectedVariant .fa')[0]) {
+        if (e.target !== $('.selectedVariant .icon')[0]) {
             $(location).find('.dropdown-list')[0].classList.toggle('active');
             $(location).find('.dropdown-visible')[0].classList.toggle('active');
 
@@ -845,18 +845,21 @@ function addSegmentDropdown(location) {
         var variant = $(this)[0];
         var input = $(location).find(' .variants input');
         var value = $(variant)[0].textContent;
-        input.before(`<div class = "selectedVariant" data-start=${variant.dataset.start} data-end=${variant.dataset.end} data-id=${variant.dataset.id}><div class = "text">${value}</div><i class="fa fa-times" aria-hidden="true"></i></div>`);
-
-        $(location).find(' .selectedVariant .fa-times').click(function () {
+        input.before(`<div class = "selectedVariant" data-start=${variant.dataset.start} data-end=${variant.dataset.end} data-id=${variant.dataset.id}>
+        <div class = "text">${value}</div>       
+        <i class = 'icon icon-delete'></i>
+        </div>`);
+          
+        $(location).find(' .selectedVariant .icon-delete').click(function () {
             $(location).find(` .dropdown-list-variant[data-id="${this.parentNode.dataset.id}"]`)[0].classList.remove('active');
             this.parentNode.remove()
         });
 
-        $('#view-page .selectors .fa-times').click(function (e) {
+        $('#view-page .selectors .icon-close').click(function (e) {
             e.stopPropagation();
             var variants = $(location).find('.variants')[0].children;
             for (var i = 0; i < variants.length - 1; i++) {
-                $(variants[i]).find('.fa').click();
+                $(variants[i]).find('.icon-delete').click();
             }
             input[0].value = '';
         });

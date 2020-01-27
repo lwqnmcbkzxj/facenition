@@ -1,6 +1,7 @@
 .dashboard {}
 
 .dashboard .sidebar {
+    z-index: 100;
     overflow: hidden;
     border-top: 2px solid #1f8ef1;
     box-shadow: 0 2px 22px 0 rgba(0, 0, 0, 0.1),
@@ -1068,10 +1069,12 @@ textarea {resize:horizontal;}
 #view-page .options .selectors {	
 	margin: 5px 8px 5px 5px;    
     flex-basis: 25px;
+    display: flex;
 }
 #view-page .options .segment-dropdown .selectors {	
 	margin: 5px 8px 5px 5px;    
     flex-basis: 50px;
+    display: flex;
 }
 #view-page .options .selector {
 	color: #d6d6d6;	
@@ -1147,15 +1150,10 @@ textarea {resize:horizontal;}
     height: auto;
     white-space: nowrap;
 }
-#view-page .dropdown .selectedVariant .fa{
+#view-page .dropdown .selectedVariant .icon{
 	padding: 2px 4px;
     margin-left: 5px;
-
     font-size: 12px;
-}
-
-#view-page .dropdown .selectedVariant .fa:hover{
-	background: #ffbdad;
 }
 
 
@@ -1210,7 +1208,6 @@ textarea {resize:horizontal;}
     display: flex;
     align-items: center;
     justify-content: start;
-    padding-left: 10px;
 }
 
 #view-page .options-block i {
@@ -1386,7 +1383,7 @@ textarea {resize:horizontal;}
     align-items: center;
 }
 
-#analytics-page .dropdown .toggle-dropdown .fa:nth-child(2){
+#analytics-page .dropdown .toggle-dropdown .icon:nth-child(2){
     margin-left: 5px;
 }
 
@@ -1599,7 +1596,7 @@ textarea {resize:horizontal;}
     background: rgba(252, 248, 215, 0.95);
 }
 
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 1200px) {
     .dashboard #monitors-page .table-mon .monitor{    
         flex-direction: column;
         flex-flow: wrap;
@@ -1970,4 +1967,100 @@ textarea {resize:horizontal;}
     100% {
         background: #fff;
     }
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    text-align: center;
+}
+
+.icon-camera {
+    background: url('../img/camera.png') no-repeat;
+}
+.icon-chart {
+    background: url('../img/chart.png') no-repeat;
+}
+
+.icon-settings {
+    background: url('../img/settings.png') no-repeat;
+}
+
+.icon-clock {
+    background: url('../img/clock.png') no-repeat;
+    filter: invert(.5);
+}
+
+.icon-desktop {
+    background: url('../img/desktop.png') no-repeat;
+    filter: invert(.5);
+}
+.icon-arrow-down {
+    background: url('../img/arrow-down.png') no-repeat;
+    height: 10px;
+    width: 15px;
+    filter: invert(.5);
+}
+
+.icon-chevron-down {
+    background: url('../img/chevron-down.png') no-repeat;
+    height: 15px;
+    width: 20px;
+    filter: invert(.5);
+}
+.icon-chevron-down:hover{
+    filter: invert(.7);
+}
+
+.icon-close {
+    background: url('../img/close.png') no-repeat;
+    width: 20px;
+    height: 20px;  
+    filter: invert(.5);
+}
+.icon-close:hover {
+    filter: invert(.7);
+}
+.icon-male {
+    background: url('../img/male.png') no-repeat;
+    filter: invert(.5);
+}
+
+.icon-eye {
+    background: url('../img/eye.png') no-repeat;
+    filter: invert(.5);
+}
+
+.icon-male-gender {
+    background: url('../img/male-gender.png') no-repeat;
+    width: 30px;
+    filter: invert(.5);
+}
+.icon-female-gender {
+    background: url('../img/female-gender.png') no-repeat;
+    width: 30px;
+    filter: invert(.5);
+}
+
+.icon-male-blue {
+    background: url('../img/male-blue.png') no-repeat;
+}
+.icon-eye-blue {
+    background: url('../img/eye-blue.png') no-repeat;
+}
+.icon-user-blue {
+    background: url('../img/user-blue.png') no-repeat;
+}
+.icon-user-red {
+    background: url('../img/user-red.png') no-repeat;
+}
+
+.icon-delete {
+    transition: .3s;
+    background: url('../img/close-red.png') no-repeat;
+    filter: brightness(1) invert(.5);
+}
+.icon-delete:hover {
+    filter: invert(0);
 }

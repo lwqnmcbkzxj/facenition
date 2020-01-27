@@ -78,9 +78,11 @@ function renderSummaryBlock(entriesType) {
             queries.push(`monitor_id=${monitor.id}&start=${start}&end=${end}&period=${newPeriod}`);
         }
 
-        $.when(
-            ...getRequestsArr(entriesType, queries)
-        ).done(function (...results) {
+       
+        $.when.apply(
+           $, getRequestsArr(entriesType, queries)
+        ).done(function () {
+            var results = arguments;
             main.show();
             $('.loader').remove();
 
@@ -238,10 +240,12 @@ function renderLargeBlock(entriesType) {
         `monitor_id=${id}&start=${start2}&end=${end2}&period=${newPeriod}`,
     ];
 
-    $.when(...getRequestsArr(entriesType, queries)).done(function (...results) {
+    $.when.apply(
+       $, getRequestsArr(entriesType, queries)
+    ).done(function () {
         main.show();
         $('.loader').remove();
-
+        var results = arguments;
         var maxLength = getMaxLength(newPeriod);
 
         for (r of results) {
@@ -690,7 +694,7 @@ function getAnalyticPagePeriod(period) {
 }
 
 
-function getRequestsArr(entriesType, queries) {
+function getRequestsArr(entriesType, queries) {   
     var requestsArr = [];
     for (query of queries) {
         requestsArr.push(getDataOfMonitor(entriesType, query))

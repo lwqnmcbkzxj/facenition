@@ -49,17 +49,6 @@ function MonitorsInit() {
                     "<div></div>" +
                     "<div></div>" +
                 "</div>"
-                
-                // "<tr>" +
-                // " <td>" +
-                // " <i>No monitors</i>" +
-                // "</td>" +
-                // "<td></td>" +
-                // "<td></td>" +
-                // "<td></td>" +
-                // "<td></td>" +
-                // "<td></td>" +
-                // "</tr>"
             );
         } else {
             monitors.map(function(e, i) {

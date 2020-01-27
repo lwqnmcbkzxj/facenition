@@ -217,10 +217,12 @@ function getSegmentsData(id) {
 
     var chartDataObject = [];
     var maxLength = 0;
-    $.when(
-        ...getRequestsArr('traffic', queries),
-        ...getRequestsArr('impression', queries),
-        ...getRequestsArr('gender', queries)).done(function (...result) {
+    $.when.apply(
+        $,
+        getRequestsArr('traffic', queries),
+        getRequestsArr('impression', queries),
+        getRequestsArr('gender', queries)).done(function () {
+            var result = arguments;
             btnMain.show();
             $('.loader').remove();
             for (var i = segments.length - 1; i >= 0; i--) {

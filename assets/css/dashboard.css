@@ -423,7 +423,7 @@
     color: #1f8ef1 !important;
 }
 
-.dashboard .text-primary tr th {
+.dashboard .text-primary>div {
     color: rgba(34, 42, 66, 0.7);
     padding: 12px 7px;
     vertical-align: middle;
@@ -440,21 +440,52 @@
     text-align: center;
 }
 
-.dashboard .card-data>tr {
-    height: 140px;
-}
 
 #monitors-page {
     min-height: calc(100vh - 59px);
 }
 
-.dashboard .card-data>tr>td {
+.dashboard .card-data .monitor>div {
     border-color: rgba(34, 42, 66, 0.2);
     padding: 12px 7px;
     vertical-align: middle;
     color: rgba(34, 42, 66, 0.7) !important;
     border-top: 0.0625rem solid #e3e3e3;
+    font-size: 14px;
 }
+
+
+.dashboard #monitors-page .table-mon .monitor{
+    display: flex;
+    flex-direction: row;
+}
+
+.dashboard #monitors-page .table-mon .text-primary{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.dashboard #monitors-page .table-mon .monitor>div:nth-child(1), .table-mon .text-primary div:nth-child(1) {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+.dashboard #monitors-page .table-mon .monitor>div:nth-child(2), .table-mon .text-primary div:nth-child(2) {
+    flex: 0 0 20%;
+    max-width: 20%;
+}
+
+.dashboard #monitors-page .table-mon .monitor>div:nth-child(3), .table-mon .text-primary div:nth-child(3) {
+    flex: 0 0 40%;
+    max-width: 40%;
+}
+
+.dashboard #monitors-page .table-mon .monitor>div:nth-child(4), .table-mon .text-primary div:nth-child(4) {
+    flex: 0 0 15%;
+    max-width: 15%;
+}
+
 
 .dashboard .card-data>tr>td>img {
     max-width: 100%;
@@ -476,7 +507,8 @@
 
 .dashboard .card-data .chart-area {
     position: relative;
-    width: 100%;
+    /* width: auto; */
+    min-width: 300px;
 
 }
 
@@ -1567,6 +1599,36 @@ textarea {resize:horizontal;}
     background: rgba(252, 248, 215, 0.95);
 }
 
+@media screen and (max-width: 1300px) {
+    .dashboard #monitors-page .table-mon .monitor{    
+        flex-direction: column;
+        flex-flow: wrap;
+    }
+    .dashboard #monitors-page .table-mon .text-primary div:nth-child(3){
+        display: none;
+    }
+    
+    .dashboard #monitors-page .table-mon .monitor>div:nth-child(1) {
+        flex: 0 0 40%;
+        max-width: 40%;
+        order: 1;
+    }
+    .dashboard #monitors-page .table-mon .monitor>div:nth-child(2){
+        flex: 0 0 30%;
+        max-width: 30%;
+        order: 2;
+    }
+    .dashboard #monitors-page .table-mon .monitor>div:nth-child(3) {
+        flex: 0 0 100%;
+        max-width: 100%;
+        order: 4;
+    }
+    .dashboard #monitors-page .table-mon .monitor>div:nth-child(4){
+        flex: 0 0 30%;
+        max-width: 30%;
+        order: 3;
+    }
+}
 
 @media screen and (max-width: 1024px) {
     .dashboard #analytics-page .card:nth-child(1) {

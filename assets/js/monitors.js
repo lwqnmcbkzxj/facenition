@@ -39,41 +39,52 @@ function MonitorsInit() {
         monitorsTable.empty();
         if (monitors.length == 0) {
             monitorsTable.append(
-                "<tr>" +
-                    " <td>" +
+                "<div>" +
+                    " <div>" +
                     " <i>No monitors</i>" +
-                    "</td>" +
-                    "<td></td>" +
-                    "<td></td>" +
-                    "<td></td>" +
-                    "<td></td>" +
-                    "<td></td>" +
-                    "</tr>"
+                    "</div>" +
+                    "<div></div>" +
+                    "<div></div>" +
+                    "<div></div>" +
+                    "<div></div>" +
+                    "<div></div>" +
+                "</div>"
+                
+                // "<tr>" +
+                // " <td>" +
+                // " <i>No monitors</i>" +
+                // "</td>" +
+                // "<td></td>" +
+                // "<td></td>" +
+                // "<td></td>" +
+                // "<td></td>" +
+                // "<td></td>" +
+                // "</tr>"
             );
         } else {
             monitors.map(function(e, i) {
                 monitorsTable.append(
-                    "<tr id='mon-" +
+                    "<div class = 'monitor' id='mon-" +
                         i +
                         "'>" +
-                        " <td class='mon-preview' id='preview-" +
+                        " <div class='mon-preview' id='preview-" +
                         i +
                         "'>" +
-                        "</td>" +
-                        "<td>" +
+                        "</div>" +
+                        "<div>" +
                         "<div class='name'> " +
                         e.name +
                         " </div>" +
-                        "</td>" +
-                        "<td class='trand'>" +
+                        "</div>" +
+                        "<div class='trand'>" +
                         "<div class='chart-area'></div>" +
-                        "</td>" +
-                        "<td class='m-btns'>" +
+                        "</div>" +
+                        "<div class='m-btns'>" +
                         "<a href='/dashboard/monitors/view' id='view-b-i' data-monitor-token='" +
                         e.id +
                         "' class='view-btn'>View</a>" +
-                        "</td>" +
-                        "</tr>"
+                        "</div>" +
+                        "</div>"
                 );
                 renderChart(i);
             });

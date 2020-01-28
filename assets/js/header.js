@@ -1,3 +1,4 @@
+/***** header ****/
 function HeaderInit() {
     var element = $("#header .nav__items");
     element.empty();
@@ -55,7 +56,9 @@ function bindHeader() {
         b_menu.removeClass("active");
     });
 }
+/***** header ****/
 
+/***** bsahboard header ****/
 function bindDashboardHeader() {
     var burger = $("#dashboard-header .navbar-toggler");
     var body = $(document.body);
@@ -91,3 +94,4 @@ function bindDashboardHeader() {
         }
     });
 }
+/***** bsahboard header ****/

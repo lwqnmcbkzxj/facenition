@@ -1,3 +1,4 @@
+/***** login ****/
 function LoginInit() {
     var email = $('#login-page input[name="email"]');
     var pass = $('#login-page input[name="password"]');
@@ -27,7 +28,9 @@ function bindLogin() {
         }
     });
 }
+/***** login ****/
 
+/***** forgot password ****/
 function ForgotPasswordInit() {
     var mail = $("#forgot-password-page input[name='email']");
     mail.val("");
@@ -45,7 +48,9 @@ function bindForgotPassword() {
         });
     });
 }
+/***** forgot password ****/
 
+/***** password reset ****/
 function PasswordResetInit() {
     var token = getUrlParameter("t");
     var inputs = $("#register-page input");
@@ -91,6 +96,9 @@ function RegisterInit() {
         $(e).val("")
     })
 }
+/***** password reset ****/
+
+/***** register ****/
 function bindRegister() {
     var email = $('#register-page input[name="email"]');
     var emailValid = email.next("#register-page .content-error");
@@ -175,3 +183,4 @@ function VerifyEmailInit() {
         loadPage("/login");
     });
 }
+/***** register ****/

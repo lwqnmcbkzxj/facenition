@@ -97,7 +97,6 @@ function bindMonitorsView() {
 }
 
 // Get data start
-// Getting data from server and making objects for chats
 function getChartData(id) {
     var displayType = $('#view-page .display-dropdown input')[0].value.toLowerCase();
     if (displayType == 'custom')

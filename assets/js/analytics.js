@@ -19,25 +19,18 @@ function bindAnalytics() {
         var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
         var selectors = $('#analytics-page .chart-selectors')[0].children;
 
-
-
         for (var i = 0; i < selectors.length; i++) {
-            if (selectors[i] != activeSelector) {
-                renderSummaryBlock(selectors[i].classList[1].split('-')[0]);
-            }
+            if (selectors[i] != activeSelector) 
+                renderSummaryBlock(selectors[i].classList[1].split('-')[0]);            
         }
         setTimeout(() => {
             renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
         }, 500);
 
-
         renderSmallBlocks();
-
-
         renderLargeBlock('traffic');
         renderLargeBlock('impression');
         renderLargeBlock('gender');
-
     });
 
 
@@ -46,9 +39,9 @@ function bindAnalytics() {
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
     });
 }
-function AnalyticsInit() {
-}
+function AnalytsicsInit() {
 
+}
 // BLOCKS RENDER START
 function renderSummaryBlock(entriesType) {
     var body = $("#analytics-page .main .card:first-child() .chart-holder");
@@ -692,7 +685,6 @@ function getAnalyticPagePeriod(period) {
     }
     return { start1, end1, start2, end2, newPeriod };
 }
-
 
 function getRequestsArr(entriesType, queries) {   
     var requestsArr = [];

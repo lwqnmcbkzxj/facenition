@@ -5,7 +5,7 @@ function HeaderInit() {
         element.append(
             "<a href='/dashboard/monitors' data-link='ajax' class='button button-nav'>Dashboard</a>" +
                 "<div class='user'>" +
-                "<i class='far fa-user'></i>" +
+                "<i class='icon icon-user'></i>" +
                 "<ul class='dropmenu'>" +
                 "<li class='drop__items'>" +
                 "<a class='link-user' href='#' data-link='ajax' id='acc_set'>Account settings</a>" +
@@ -53,5 +53,41 @@ function bindHeader() {
     overlay.add($("#header .b-menu-close")).click(function() {
         overlay.removeClass("active");
         b_menu.removeClass("active");
+    });
+}
+
+function bindDashboardHeader() {
+    var burger = $("#dashboard-header .navbar-toggler");
+    var body = $(document.body);
+    var sidebar = $("#dashboard-header .sidebar");
+    burger.click(function(e) {
+        e.stopPropagation();
+        body.toggleClass("nav-opened");
+    });
+
+    var user = $("#dashboard-header .user");
+    var drop = $("#dashboard-header .dropmenu");
+    user.click(function(e) {
+        e.stopPropagation();
+        drop.toggleClass("show");
+    });
+
+    $("#dashboard-header #logout").click(function(e) {
+        e.preventDefault();
+        logout();
+        loadPage("/login")
+    });
+
+    var toggler = $("#dashboard-header .nav-toggler");
+
+    toggler.click(function() {
+        body.toggleClass("user-opened");
+    });
+
+    body.click(function(e) {
+        if (e.target !== sidebar[0]) {
+            body.removeClass("nav-opened");
+            drop.removeClass("show");
+        }
     });
 }

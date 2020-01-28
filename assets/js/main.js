@@ -18,7 +18,7 @@ function loadPage(pageName) {
     $footers.hide();
     if (includes(pageName, "dashboard")) {
         $dashboardHeader.show();
-        DashboardHeaderInit();
+        // DashboardHeaderInit();
     } else {
         $header.show();
         HeaderInit();
@@ -81,7 +81,7 @@ function init() {
         "password-reset": PasswordResetInit,
         "dashboard/monitors": MonitorsInit,
         "dashboard/settings": SettingsInit,
-        "dashboard/analytics": AnalyticsInit,
+        "dashboard/analytics": AnalytsicsInit,
         "dashboard/monitors/view": MonitorsViewInit
     };
 

@@ -2064,3 +2064,11 @@ textarea {resize:horizontal;}
 .icon-delete:hover {
     filter: invert(0);
 }
+
+.icon-burger {
+    background: url('../img/burger-bars.png') no-repeat;
+}
+
+.icon-user {
+    background: url('../img/user.png') no-repeat;
+}

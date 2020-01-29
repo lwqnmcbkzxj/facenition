@@ -13,34 +13,28 @@ function bindAnalytics() {
         addDropdowns($('#analytics-page .card:nth-child(3) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
         addDropdowns($('#analytics-page .card:nth-child(4) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
         addDropdowns($('#analytics-page .card:nth-child(5) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
-
-
-
-        var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
-        var selectors = $('#analytics-page .chart-selectors')[0].children;
-
-        for (var i = 0; i < selectors.length; i++) {
-            if (selectors[i] != activeSelector) 
-                renderSummaryBlock(selectors[i].classList[1].split('-')[0]);            
-        }
-        setTimeout(() => {
-            renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
-        }, 500);
-
-        renderSmallBlocks();
-        renderLargeBlock('traffic');
-        renderLargeBlock('impression');
-        renderLargeBlock('gender');
     });
+}
+function AnalytsicsInit() {
+    var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
+    var selectors = $('#analytics-page .chart-selectors')[0].children;
+    for (var i = 0; i < selectors.length; i++) {
+        if (selectors[i] != activeSelector)
+            renderSummaryBlock(selectors[i].classList[1].split('-')[0]);
+    }
+    setTimeout(() => {
+        renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
+    }, 500);
 
+    renderSmallBlocks();
+    renderLargeBlock('traffic');
+    renderLargeBlock('impression');
+    renderLargeBlock('gender');
 
     $('#analytics-page .chart-selectors .selector').click(function (e) {
         if (e.target.closest('.selector').classList[2] != 'active')
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
     });
-}
-function AnalytsicsInit() {
-
 }
 // BLOCKS RENDER START
 function renderSummaryBlock(entriesType) {
@@ -71,9 +65,9 @@ function renderSummaryBlock(entriesType) {
             queries.push(`monitor_id=${monitor.id}&start=${start}&end=${end}&period=${newPeriod}`);
         }
 
-       
+
         $.when.apply(
-           $, getRequestsArr(entriesType, queries)
+            $, getRequestsArr(entriesType, queries)
         ).done(function () {
             var results = arguments;
             main.show();
@@ -234,7 +228,7 @@ function renderLargeBlock(entriesType) {
     ];
 
     $.when.apply(
-       $, getRequestsArr(entriesType, queries)
+        $, getRequestsArr(entriesType, queries)
     ).done(function () {
         main.show();
         $('.loader').remove();
@@ -686,7 +680,7 @@ function getAnalyticPagePeriod(period) {
     return { start1, end1, start2, end2, newPeriod };
 }
 
-function getRequestsArr(entriesType, queries) {   
+function getRequestsArr(entriesType, queries) {
     var requestsArr = [];
     for (query of queries) {
         requestsArr.push(getDataOfMonitor(entriesType, query))

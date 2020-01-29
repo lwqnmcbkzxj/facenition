@@ -226,6 +226,7 @@ var api_routes = {
     }
 };
 
+// var API = "http://facenition.dig-studio.ru/api/";
 var API = "https://app.facenition.com/api/";
 
 function setCookie(cname, cvalue, exdays) {
@@ -916,10 +917,10 @@ function getObjectTotalSum(dataObject) {
     }
 
     for (elem of dataObject) {
-        totalSum.traffic += getSum(elem.result.trafficData);
-        totalSum.impression += getSum(elem.result.impressionData);
-        totalSum.male += getSum(elem.result.maleData);
-        totalSum.female += getSum(elem.result.femaleData);
+        totalSum.traffic += getSum(elem.trafficData);
+        totalSum.impression += getSum(elem.impressionData);
+        totalSum.male += getSum(elem.maleData);
+        totalSum.female += getSum(elem.femaleData);
     }
     return totalSum;
 }

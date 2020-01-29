@@ -1,4 +1,7 @@
 function bindAnalytics() {
+    
+}
+function AnalytsicsInit() {
     $.when(getMonitors()).done(function (r) {
         var monitorsNames = [];
         monitorsIds = []
@@ -13,23 +16,19 @@ function bindAnalytics() {
         addDropdowns($('#analytics-page .card:nth-child(3) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
         addDropdowns($('#analytics-page .card:nth-child(4) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
         addDropdowns($('#analytics-page .card:nth-child(5) .info .dropdowns'), { periods, monitorsNames, monitorsIds });
-    });
-}
-function AnalytsicsInit() {
-    var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
-    var selectors = $('#analytics-page .chart-selectors')[0].children;
-    for (var i = 0; i < selectors.length; i++) {
-        if (selectors[i] != activeSelector)
-            renderSummaryBlock(selectors[i].classList[1].split('-')[0]);
-    }
-    setTimeout(() => {
-        renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
-    }, 500);
 
-    renderSmallBlocks();
-    renderLargeBlock('traffic');
-    renderLargeBlock('impression');
-    renderLargeBlock('gender');
+
+        var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
+        renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
+        showSummaryBlockStats();
+        
+        renderSmallBlocks();
+
+        renderLargeBlock('traffic');
+        renderLargeBlock('impression');
+        renderLargeBlock('gender');
+    });
+
 
     $('#analytics-page .chart-selectors .selector').click(function (e) {
         if (e.target.closest('.selector').classList[2] != 'active')
@@ -69,6 +68,8 @@ function renderSummaryBlock(entriesType) {
         $.when.apply(
             $, getRequestsArr(entriesType, queries)
         ).done(function () {
+
+
             var results = arguments;
             main.show();
             $('.loader').remove();
@@ -118,7 +119,7 @@ function renderSummaryBlock(entriesType) {
                 chartDataObject['labels'] = getExactPeriodLabels(newPeriod, maxLength);
 
             renderSummaryChart(chartDataObject, entriesType);
-            showSummaryBlockStats(chartDataObject, oldPeriod);
+            // showSummaryBlockStats(chartDataObject, oldPeriod);
         });
     });
 }
@@ -556,10 +557,10 @@ function renderLargeBlockChart(monitorsObject, entriesType) {
 // CHARTS END
 
 
-function showSummaryBlockStats(dataObject, period) {
+function showSummaryBlockStats() {
     $('#analytics-page .card:nth-child(1) h2')[0].textContent = 'Last ' + period + ' summary';
+    var period = $('#analytics-page .card:first-child .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
 
-    var totalSum = getObjectTotalSum(dataObject);
     if (period == 'day')
         period = 'dai';
 
@@ -567,12 +568,75 @@ function showSummaryBlockStats(dataObject, period) {
         span.textContent = period + 'ly';
     }
 
-    if (totalSum.traffic)
-        $('#analytics-page .chart-selectors .traffic-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.traffic) + ' people';
-    if (totalSum.impression)
-        $('#analytics-page .chart-selectors .impression-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.impression) + ' people';
-    if (totalSum.male)
-        $('#analytics-page .chart-selectors .gender-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.male) + ' M, ' + numberWithCommas(totalSum.female) + ' F';
+    $.when(getMonitors()).then(function (r1) {
+        var monitors = r1.data;
+        var period = $('#analytics-page .card:first-child .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
+
+        var timestampObject = getAnalyticPagePeriod(period);
+        var start = timestampObject.start1;
+        var end = timestampObject.end1;
+        var newPeriod = timestampObject.newPeriod;
+
+        var chartDataObject = [];
+
+        var queries = [];
+        for (monitor of monitors) {
+            queries.push(`monitor_id=${monitor.id}&start=${start}&end=${end}&period=${newPeriod}`);
+        }
+
+
+        $.when(
+            ...getRequestsArr('traffic', queries),
+            ...getRequestsArr('impression', queries),
+            ...getRequestsArr('gender', queries)
+        ).done(function () {
+            var results = arguments;
+
+            for (var i = 1; i <= monitors.length; i++) {
+                var trafficData = [];
+                var impressionData = [];
+                var maleData = [];
+                var femaleData = [];
+                var trafficResult = [];
+                var impressionResult = [];
+                var genderResult = [];
+
+                for (var j = 1; j <= 3; j++) {
+                    var position = (j * monitors.length) - (monitors.length - i) - 1;
+                    if (j === 1)
+                        trafficResult.push(results[position][0].data);
+                    else if (j === 2)
+                        impressionResult.push(results[position][0].data);
+                    else if (j === 3)
+                        genderResult.push(results[position][0].data);
+                }
+                trafficResult = trafficResult[0];
+                impressionResult = impressionResult[0];
+                genderResult = genderResult[0];
+                for (var j = 0; j < trafficResult.length; j++)
+                    trafficData.push(trafficResult[j].count);
+
+                for (var j = 0; j < impressionResult.length; j++)
+                    impressionData.push(impressionResult[j].count);
+
+                for (var j = 0; j < genderResult.length; j++) {
+                    maleData.push(genderResult[j].males);
+                    femaleData.push(genderResult[j].females);
+                }
+
+                chartDataObject.push({
+                    trafficData,
+                    impressionData,
+                    maleData,
+                    femaleData
+                });
+            }
+            var totalSum = getObjectTotalSum(chartDataObject);
+            $('#analytics-page .chart-selectors .traffic-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.traffic) + ' people';
+            $('#analytics-page .chart-selectors .impression-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.impression) + ' people';
+            $('#analytics-page .chart-selectors .gender-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.male) + ' M, ' + numberWithCommas(totalSum.female) + ' F';
+        });
+    });
 }
 function showSmallBlockStats(dataObject) {
     var trafficSum = getSum(dataObject.trafficData);
@@ -769,16 +833,8 @@ function startRenderFunction(e) {
 
     if (target == $('#analytics-page .card:nth-child(1)')[0]) {
         var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
-        var selectors = $('#analytics-page .chart-selectors')[0].children;
-
-        for (var i = 0; i < selectors.length; i++) {
-            if (selectors[i] != activeSelector) {
-                renderSummaryBlock(selectors[i].classList[1].split('-')[0]);
-            }
-        }
-        setTimeout(() => {
-            renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
-        }, 1000);
+        renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
+        showSummaryBlockStats();
 
     } else if (target == $('#analytics-page .card:nth-child(2)')[0]) {
         renderSmallBlocks();

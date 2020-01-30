@@ -68,9 +68,8 @@ function renderSummaryBlock(entriesType) {
         $.when.apply(
             $, getRequestsArr(entriesType, queries)
         ).done(function () {
-
-
             var results = arguments;
+
             main.show();
             $('.loader').remove();
 
@@ -92,16 +91,18 @@ function renderSummaryBlock(entriesType) {
 
                 result = checkCorrectCount(result, newPeriod);
 
-                if (entriesType == 'traffic') {
-                    for (var i = 0; i < result.length; i++)
-                        trafficData[maxLength - result.length + i] = result[i].count;
-                } else if (entriesType == 'impression') {
-                    for (var i = 0; i < result.length; i++)
-                        impressionData[maxLength - result.length + i] = result[i].count;
-                } else if (entriesType == 'gender') {
-                    for (var i = 0; i < result.length; i++) {
-                        maleData[maxLength - result.length + i] = result[i].males;
-                        femaleData[maxLength - result.length + i] = result[i].females;
+                if (result !== null) {
+                    if (entriesType == 'traffic') {
+                        for (var i = 0; i < result.length; i++)
+                            trafficData[maxLength - result.length + i] = +result[i].count;
+                    } else if (entriesType == 'impression') {
+                        for (var i = 0; i < result.length; i++)
+                            impressionData[maxLength - result.length + i] = +result[i].count;
+                    } else if (entriesType == 'gender') {
+                        for (var i = 0; i < result.length; i++) {
+                            maleData[maxLength - result.length + i] = +result[i].males;
+                            femaleData[maxLength - result.length + i] = +result[i].females;
+                        }
                     }
                 }
 
@@ -177,16 +178,17 @@ function renderSmallBlocks() {
         trafficResult = checkCorrectCount(trafficResult, newPeriod);
         impressionResult = checkCorrectCount(impressionResult, newPeriod);
         genderResult = checkCorrectCount(genderResult, newPeriod);
-
-        for (var i = 0; i < trafficResult.length; i++) {
-            trafficData[maxLength - trafficResult.length + i] = trafficResult[i].count;
-        }
-        for (var i = 0; i < impressionResult.length; i++) {
-            impressionData[maxLength - impressionResult.length + i] = impressionResult[i].count;
-        }
-        for (var i = 0; i < genderResult.length; i++) {
-            maleData[maxLength - genderResult.length + i] = genderResult[i].males;
-            femaleData[maxLength - genderResult.length + i] = genderResult[i].females;
+        if (trafficResult !== null && impressionResult !== null && genderResult !== null) {           
+            for (var i = 0; i < trafficResult.length; i++) {
+                trafficData[maxLength - trafficResult.length + i] = +trafficResult[i].count;
+            }
+            for (var i = 0; i < impressionResult.length; i++) {
+                impressionData[maxLength - impressionResult.length + i] = +impressionResult[i].count;
+            }
+            for (var i = 0; i < genderResult.length; i++) {
+                maleData[maxLength - genderResult.length + i] = +genderResult[i].males;
+                femaleData[maxLength - genderResult.length + i] = +genderResult[i].females;
+            }
         }
 
         var labels = getExactPeriodLabels(newPeriod, maxLength);
@@ -249,15 +251,15 @@ function renderLargeBlock(entriesType) {
             }
 
             result = checkCorrectCount(result, newPeriod);
-            if (entriesType == 'gender') {
-                for (var i = 0; i < result.length; i++) {
-                    maleData[maxLength - result.length + i] = result[i].males;
-                    femaleData[maxLength - result.length + i] = result[i].females;
-                }
-            } else {
-                for (var i = 0; i < result.length; i++) {
-                    countData[maxLength - result.length + i] = result[i].count;
-
+            if (result !== null) {
+                if (entriesType == 'gender') {
+                    for (var i = 0; i < result.length; i++) {
+                        maleData[maxLength - result.length + i] = +result[i].males;
+                        femaleData[maxLength - result.length + i] = +result[i].females;
+                    }
+                } else {
+                    for (var i = 0; i < result.length; i++)
+                        countData[maxLength - result.length + i] = +result[i].count;  
                 }
             }
 
@@ -585,13 +587,13 @@ function showSummaryBlockStats() {
         }
 
 
-        $.when(
-            ...getRequestsArr('traffic', queries),
-            ...getRequestsArr('impression', queries),
-            ...getRequestsArr('gender', queries)
+        $.when.apply(        
+            $,[].concat(
+                getRequestsArr('traffic', queries),
+                getRequestsArr('impression', queries),
+                getRequestsArr('gender', queries)), 
         ).done(function () {
             var results = arguments;
-
             for (var i = 1; i <= monitors.length; i++) {
                 var trafficData = [];
                 var impressionData = [];
@@ -610,18 +612,20 @@ function showSummaryBlockStats() {
                     else if (j === 3)
                         genderResult.push(results[position][0].data);
                 }
+
                 trafficResult = trafficResult[0];
                 impressionResult = impressionResult[0];
                 genderResult = genderResult[0];
+
                 for (var j = 0; j < trafficResult.length; j++)
-                    trafficData.push(trafficResult[j].count);
+                    trafficData.push(+trafficResult[j].count);
 
                 for (var j = 0; j < impressionResult.length; j++)
-                    impressionData.push(impressionResult[j].count);
+                    impressionData.push(+impressionResult[j].count);
 
                 for (var j = 0; j < genderResult.length; j++) {
-                    maleData.push(genderResult[j].males);
-                    femaleData.push(genderResult[j].females);
+                    maleData.push(+genderResult[j].males);
+                    femaleData.push(+genderResult[j].females);
                 }
 
                 chartDataObject.push({
@@ -632,6 +636,7 @@ function showSummaryBlockStats() {
                 });
             }
             var totalSum = getObjectTotalSum(chartDataObject);
+            console.log(totalSum)
             $('#analytics-page .chart-selectors .traffic-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.traffic) + ' people';
             $('#analytics-page .chart-selectors .impression-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.impression) + ' people';
             $('#analytics-page .chart-selectors .gender-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.male) + ' M, ' + numberWithCommas(totalSum.female) + ' F';

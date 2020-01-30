@@ -125,61 +125,58 @@ function getCustomData(id) {
         $.ajax(request("GET_GENDER_ENTRIES_V2", { query }, function (r) { }, true))
 
     ).done(function (r1, r2, r3) {
-        if (!r1[0].success) {
+        if (!r1[0].success || !r2[0].success || !r3[0].success) {
             showAlert('Failed to load info', 'error');
             return;
         }
-        if (!r2[0].success) {
-            showAlert('Failed to load info', 'error');
-            return;
-        }
-        if (!r3[0].success) {
-            showAlert('Failed to load info', 'error');
-            return;
-        }
+
         btnMain.show();
         $('.loader').remove();
         trafficResult = r1[0].data;
         impressionResult = r2[0].data;
         genderResult = r3[0].data;
 
-        var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length);
+
         var labels = [];
         var trafficData = [];
-
         var postitveData = [];
         var negativeData = [];
-
         var maleData = [];
         var femaleData = [];
-        for (var i = 0; i < n; i++) {
-            trafficData.push(0);
 
-            postitveData.push(0);
-            negativeData.push(0);
+        if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
+            var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length);
 
-            maleData.push(0);
-            femaleData.push(0);
-        }
+            for (var i = 0; i < n; i++) {
+                trafficData.push(0);
+                postitveData.push(0);
+                negativeData.push(0);
+                maleData.push(0);
+                femaleData.push(0);
+            }
 
-        var labels = getExactPeriodLabels(period, n);
+            var labels = getExactPeriodLabels(period, n);
 
-        for (var i = 0; i < trafficResult.length; i++) {
-            trafficData[i] = trafficResult[i].count;
-        }
 
-        for (var i = 0; i < impressionResult.length; i++) {
-            postitveData[i] = impressionResult[i].positive;
-            negativeData[i] = impressionResult[i].negative;
 
-        }
-        for (var i = 0; i < genderResult.length; i++) {
-            maleData[i] = genderResult[i].males;
-            femaleData[i] = genderResult[i].females;
+            for (var i = 0; i < +trafficResult.length; i++) {
+                trafficData[i] = +trafficResult[i].count;
+            }
+
+            for (var i = 0; i < impressionResult.length; i++) {
+                postitveData[i] = +impressionResult[i].positive;
+                negativeData[i] = +impressionResult[i].negative;
+
+            }
+            for (var i = 0; i < genderResult.length; i++) {
+                maleData[i] = +genderResult[i].males;
+                femaleData[i] = +genderResult[i].females;
+            }
         }
 
         var chartData = { labels, trafficData, postitveData, negativeData, maleData, femaleData }
         renderCustomChart(chartData);
+
         $('#view-page .chart-selector div').unbind('click');
         $('#view-page .chart-selector div').click(function (e) {
             var selectorBlock = $('#view-page .chart-selector');
@@ -216,14 +213,18 @@ function getSegmentsData(id) {
 
     var chartDataObject = [];
     var maxLength = 0;
-    $.when.apply(
-        $,
-        getRequestsArr('traffic', queries),
-        getRequestsArr('impression', queries),
-        getRequestsArr('gender', queries)).done(function () {
-            var result = arguments;
+
+
+    $.when.apply(        
+        $,[].concat(
+            getRequestsArr('traffic', queries),
+            getRequestsArr('impression', queries),
+            getRequestsArr('gender', queries)), 
+    ).done(function () {
+            var result = arguments; 
             btnMain.show();
             $('.loader').remove();
+
             for (var i = segments.length - 1; i >= 0; i--) {
                 var trafficResult = [];
                 var impressionResult = [];
@@ -235,43 +236,49 @@ function getSegmentsData(id) {
                 var maleData = [];
                 var femaleData = [];
 
+
                 for (var j = 1; j <= 3; j++) {
                     var position = (j * segments.length) - (segments.length - i);
-                    if (j === 1)
-                        trafficResult.push(result[position][0].data);
-                    else if (j === 2)
-                        impressionResult.push(result[position][0].data);
-                    else if (j === 3)
-                        genderResult.push(result[position][0].data);
+                    if (result[0].data !== null) {
+                        if (j === 1)
+                            trafficResult.push(result[position][0].data);
+                        else if (j === 2)
+                            impressionResult.push(result[position][0].data);
+                        else if (j === 3)
+                            genderResult.push(result[position][0].data);
+                    }
                 }
 
                 trafficResult = trafficResult[0];
                 impressionResult = impressionResult[0];
                 genderResult = genderResult[0];
 
-                var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
-                for (var j = 0; j < n; j++) {
-                    trafficData.push(0);
-                    postitveData.push(0);
-                    negativeData.push(0);
-                    maleData.push(0);
-                    femaleData.push(0);
-                }
+                
+                if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
+                    var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
+                    for (var j = 0; j < n; j++) {
+                        trafficData.push(0);
+                        postitveData.push(0);
+                        negativeData.push(0);
+                        maleData.push(0);
+                        femaleData.push(0);
+                    }
 
-                for (var j = 0; j < trafficResult.length; j++) {
-                    trafficData[j] = trafficResult[j].count;
-                }
+                    for (var j = 0; j < trafficResult.length; j++)
+                        trafficData[j] = +trafficResult[j].count;
 
-                for (var j = 0; j < impressionResult.length; j++) {
-                    postitveData[j] = impressionResult[j].positive;
-                    negativeData[j] = impressionResult[j].negative;
-                }
-                for (var j = 0; j < genderResult.length; j++) {
-                    maleData[j] = genderResult[j].males;
-                    femaleData[j] = genderResult[j].females;
+
+                    for (var j = 0; j < impressionResult.length; j++) {
+                        postitveData[j] = +impressionResult[j].positive;
+                        negativeData[j] = +impressionResult[j].negative;
+                    }
+                    for (var j = 0; j < genderResult.length; j++) {
+                        maleData[j] = +genderResult[j].males;
+                        femaleData[j] = +genderResult[j].females;
+                    }
                 }
                 chartDataObject.push({
-                    name: segments[i].name,
+                    name: segments[i].name.trim(),
                     result: { trafficData, postitveData, negativeData, maleData, femaleData },
                 });
                 maxLength = Math.max(n, maxLength);
@@ -557,11 +564,11 @@ function showViewPageStats(chartData) {
     var femaleSum = 0;
 
     if (displayType == 'custom') {
-        trafficSum = getSum(chartData.trafficData);
-        positiveSum = getSum(chartData.postitveData);
-        negativeSum = getSum(chartData.negativeData);
-        maleSum = getSum(chartData.maleData);
-        femaleSum = getSum(chartData.femaleData);
+        trafficSum += getSum(chartData.trafficData);
+        positiveSum += getSum(chartData.postitveData);
+        negativeSum += getSum(chartData.negativeData);
+        maleSum += getSum(chartData.maleData);
+        femaleSum += getSum(chartData.femaleData);
     }
     else {
         for (var i = 0; i < chartData.length; i++) {
@@ -744,7 +751,7 @@ function addOptionsBlock(segments) {
         '<div class = "variants">' +
         '<input class="dropdown-input" placeholder="Select..."></input>' +
         '</div > ' +
-        '<div class = "selectors">' +        
+        '<div class = "selectors">' +
         '<i class = "icon icon-close selector"></i>' +
         '<i class = "icon icon-chevron-down selector"></i>' +
         '</div > ' +
@@ -848,7 +855,7 @@ function addSegmentDropdown(location) {
         <div class = "text">${value}</div>       
         <i class = 'icon icon-delete'></i>
         </div>`);
-          
+
         $(location).find(' .selectedVariant .icon-delete').click(function () {
             $(location).find(` .dropdown-list-variant[data-id="${this.parentNode.dataset.id}"]`)[0].classList.remove('active');
             this.parentNode.remove()

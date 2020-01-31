@@ -120,7 +120,6 @@ function renderSummaryBlock(entriesType) {
                 chartDataObject['labels'] = getExactPeriodLabels(newPeriod, maxLength);
 
             renderSummaryChart(chartDataObject, entriesType);
-            // showSummaryBlockStats(chartDataObject, oldPeriod);
         });
     });
 }
@@ -560,8 +559,8 @@ function renderLargeBlockChart(monitorsObject, entriesType) {
 
 
 function showSummaryBlockStats() {
-    $('#analytics-page .card:nth-child(1) h2')[0].textContent = 'Last ' + period + ' summary';
     var period = $('#analytics-page .card:first-child .dropdown .visible-dropdown h6')[0].textContent.toLowerCase();
+    $('#analytics-page .card:nth-child(1) h2')[0].textContent = 'Last ' + period + ' summary';
 
     if (period == 'day')
         period = 'dai';
@@ -636,7 +635,6 @@ function showSummaryBlockStats() {
                 });
             }
             var totalSum = getObjectTotalSum(chartDataObject);
-            console.log(totalSum)
             $('#analytics-page .chart-selectors .traffic-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.traffic) + ' people';
             $('#analytics-page .chart-selectors .impression-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.impression) + ' people';
             $('#analytics-page .chart-selectors .gender-selector>div:nth-child(3)')[0].textContent = numberWithCommas(totalSum.male) + ' M, ' + numberWithCommas(totalSum.female) + ' F';
@@ -765,6 +763,8 @@ function addDropdowns(location, items) {
 }
 
 function addDropdown(location, type, items) {
+    if (location.find(`.${type}-dropdown`)[0])
+        location.find(`.${type}-dropdown`)[0].remove()
     var dropListItems = '';
     var icon = '';
     var visibleTag = '';

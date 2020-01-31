@@ -226,8 +226,9 @@ var api_routes = {
     }
 };
 
-// var API = "http://facenition.dig-studio.ru/api/";
-var API = "https://app.facenition.com/api/";
+// var API = "https://app.facenition.com/api/";
+var API = "http://28ccf81b.ngrok.io/api/";
+
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();

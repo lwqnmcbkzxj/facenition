@@ -28,7 +28,12 @@ function MonitorsViewInit() {
                 return;
             }
 
-            monitor = r1[0].data;
+            $(".loader").remove();
+            main.show();
+    
+            monitor = r1[0].data[0];
+            showSegments(monitor.id);
+
             var img = r2[0].data;
             var isCheckBoxActive = monitor.active ? 'checked' : 'none';
             infoCard.empty();
@@ -48,7 +53,6 @@ function MonitorsViewInit() {
                 "<div><button class='btn add-segment'>Add Segment</button></div>" +
                 "</div > "
             );
-            showSegments(monitor.id);
 
 
             if (monitor.active)
@@ -69,6 +73,7 @@ function MonitorsViewInit() {
             });
             addOptionsBlock(r3[0].data);
             getChartData(id);
+
         });
 
         setInterval(() => { getChartData(id); }, 15000);
@@ -603,7 +608,6 @@ function monitorToggle(id) {
 function showSegments(id) {
     var main = $("#view-page .main");
     var segmentsTable = $('#view-page #segments-table-content');
-
     $.when(
         $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) { }, true)),
     ).done(function (r1) {
@@ -611,9 +615,6 @@ function showSegments(id) {
             showAlert('Failed to monitor segments', 'error')
             return;
         }
-
-        $(".loader").remove();
-        main.show();
 
         var monitorSerments = r1.data;
         segmentsTable.empty();

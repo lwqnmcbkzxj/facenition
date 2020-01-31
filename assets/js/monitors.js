@@ -7,6 +7,8 @@ function MonitorsInit() {
     body.append(loader);
     var monitors = null;
     var trafic = null;
+
+
     (function() {
         $.when(
             $.ajax(request("GET_MONITORS", {}, function(r) {}, true)),
@@ -183,22 +185,20 @@ function MonitorsInit() {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
-                    data[data.length - Math.floor(diff)] += x.total;
+                    data[data.length - Math.floor(diff)] += +x.total;
                 });
                 impressionResult.data.map(function(x) {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
-                    impressionData[impressionData.length - Math.ceil(diff)] +=
-                        x.total;
+                    impressionData[impressionData.length - Math.ceil(diff)] += +x.total;
                 });
                 genderResult.data.map(function(x) {
                     var diff = moment
                         .duration(moment().diff(moment(x.time)))
                         .asDays();
-                    maleData[maleData.length - Math.ceil(diff)] += x.males;
-                    femaleData[femaleData.length - Math.ceil(diff)] +=
-                        x.females;
+                    maleData[maleData.length - Math.ceil(diff)] += +x.males;
+                    femaleData[femaleData.length - Math.ceil(diff)] += +x.females;
                 });
                 dataGend(
                     labels.reverse(),

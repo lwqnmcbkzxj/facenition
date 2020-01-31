@@ -226,8 +226,7 @@ var api_routes = {
     }
 };
 
-// var API = "https://app.facenition.com/api/";
-var API = "http://28ccf81b.ngrok.io/api/";
+var API = "https://api.facenition.com/api/";
 
 
 function setCookie(cname, cvalue, exdays) {
@@ -972,14 +971,6 @@ function dateToTimestamp(date, phase) {
 
     return fullDate;
 }
-
-function dateForInput(date) {
-    var stringDate = date.getFullYear();
-    stringDate += '-' + (('0' + (date.getMonth() + 1)).slice(-2));
-    stringDate += '-' + date.getDate();
-    return stringDate;
-}
-
 
 function getExactPeriodLabels(period, n) {
     var labels = [];

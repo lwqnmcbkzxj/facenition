@@ -527,8 +527,7 @@ function showModal() {
     var content = $("#view-page .modal .modal-body");
     var footer = $("#view-page .modal .modal-footer");
 
-    var nowDate = new Date();
-    var stringDate = dateForInput(nowDate);
+    var stringDate = moment().format('YYYY-MM-DD');
 
     title.html("Create segment");
     content.html(
@@ -690,7 +689,7 @@ function addOptionsBlock(segments) {
         segmentsVariants += `<div class="dropdown-list-variant" data-id="${i}" data-start="${segments[i].start}" data-end="${segments[i].end}">${segments[i].name}</div>`
     }
 
-    var stringDate = dateForInput(new Date());
+    var stringDate = moment().format('YYYY-MM-DD');
 
     var optionsContent = $('#view-page .options-block .options');
     if ($('#view-page .options-block .options form')[0])

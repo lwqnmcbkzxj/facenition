@@ -39,8 +39,11 @@ function bindSettings() {
                 $.ajax(request('PASSWORD_RESET', { email: email.val() }, function (r1) { }, true)),
             ).done(function (r1) {               
                 if (!r1.success) {
-                    showAlert("Can't reset password", 'error');
+                    showAlert(r1.msg, 'error');
                     return;
+                } else {
+                    showAlert(r1.msg, 'success');
+                    modal.fadeOut();
                 }
             });          
 

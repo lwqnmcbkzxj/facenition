@@ -1,5 +1,5 @@
 function bindAnalytics() {
-    
+
 }
 function AnalytsicsInit() {
     $.when(getMonitors()).done(function (r) {
@@ -21,7 +21,7 @@ function AnalytsicsInit() {
         var activeSelector = $('#analytics-page .chart-selectors .selector.active')[0];
         renderSummaryBlock(activeSelector.classList[1].split('-')[0]);
         showSummaryBlockStats();
-        
+
         renderSmallBlocks();
 
         renderLargeBlock('traffic');
@@ -69,7 +69,7 @@ function renderSummaryBlock(entriesType) {
             $, getRequestsArr(entriesType, queries)
         ).done(function () {
             var results = arguments;
-
+            console.log(results)
             main.show();
             $('.loader').remove();
 
@@ -82,6 +82,7 @@ function renderSummaryBlock(entriesType) {
                 var maleData = [];
                 var femaleData = [];
 
+
                 for (var i = 0; i < maxLength; i++) {
                     trafficData.push(0);
                     impressionData.push(0);
@@ -91,17 +92,24 @@ function renderSummaryBlock(entriesType) {
 
                 result = checkCorrectCount(result, newPeriod);
 
-                if (result !== null) {
+                if (result.length !== 0) {
                     if (entriesType == 'traffic') {
-                        for (var i = 0; i < result.length; i++)
-                            trafficData[maxLength - result.length + i] = +result[i].count;
+                        if (period == 'year')
+                            trafficData = fillYearData(trafficData, maxLength, result);
+                        else
+                            trafficData = fillData(trafficData, result);
                     } else if (entriesType == 'impression') {
-                        for (var i = 0; i < result.length; i++)
-                            impressionData[maxLength - result.length + i] = +result[i].count;
+                        if (period == 'year')
+                            impressionData = fillYearData(impressionData, maxLength, result);
+                        else
+                            impressionData = fillData(impressionData, result);
                     } else if (entriesType == 'gender') {
-                        for (var i = 0; i < result.length; i++) {
-                            maleData[maxLength - result.length + i] = +result[i].males;
-                            femaleData[maxLength - result.length + i] = +result[i].females;
+                        if (period == 'year') {
+                            maleData = fillYearGenderData(maleData, maxLength, result, 'male')
+                            femaleData = fillYearGenderData(femaleData, maxLength, result, 'female')
+                        } else {
+                            maleData = fillGenderData(maleData, result, 'male');
+                            femaleData = fillGenderData(femaleData, result, 'female');            
                         }
                     }
                 }
@@ -177,16 +185,22 @@ function renderSmallBlocks() {
         trafficResult = checkCorrectCount(trafficResult, newPeriod);
         impressionResult = checkCorrectCount(impressionResult, newPeriod);
         genderResult = checkCorrectCount(genderResult, newPeriod);
-        if (trafficResult !== null && impressionResult !== null && genderResult !== null) {           
-            for (var i = 0; i < trafficResult.length; i++) {
-                trafficData[maxLength - trafficResult.length + i] = +trafficResult[i].count;
-            }
-            for (var i = 0; i < impressionResult.length; i++) {
-                impressionData[maxLength - impressionResult.length + i] = +impressionResult[i].count;
-            }
-            for (var i = 0; i < genderResult.length; i++) {
-                maleData[maxLength - genderResult.length + i] = +genderResult[i].males;
-                femaleData[maxLength - genderResult.length + i] = +genderResult[i].females;
+
+        if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
+            if (period == 'year') {
+                trafficData = fillYearData(trafficData, maxLength, trafficResult);
+                impressionData = fillYearData(impressionData, impressionResult);
+
+                maleData = fillYearGenderData(maleData, maxLength, genderResult, 'male')
+                femaleData = fillYearGenderData(femaleData, maxLength, genderResult, 'female')
+
+            } else {
+                trafficData = fillData(trafficData, trafficResult);
+                impressionData = fillData(impressionData, impressionResult);
+
+                maleData = fillGenderData(maleData, genderResult, 'male')
+                femaleData = fillGenderData(femaleData, genderResult, 'female')
+
             }
         }
 
@@ -252,13 +266,18 @@ function renderLargeBlock(entriesType) {
             result = checkCorrectCount(result, newPeriod);
             if (result !== null) {
                 if (entriesType == 'gender') {
-                    for (var i = 0; i < result.length; i++) {
-                        maleData[maxLength - result.length + i] = +result[i].males;
-                        femaleData[maxLength - result.length + i] = +result[i].females;
+                    if (period == 'year') {
+                        maleData = fillYearGenderData(maleData, maxLength, result, 'male')
+                        femaleData = fillYearGenderData(femaleData, maxLength, result, 'female')
+                    } else {
+                        maleData = fillGenderData(maleData, result, 'male');
+                        femaleData = fillGenderData(femaleData, result, 'female');            
                     }
                 } else {
-                    for (var i = 0; i < result.length; i++)
-                        countData[maxLength - result.length + i] = +result[i].count;  
+                    if (period == 'year')
+                        countData = fillYearData(countData, maxLength, result);
+                    else
+                        countData = fillData(countData, result);
                 }
             }
 
@@ -586,11 +605,11 @@ function showSummaryBlockStats() {
         }
 
 
-        $.when.apply(        
-            $,[].concat(
+        $.when.apply(
+            $, [].concat(
                 getRequestsArr('traffic', queries),
                 getRequestsArr('impression', queries),
-                getRequestsArr('gender', queries)), 
+                getRequestsArr('gender', queries)),
         ).done(function () {
             var results = arguments;
             for (var i = 1; i <= monitors.length; i++) {
@@ -770,7 +789,7 @@ function addDropdown(location, type, items) {
     var visibleTag = '';
     var selectText = '';
     if (type == 'period') {
-        items.map(item => {
+        items.map(function (item) {
             dropListItems += `<div class = "dropdown-element">${item}</div>`;
         });
 
@@ -814,8 +833,8 @@ function addDropdown(location, type, items) {
         dropdownList[0].classList.toggle('active');
     });
 
-    location.click(function (e) {
-        if (!e.target.closest('.toggle-dropdown'))
+    $('body').click(function (e) {
+        if (e.target.closest(`.${type}-dropdown`) !== $(location).find(`.${type}-dropdown`)[0])
             dropdownList[0].classList.remove('active');
     });
 
@@ -850,28 +869,6 @@ function startRenderFunction(e) {
     }
 }
 
-function getMaxLength(period) {
-    var length = 0;
-    switch (period) {
-        case 'hour':
-            length = 24;
-            break;
-        case 'day':
-            length = 7;
-            break;
-        case 'week':
-            length = 5;
-            break;
-        case 'month':
-            length = 12;
-
-            break;
-
-        default:
-            break;
-    }
-    return length;
-}
 
 function getPeriodTime(period) {
     var daySeconds = 86400;
@@ -907,4 +904,47 @@ function checkCorrectCount(result, period) {
         }
     }
     return result;
+}
+
+
+function fillYearData(resultData, maxLength, result) {
+    for (var i = 0; i < result.length; i++) {
+        resultData[maxLength - result.length + i] = +result[i].count;
+    }
+    return resultData;
+}
+function fillYearGenderData(resultData, maxLength, result, type) {
+    if (type == 'male') {
+        for (var i = 0; i < result.length; i++) {
+            resultData[maxLength - result.length + i] = +result[i].males;
+        }
+    } else {
+        for (var i = 0; i < result.length; i++) {
+            resultData[maxLength - result.length + i] = +result[i].females;
+        }
+    }
+
+    return resultData;
+}
+
+
+function fillData(resultData, result) {
+    for (var i = 0; i < result.length; i++) {
+        resultData[i] = +result[i].count;
+    }
+    return resultData;
+}
+
+function fillGenderData(resultData, result, type) {
+    if (type == 'male') {
+        for (var i = 0; i < result.length; i++) {
+            resultData[i] = +result[i].males;
+        }
+    } else {
+        for (var i = 0; i < result.length; i++) {
+            resultData[i] = +result[i].females;
+        }
+    }
+
+    return resultData;
 }

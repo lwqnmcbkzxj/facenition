@@ -30,7 +30,7 @@ function MonitorsViewInit() {
 
             $(".loader").remove();
             main.show();
-    
+
             monitor = r1[0].data[0];
             showSegments(monitor.id);
 
@@ -73,10 +73,7 @@ function MonitorsViewInit() {
             });
             addOptionsBlock(r3[0].data);
             getChartData(id);
-
         });
-
-        setInterval(() => { getChartData(id); }, 15000);
     })();
 }
 
@@ -102,7 +99,13 @@ function bindMonitorsView() {
 }
 
 // Get data start
+var graphsRefreshInterval;
 function getChartData(id) {
+    clearInterval(graphsRefreshInterval);
+    graphsRefreshInterval = setInterval(function () {
+        getChartData(id)
+    }, 15000);
+
     var displayType = $('#view-page .display-dropdown input')[0].value.toLowerCase();
     if (displayType == 'custom')
         getCustomData(id);
@@ -114,6 +117,7 @@ function getCustomData(id) {
     var period = $('#view-page .period-dropdown .dropdown-input')[0].value.toLowerCase();
     var start = dateToTimestamp($('#view-page #startInput')[0].value, 'start');
     var end = dateToTimestamp($('#view-page #endInput')[0].value, 'end');
+
 
     var query = `monitor_id=${id}&start=${start}&end=${end}&period=${period}`;
 
@@ -141,7 +145,6 @@ function getCustomData(id) {
         impressionResult = r2[0].data;
         genderResult = r3[0].data;
 
-
         var labels = [];
         var trafficData = [];
         var postitveData = [];
@@ -149,33 +152,39 @@ function getCustomData(id) {
         var maleData = [];
         var femaleData = [];
 
-        if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
-            var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length);
+        var n = Math.ceil((end - start) / 86400000);
+        n = getPeriodSegments(n, period);
 
-            for (var i = 0; i < n; i++) {
-                trafficData.push(0);
-                postitveData.push(0);
-                negativeData.push(0);
-                maleData.push(0);
-                femaleData.push(0);
+
+        var labels = getExactPeriodLabels(period, n);
+        for (var i = 0; i < n; i++) {
+            trafficData.push(0);
+            postitveData.push(0);
+            negativeData.push(0);
+            maleData.push(0);
+            femaleData.push(0);
+        }
+
+        if (trafficResult.length !== 0 && impressionResult !== null && genderResult !== null) {
+            var periodTime = getPeriodTime(period);
+            var pos = 0;
+            var startPeriod = +trafficResult[0].period;
+            while (startPeriod - start > periodTime) {
+                startPeriod -= periodTime;
+                pos++;
             }
 
-            var labels = getExactPeriodLabels(period, n);
 
-
-
-            for (var i = 0; i < +trafficResult.length; i++) {
-                trafficData[i] = +trafficResult[i].count;
+            for (var i = pos, j = 0; i < n, j < trafficResult.length; i++ , j++) {
+                trafficData[i] = +trafficResult[j].count;
             }
-
-            for (var i = 0; i < impressionResult.length; i++) {
-                postitveData[i] = +impressionResult[i].positive;
-                negativeData[i] = +impressionResult[i].negative;
-
+            for (var i = pos, j = 0; i < n, j < impressionResult.length; i++ , j++) {
+                postitveData[i] = +impressionResult[j].positive;
+                negativeData[i] = +impressionResult[j].negative;
             }
-            for (var i = 0; i < genderResult.length; i++) {
-                maleData[i] = +genderResult[i].males;
-                femaleData[i] = +genderResult[i].females;
+            for (var i = pos, j = 0; i < n, j < genderResult.length; i++ , j++) {
+                maleData[i] = +genderResult[j].males;
+                femaleData[i] = +genderResult[j].females;
             }
         }
 
@@ -220,90 +229,90 @@ function getSegmentsData(id) {
     var maxLength = 0;
 
 
-    $.when.apply(        
-        $,[].concat(
+    $.when.apply(
+        $, [].concat(
             getRequestsArr('traffic', queries),
             getRequestsArr('impression', queries),
-            getRequestsArr('gender', queries)), 
+            getRequestsArr('gender', queries)),
     ).done(function () {
-            var result = arguments; 
-            btnMain.show();
-            $('.loader').remove();
+        var result = arguments;
+        btnMain.show();
+        $('.loader').remove();
 
-            for (var i = segments.length - 1; i >= 0; i--) {
-                var trafficResult = [];
-                var impressionResult = [];
-                var genderResult = [];
+        for (var i = segments.length - 1; i >= 0; i--) {
+            var trafficResult = [];
+            var impressionResult = [];
+            var genderResult = [];
 
-                var trafficData = [];
-                var postitveData = [];
-                var negativeData = [];
-                var maleData = [];
-                var femaleData = [];
+            var trafficData = [];
+            var postitveData = [];
+            var negativeData = [];
+            var maleData = [];
+            var femaleData = [];
 
 
-                for (var j = 1; j <= 3; j++) {
-                    var position = (j * segments.length) - (segments.length - i);
-                    if (result[0].data !== null) {
-                        if (j === 1)
-                            trafficResult.push(result[position][0].data);
-                        else if (j === 2)
-                            impressionResult.push(result[position][0].data);
-                        else if (j === 3)
-                            genderResult.push(result[position][0].data);
-                    }
+            for (var j = 1; j <= 3; j++) {
+                var position = (j * segments.length) - (segments.length - i);
+                if (result[0].data !== null) {
+                    if (j === 1)
+                        trafficResult.push(result[position][0].data);
+                    else if (j === 2)
+                        impressionResult.push(result[position][0].data);
+                    else if (j === 3)
+                        genderResult.push(result[position][0].data);
                 }
-
-                trafficResult = trafficResult[0];
-                impressionResult = impressionResult[0];
-                genderResult = genderResult[0];
-
-                
-                if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
-                    var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
-                    for (var j = 0; j < n; j++) {
-                        trafficData.push(0);
-                        postitveData.push(0);
-                        negativeData.push(0);
-                        maleData.push(0);
-                        femaleData.push(0);
-                    }
-
-                    for (var j = 0; j < trafficResult.length; j++)
-                        trafficData[j] = +trafficResult[j].count;
-
-
-                    for (var j = 0; j < impressionResult.length; j++) {
-                        postitveData[j] = +impressionResult[j].positive;
-                        negativeData[j] = +impressionResult[j].negative;
-                    }
-                    for (var j = 0; j < genderResult.length; j++) {
-                        maleData[j] = +genderResult[j].males;
-                        femaleData[j] = +genderResult[j].females;
-                    }
-                }
-                chartDataObject.push({
-                    name: segments[i].name.trim(),
-                    result: { trafficData, postitveData, negativeData, maleData, femaleData },
-                });
-                maxLength = Math.max(n, maxLength);
             }
 
-            chartDataObject['labels'] = getExactPeriodLabels(period, maxLength);
-            renderSegmentsChart(chartDataObject);
+            trafficResult = trafficResult[0];
+            impressionResult = impressionResult[0];
+            genderResult = genderResult[0];
 
-            $('#view-page .chart-selector div').unbind('click');
-            $('#view-page .chart-selector div').click(function (e) {
-                var selectorBlock = $('#view-page .chart-selector');
-                for (selector of selectorBlock[0].children) {
-                    if (e.target == selector)
-                        selector.classList.add('active');
-                    else
-                        selector.classList.remove('active');
+
+            if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
+                var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
+                for (var j = 0; j < n; j++) {
+                    trafficData.push(0);
+                    postitveData.push(0);
+                    negativeData.push(0);
+                    maleData.push(0);
+                    femaleData.push(0);
                 }
-                renderSegmentsChart(chartDataObject);
+
+                for (var j = 0; j < trafficResult.length; j++)
+                    trafficData[j] = +trafficResult[j].count;
+
+
+                for (var j = 0; j < impressionResult.length; j++) {
+                    postitveData[j] = +impressionResult[j].positive;
+                    negativeData[j] = +impressionResult[j].negative;
+                }
+                for (var j = 0; j < genderResult.length; j++) {
+                    maleData[j] = +genderResult[j].males;
+                    femaleData[j] = +genderResult[j].females;
+                }
+            }
+            chartDataObject.push({
+                name: segments[i].name.trim(),
+                result: { trafficData, postitveData, negativeData, maleData, femaleData },
             });
+            maxLength = Math.max(n, maxLength);
+        }
+
+        chartDataObject['labels'] = getExactPeriodLabels(period, maxLength);
+        renderSegmentsChart(chartDataObject);
+
+        $('#view-page .chart-selector div').unbind('click');
+        $('#view-page .chart-selector div').click(function (e) {
+            var selectorBlock = $('#view-page .chart-selector');
+            for (selector of selectorBlock[0].children) {
+                if (e.target == selector)
+                    selector.classList.add('active');
+                else
+                    selector.classList.remove('active');
+            }
+            renderSegmentsChart(chartDataObject);
         });
+    });
 }
 // Get data end
 
@@ -622,7 +631,7 @@ function showSegments(id) {
                 "<tr><td class='td'><i>No segments available! Create one above</i></td> <td></td> <td></td> <td></td> </tr>"
             );
         } else {
-            monitorSerments.map(segment => {
+            monitorSerments.map(function (segment) {
                 segmentsTable.append(
                     "<tr>" +
                     "<td>" + segment.name + "</td>" +
@@ -673,15 +682,22 @@ function deleteSegment(segment_id) {
 function addOptionsBlock(segments) {
     var id = getCookie("view_token");
     var displayTypes = ['Custom', 'By segment'];
-    var displayVariants = `<div class="dropdown-list-variant active" data-id="${0}">${displayTypes[0]}</div>`;
-    for (var i = 1; i < displayTypes.length; i++) {
-        displayVariants += `<div class="dropdown-list-variant" data-id="${i}">${displayTypes[i]}</div>`
+    var displayVariants = '';
+    for (var i = 0; i < displayTypes.length; i++) {
+        if (i == 0)
+            displayVariants += `<div class="dropdown-list-variant active" data-id="${i}">${displayTypes[i]}</div>`;
+        else
+            displayVariants += `<div class="dropdown-list-variant" data-id="${i}">${displayTypes[i]}</div>`;
+
     }
 
     var periods = ["Hour", "Day", "Week", "Fortnight", "Month", "Year"];
-    var periodVariants = `<div class="dropdown-list-variant active" data-id="${0}">${periods[0]}</div>`;
-    for (var i = 1; i < periods.length; i++) {
-        periodVariants += `<div class="dropdown-list-variant" data-id="${i}">${periods[i]}</div>`
+    var periodVariants = ``;
+    for (var i = 0; i < periods.length; i++) {
+        if (i == 1)
+            periodVariants += `<div class="dropdown-list-variant active" data-id="${i}">${periods[i]}</div>`
+        else
+            periodVariants += `<div class="dropdown-list-variant" data-id="${i}">${periods[i]}</div>`
     }
 
     var segmentsVariants = '';
@@ -720,7 +736,7 @@ function addOptionsBlock(segments) {
         '<div class="dropdown period-dropdown"> ' +
         '<div class="dropdown-visible">' +
         '<div class = "variants">' +
-        `<input class="dropdown-input" value="${periods[0]}"></input>` +
+        `<input class="dropdown-input" value="${periods[1]}"></input>` +
         '</div > ' +
         '<div class = "selectors">' +
         '<i class = "icon icon-chevron-down selector"></i>' +
@@ -790,8 +806,15 @@ function addInputDropdown(location) {
             $(location).find('.no-options')[0].classList.add('active');
         else
             $(location).find('.no-options')[0].classList.remove('active');
-
     });
+
+    $('body').click(function (e) {
+        if (e.target.closest(`.dropdown`) !== $(location)[0]) {
+            $(location).find('.dropdown-list')[0].classList.remove('active');
+            $(location).find('.dropdown-visible')[0].classList.remove('active');
+        }
+    });
+
 
     $(location).find('.dropdown-list-variant').click(function (e) {
         var dropdownList = $(location).find('.dropdown-list')[0];
@@ -872,3 +895,4 @@ function addSegmentDropdown(location) {
     });
 }
 // Dropdown end
+

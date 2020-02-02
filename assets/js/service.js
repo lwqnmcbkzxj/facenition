@@ -227,7 +227,7 @@ var api_routes = {
 };
 
 var API = "https://api.facenition.com/api/";
-
+// var API = "http://25ffbe15.ngrok.io/api/"
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -867,7 +867,7 @@ function showAlert(text, type) {
 		
 	}, 5000);
 
-	alert.addEventListener('click', () => {
+	alert.addEventListener('click', function() {
 		$(alert).animate({'right': '-320px'}, 600);
 		setTimeout(function() {
 			alert.classList.remove('visible');
@@ -1085,4 +1085,51 @@ function getSegments(id) {
             return;
         }
     }, true));
+}
+
+function getMaxLength(period) {
+    var length = 0;
+    switch (period) {
+        case 'hour':
+            length = 24;
+            break;
+        case 'day':
+            length = 7;
+            break;
+        case 'week':
+            length = 5;
+            break;
+        case 'month':
+            length = 12;
+
+            break;
+
+        default:
+            break;
+    }
+    return length;
+}
+function getPeriodSegments(n, period) {
+    switch (period) {
+        case 'hour':
+            n *= 24;
+            break;            
+        case 'day':               
+            break;
+        case 'week':
+            n = Math.ceil(n / 7)
+            break;
+        case 'fortnight':
+            n = Math.ceil(n / 14)
+            break;
+        case 'month':
+            n = Math.ceil(n / 30)
+            break;
+        case 'year':
+            n = Math.ceil(n / 365)
+            break;
+        default:
+            break;
+    }
+    return n;
 }

@@ -65,13 +65,7 @@ function PasswordResetInit() {
         if (pass.val() === confirm.val()) {
             var isVaild = validatePassword(pass.val());
             if (isVaild === true) {
-                request(
-                    "PASSWORD_RESET_TOKEN",
-                    {
-                        params: token,
-                        password: pass.val()
-                    },
-                    function (r) {
+                request("PASSWORD_RESET_TOKEN", { params: token, password: pass.val() }, function (r) {
                         if (!r.success) {
                             showAlert(r, 'error');                            
                             return;
@@ -89,16 +83,15 @@ function PasswordResetInit() {
         }
     });
 }
+/***** password reset ****/
 
+/***** register ****/
 function RegisterInit() {
     var inputs = $('#register-page input');
     inputs.map(function(i, e) {
         $(e).val("")
     })
 }
-/***** password reset ****/
-
-/***** register ****/
 function bindRegister() {
     var email = $('#register-page input[name="email"]');
     var emailValid = email.next("#register-page .content-error");
@@ -169,6 +162,7 @@ function bindRegister() {
         return isValid;
     }
 }
+/***** register ****/
 
 function VerifyEmailInit() {
     var token = getUrlParameter("t");
@@ -183,4 +177,3 @@ function VerifyEmailInit() {
         loadPage("/login");
     });
 }
-/***** register ****/

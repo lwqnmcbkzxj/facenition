@@ -69,7 +69,9 @@
                         <input class="input input-landing" placeholder="Email" type="email" name="email" />
                         <input class="input input-landing" placeholder="Password" type="password" name="password" />
                     </form>
-                    <button class="button button-login" id="login"> Login </button>
+                    <div class="button-holder">
+                        <button class="button button-login" id="login"> Login </button>
+                    </div>
                     <div class="content-link">
                         <a href="forgot-password" data-link="ajax" class="content-link-item">Forgot password?</a>
                     </div>
@@ -154,7 +156,7 @@
                         <input class="input input-landing" placeholder="Email" type="email" name="email" />
                         <input class="input input-landing" placeholder="Password" type="password" name="password" />
                     </form>
-                        <button class="button button-login" id="login"> Login </button>
+                    <button class="button button-login" id="login"> Login </button>
                     <div class="content-link">
                         <a href="forgot-password" data-link="ajax" class="content-link-item">Forgot password?</a>
                     </div>
@@ -260,6 +262,10 @@
                             </p>
                         </a>
                     </div>
+                    <div class="navbar-item mobile-logout">
+                        <i class="icon icon-user"></i>
+                        <a class="link-user" href="#" id="logout">Log out</a>
+                    </div>
                 </div>
             </div>
 
@@ -306,10 +312,10 @@
                                     <div>Name</div>
                                     <div>Trend</div>
                                     <div>Actions</div>
-                                </div> 
-                                <div class = "card-data">
+                                </div>
+                                <div class="card-data">
 
-                                </div>                                
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -409,23 +415,23 @@
                         <h4>Period summary <span class='live-button'>live</span></h4>
                         <div class="stats">
                             <div>
-                                <i class = 'icon icon-male'></i>
+                                <i class='icon icon-male'></i>
                                 <span>0</span>
                             </div>
                             <div>
-                                <i class = 'icon icon-eye'></i>
+                                <i class='icon icon-eye'></i>
                                 <span>0</span>
                             </div>
                             <div>
                                 <div>
-                                    <i class = 'icon icon-male-gender'></i> / 
-                                    <i class = 'icon icon-female-gender'></i>
-                                </div>                               
+                                    <i class='icon icon-male-gender'></i> /
+                                    <i class='icon icon-female-gender'></i>
+                                </div>
                                 <span>0</span>
                             </div>
                         </div>
                         <div class="options">
-                            
+
                         </div>
                         <div class="button-holder">
                             <button class="btn-secondary refresh-btn" id="refresh-pwd"> Refresh </button>
@@ -514,23 +520,23 @@
                             <div class="chart-blocks">
                                 <div class="chart-block traffic-chart-block">
                                     <div class="stats">
-                                        <i class = 'icon icon-male-blue'></i>
+                                        <i class='icon icon-male-blue'></i>
                                         <span>0</span>
                                     </div>
                                     <div class="small-chart-area"></div>
                                 </div>
                                 <div class="chart-block impression-chart-block">
-                                    <div class="stats">                                       
-                                        <i class = 'icon icon-eye-blue'></i>
+                                    <div class="stats">
+                                        <i class='icon icon-eye-blue'></i>
                                         <span>0</span>
                                     </div>
                                     <div class="small-chart-area"></div>
                                 </div>
                                 <div class="chart-block gender-chart-block">
                                     <div class="stats">
-                                        <i class = 'icon icon-user-blue'></i>
+                                        <i class='icon icon-user-blue'></i>
                                         <span>0</span>
-                                        <i class = 'icon icon-user-red'></i>
+                                        <i class='icon icon-user-red'></i>
                                         <span>0</span>
                                     </div>
                                     <div class="small-chart-area"></div>
@@ -614,7 +620,7 @@
         </div>
         <div class='alert-block'></div>
         </divcl>
-        <script src="/assets/js/login.js"></script>       
+        <script src="/assets/js/login.js"></script>
         <script src="/assets/js/monitors.js"></script>
         <script src="/assets/js/settings.js"></script>
         <script src="/assets/js/monitors-view.js"></script>

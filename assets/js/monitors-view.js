@@ -614,7 +614,13 @@ function monitorToggle(id) {
 }
 
 function showSegments(id) {
-    var main = $("#view-page .main");
+    var tableBody = $('#view-page .card:nth-child(3) .card-body')
+    var table = $('#view-page .card:nth-child(3) #segments-table');
+    var loader = "<div class='loader'></div>";
+
+    table.hide();
+    tableBody.append(loader);
+
     var segmentsTable = $('#view-page #segments-table-content');
     $.when(
         $.ajax(request("GET_MONITOR_SEGMENTS", { params: id }, function (r) { }, true)),
@@ -623,7 +629,8 @@ function showSegments(id) {
             showAlert('Failed to monitor segments', 'error')
             return;
         }
-
+        table.show();
+        $('.loader').remove()
         var monitorSerments = r1.data;
         segmentsTable.empty();
         if (monitorSerments.length === 0) {
@@ -786,7 +793,8 @@ function addOptionsBlock(segments) {
     addSegmentDropdown($('#view-page .options-block .options .segment-dropdown')[0]);
 
     $('#view-page .refresh-btn').unbind('click');
-    $('#view-page .refresh-btn').click(function () {
+    $('#view-page .refresh-btn').click(function (e) {
+        moveToChart(e);
         getChartData(id);
     });
 
@@ -895,4 +903,3 @@ function addSegmentDropdown(location) {
     });
 }
 // Dropdown end
-

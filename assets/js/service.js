@@ -227,7 +227,6 @@ var api_routes = {
 };
 
 var API = "https://api.facenition.com/api/";
-// var API = "http://25ffbe15.ngrok.io/api/"
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -327,6 +326,8 @@ function login(email, password) {
             showAlert(result.msg, 'error');
             return;
         }
+        $('#login-page #login').show();
+                $('.loader').remove();
         var week = new Date();
         week.setDate(week.getDate() + 7);
         setCookie("auth_token", result.token, week);
@@ -1132,4 +1133,15 @@ function getPeriodSegments(n, period) {
             break;
     }
     return n;
+}
+
+
+function moveToChart(e) {
+    var chartPosition = 0;
+    if ($('.sidebar').height() > 500)
+        chartPosition = $(e.target.closest('.card')).offset().top;
+    else
+        chartPosition = $(e.target.closest('.card')).offset().top - $('.sidebar').height();
+
+    $("html, body").animate({ scrollTop: chartPosition }, 600);
 }

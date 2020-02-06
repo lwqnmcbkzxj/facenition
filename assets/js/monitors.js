@@ -105,6 +105,9 @@ function MonitorsInit() {
         request("GET_MONITOR_THUMBNAIL", { params: id }, function(r) {
             var thumbnail = r.data;
             var image = "data:image/jpg;base64," + thumbnail;
+            if (thumbnail == '')
+                image = '../assets/img/monitor-thumbnail-placeholder.png';
+            
             $(
                 "#monitors-page #mon-" + index + " #preview-" + index + " .l-w"
             ).remove();

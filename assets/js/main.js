@@ -105,6 +105,8 @@ function navigate(e) {
     e.stopPropagation();
     e.preventDefault();
     loadPage(e.currentTarget.pathname);
+    $(document.body).toggleClass("nav-opened");
+
 }
 
 $(document).ready(function() {

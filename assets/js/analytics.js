@@ -31,8 +31,10 @@ function AnalytsicsInit() {
 
 
     $('#analytics-page .chart-selectors .selector').click(function (e) {
-        if (e.target.closest('.selector').classList[2] != 'active')
+        if (e.target.closest('.selector').classList[2] != 'active') {
             renderSummaryBlock(e.target.closest('.selector').classList[1].split('-')[0]);
+            moveToChart(e);
+        }
     });
 }
 // BLOCKS RENDER START
@@ -69,7 +71,6 @@ function renderSummaryBlock(entriesType) {
             $, getRequestsArr(entriesType, queries)
         ).done(function () {
             var results = arguments;
-            console.log(results)
             main.show();
             $('.loader').remove();
 
@@ -109,7 +110,7 @@ function renderSummaryBlock(entriesType) {
                             femaleData = fillYearGenderData(femaleData, maxLength, result, 'female')
                         } else {
                             maleData = fillGenderData(maleData, result, 'male');
-                            femaleData = fillGenderData(femaleData, result, 'female');            
+                            femaleData = fillGenderData(femaleData, result, 'female');
                         }
                     }
                 }
@@ -271,7 +272,7 @@ function renderLargeBlock(entriesType) {
                         femaleData = fillYearGenderData(femaleData, maxLength, result, 'female')
                     } else {
                         maleData = fillGenderData(maleData, result, 'male');
-                        femaleData = fillGenderData(femaleData, result, 'female');            
+                        femaleData = fillGenderData(femaleData, result, 'female');
                     }
                 } else {
                     if (period == 'year')
@@ -848,6 +849,8 @@ function addDropdown(location, type, items) {
 
             dropdownList[0].classList.toggle('active');
             startRenderFunction(e);
+
+            moveToChart(e);
         }
     });
 }

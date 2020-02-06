@@ -6,7 +6,7 @@ function LoginInit() {
     pass.val("");
 }
 
-function bindLogin() {
+function bindLogin() { 
     var email = $('#login-page input[name="email"]');
     var pass = $('#login-page input[name="password"]');
     email.add(pass).on("keypress", function(e) {
@@ -19,9 +19,18 @@ function bindLogin() {
             }
         }
     });
-    $("#login").click(function() {
+    $("#login").click(function () {
+        var btnBody = $('#login-page .button-holder');
+        var btnMain = $('#login-page #login');
+        var loader = "<div class='loader'></div>";
+        btnMain.hide();
+        btnBody.append(loader);
+
+
+
         try {
             login(email.val(), pass.val());
+            
         } catch (error) {
             console.error(error);
             showAlert('Something went wrong...', 'error');

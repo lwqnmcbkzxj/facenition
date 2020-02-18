@@ -190,7 +190,7 @@ function renderSmallBlocks() {
         if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
             if (period == 'year') {
                 trafficData = fillYearData(trafficData, maxLength, trafficResult);
-                impressionData = fillYearData(impressionData, impressionResult);
+                impressionData = fillYearData(impressionData, maxLength, impressionResult);
 
                 maleData = fillYearGenderData(maleData, maxLength, genderResult, 'male')
                 femaleData = fillYearGenderData(femaleData, maxLength, genderResult, 'female')

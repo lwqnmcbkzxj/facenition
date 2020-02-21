@@ -31,7 +31,7 @@ function MonitorsViewInit() {
             $(".loader").remove();
             main.show();
 
-            monitor = r1[0].data[0];
+            monitor = r1[0].data;
             showSegments(monitor.id);
 
             var img = r2[0].data;
@@ -227,8 +227,17 @@ function getSegmentsData(id) {
 
     var chartDataObject = [];
     var maxLength = 0;
+    var segmentsStart = segments[0].start;
+    var segmentsEnd = segments[0].end;
 
-
+    for (let segment of segments) {
+        if (+segment.start < +segmentsStart)
+            segmentsStart = segment.start;
+        if (+segment.end > +segmentsEnd)
+            segmentsEnd = segment.end;
+    }
+    var maxLength = getSegmentsLength(+segmentsStart, +segmentsEnd, period);
+    
     $.when.apply(
         $, [].concat(
             getRequestsArr('traffic', queries),
@@ -238,6 +247,7 @@ function getSegmentsData(id) {
         var result = arguments;
         btnMain.show();
         $('.loader').remove();
+
 
         for (var i = segments.length - 1; i >= 0; i--) {
             var trafficResult = [];
@@ -263,14 +273,15 @@ function getSegmentsData(id) {
                 }
             }
 
+
             trafficResult = trafficResult[0];
             impressionResult = impressionResult[0];
             genderResult = genderResult[0];
-
-
+            var segmentStart = +trafficResult[0].period;
+            
             if (trafficResult !== null && impressionResult !== null && genderResult !== null) {
-                var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
-                for (var j = 0; j < n; j++) {
+                // var n = Math.max(trafficResult.length, impressionResult.length, genderResult.length)
+                for (var j = 0; j < maxLength; j++) {
                     trafficData.push(0);
                     postitveData.push(0);
                     negativeData.push(0);
@@ -278,27 +289,37 @@ function getSegmentsData(id) {
                     femaleData.push(0);
                 }
 
-                for (var j = 0; j < trafficResult.length; j++)
-                    trafficData[j] = +trafficResult[j].count;
-
-
-                for (var j = 0; j < impressionResult.length; j++) {
-                    postitveData[j] = +impressionResult[j].positive;
-                    negativeData[j] = +impressionResult[j].negative;
+                var periodTime = getPeriodTime(period);
+                var k = 0;
+                while (+trafficResult[0].period - (+segmentsStart + (periodTime* k))  > periodTime)
+                    k++;
+                for (var j = 0; j < trafficResult.length; k++, j++) {
+                    trafficData[k] = +trafficResult[j].count;
                 }
-                for (var j = 0; j < genderResult.length; j++) {
-                    maleData[j] = +genderResult[j].males;
-                    femaleData[j] = +genderResult[j].females;
+                    
+                k = 0;
+                while (+trafficResult[0].period - (+segmentsStart + (periodTime* k))  > periodTime)
+                    k++;
+                for (var j = 0; j < impressionResult.length; k++, j++) {
+                    postitveData[k] = +impressionResult[j].positive;
+                    negativeData[k] = +impressionResult[j].negative;
+                }
+
+                k = 0;
+                while (+trafficResult[0].period - (+segmentsStart + (periodTime* k))  > periodTime)
+                    k++;
+                for (var j = 0; j < genderResult.length; k++, j++) {
+                    maleData[k] = +genderResult[j].males;
+                    femaleData[k] = +genderResult[j].females;
                 }
             }
             chartDataObject.push({
                 name: segments[i].name.trim(),
                 result: { trafficData, postitveData, negativeData, maleData, femaleData },
             });
-            maxLength = Math.max(n, maxLength);
         }
-
-        chartDataObject['labels'] = getExactPeriodLabels(period, maxLength);
+        
+        chartDataObject['labels'] = getSegmentsLabels(+segmentsEnd, period, maxLength);
         renderSegmentsChart(chartDataObject);
 
         $('#view-page .chart-selector div').unbind('click');
@@ -313,6 +334,7 @@ function getSegmentsData(id) {
             renderSegmentsChart(chartDataObject);
         });
     });
+
 }
 // Get data end
 
@@ -903,3 +925,77 @@ function addSegmentDropdown(location) {
     });
 }
 // Dropdown end
+function getSegmentsLabels(end, period, n) {
+    var labels = [];
+
+    var formatString = '';
+    var additionalFormat = '';
+
+    var cur = moment(end).startOf(period);
+    var cur1 = moment(end).startOf(period);
+
+
+    switch (period) {
+        case 'hour':
+            formatString = 'ddd h a';
+            additionalFormat = 'h a';
+            break;
+        case 'day':
+            formatString = 'ddd DD/MM';
+            break;
+        case 'week':
+            cur = moment().startOf('isoWeek');
+            cur1 = moment().startOf('isoWeek');
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
+            break;
+        case 'fortnight':
+            //Moment.js not includes function for fortnight(2 weeks)
+            cur = moment().startOf('isoWeek');
+            cur1 = moment().startOf('isoWeek');
+
+            cur1.add(2, 'week');
+            formatString = 'DD/MM';
+            additionalFormat = 'DD/MM';
+            break;
+        case 'month':
+            formatString = 'MM/Y';
+            additionalFormat = '';
+            break;
+        case 'year':
+            formatString = 'Y';
+            break;
+
+        default:
+            formatString = 'ddd DD/MM';
+            break;
+    }
+    cur1.add(1, period);
+    while (n > 0) {
+        var date = cur.format(formatString);
+        if (period == 'hour' || period == 'week') {
+            var additionalDate = cur1.format(additionalFormat);
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(1, period);
+        }
+        else if (period == 'fortnight') {
+            var additionalDate = cur1.format(additionalFormat);
+            labels.push(date + ' - ' + additionalDate);
+            cur1.subtract(2, 'week');
+            cur.subtract(2, 'week');
+        }
+        else {
+            labels.push(date);
+        }
+
+        cur.subtract(1, period);
+        n--;
+    }
+    return labels.reverse();
+}
+
+function getSegmentsLength(start, end, period) {
+    var n = getPeriodSegments(1, period);
+    var totalTime = Math.ceil((end - start) / 86400000) / n;
+    return Math.ceil(totalTime);
+}

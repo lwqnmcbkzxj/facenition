@@ -12,25 +12,25 @@ function MonitorsInit() {
     (function() {
         $.when(
             $.ajax(request("GET_MONITORS", {}, function(r) {}, true)),
-            $.ajax(
-                request(
-                    "GET_TRAFFIC_BY_DAYS",
-                    { query: "days=" + 14 },
-                    function(r) {},
-                    true
-                )
-            )
-        ).done(function(r1, r2) {
-            if (!r1[0].success) {
+            // $.ajax(
+            //     request(
+            //         "GET_TRAFFIC_BY_DAYS",
+            //         { query: "days=" + 14 },
+            //         function(r) {},
+            //         true
+            //     )
+            // )
+        ).done(function(r1) {
+            if (!r1.success) {
                 showAlert('Failed to load monitors', 'error');
                 return;
             }
-            if (!r2[0].success) {
-                showAlert('Failed to load monitors', 'error');
-                return;
-            }
-            monitors = r1[0].data;
-            trafic = r2[0].data;
+            // if (!r2[0].success) {
+            //     showAlert('Failed to load monitors', 'error');
+            //     return;
+            // }
+            monitors = r1.data;
+            // trafic = r2[0].data;
             $(".loader").remove();
             main.show();
             charts();
@@ -114,41 +114,13 @@ function MonitorsInit() {
             $(preview).append("<img src='" + image + "' alt='Preview'>");
         });
 
-        var query =
-            "start=" +
-            start +
-            "&end=" +
-            end +
-            "&monitor_id=" +
-            id +
-            "&duration=" +
-            duration;
+
+        var query = `monitor_id=${id}&start=${start}&end=${end}&period=${duration}`;            
         (function() {
             $.when(
-                $.ajax(
-                    request(
-                        "GET_TRAFFIC_ENTRIES",
-                        { query: query },
-                        function(r) {},
-                        true
-                    )
-                ),
-                $.ajax(
-                    request(
-                        "GET_IMPRESSION_ENTRIES",
-                        { query: query },
-                        function(r) {},
-                        true
-                    )
-                ),
-                $.ajax(
-                    request(
-                        "GET_GENDER_ENTRIES",
-                        { query: query },
-                        function(r) {},
-                        true
-                    )
-                )
+                $.ajax(request("GET_TRAFFIC_ENTRIES_V2", { query }, function (r) { }, true)),
+                $.ajax(request("GET_IMPRESSION_ENTRIES_V2", { query }, function (r) { }, true)),
+                $.ajax(request("GET_GENDER_ENTRIES_V2", { query }, function (r) { }, true))
             ).done(function(r1, r2, r3) {
                 if (!r1[0].success) {
                     showAlert(r1[0].msg, 'error');        

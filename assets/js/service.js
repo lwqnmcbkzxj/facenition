@@ -226,7 +226,7 @@ var api_routes = {
     }
 };
 
-var API = "https://api.facenition.com/api/";
+var API = "http://4398b977.ngrok.io/api/";
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
